@@ -86,9 +86,46 @@ The same setup check also produced a real `provider_error`: the model hit a rate
 
 ## Architecture
 
-![Architecture](docs/images/architecture.svg)
+![Architecture: the Maintainer's notes feed the Neuron daemon, three role sessions ask it over MCP, and the recorder and verifier check what they did](docs/images/architecture.png)
 
 Three roles talk to one Neuron daemon over MCP. The daemon serves two vaults, each fed by its own watched folder. Nothing the agents do is trusted on its own: the recorder reads their transcripts, and the verifier re-reads the cited bytes.
+
+The same architecture as a diagram you can edit in place:
+
+```mermaid
+flowchart LR
+    M(["Maintainer"]) -->|"1 edits notes"| N["vault/ and vault-private/"]
+    N -->|"2 folder watcher"| W
+
+    subgraph D["Okto Neuron daemon"]
+        W["Claims from blocks"] --> G[("Graph: team and reviewer-private")]
+        G --> S["MCP server"]
+    end
+
+    W <-->|"3 extract claims, synthesise answers"| L["Your LLM provider"]
+
+    subgraph C["Claude Code sessions, fresh each step"]
+        P["Planner"]
+        B["Builder"]
+        R["Reviewer"]
+    end
+
+    P & B & R <-->|"4 ask, 5 answer with sources"| S
+    P & B & R -->|"6 transcripts"| REC["Recorder"]
+    REC --> A[("asks.jsonl")]
+    A --> V["Verifier"]
+    G -.->|"7 cited bytes re-read"| V
+    V -->|"8 totals"| X["Close-out"]
+
+    classDef person fill:#334155,stroke:#1e293b,color:#ffffff
+    classDef svc fill:#4f46e5,stroke:#312e81,color:#ffffff
+    classDef data fill:#0d9488,stroke:#134e4a,color:#ffffff
+    classDef check fill:#16a34a,stroke:#14532d,color:#ffffff
+    class M person
+    class W,S,P,B,R,L svc
+    class N,G,A data
+    class REC,V,X check
+```
 
 ![The ten steps: setup, three features, two Maintainer edits, the outage and the close-out](docs/images/flow.png)
 

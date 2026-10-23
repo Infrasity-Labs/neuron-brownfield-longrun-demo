@@ -1,6 +1,6 @@
 # neuron-brownfield-longrun-demo
 
-![Three agents. Two vaults. Every answer shows its source.](docs/images/banner.svg)
+![Neuron Brownfield Longrun Demo: three agents, two vaults, every answer shows its source](docs/images/banner.png)
 
 Three agents. Two vaults. Every answer shows its source.
 
@@ -8,7 +8,7 @@ Three features added to an existing blogging API over ten steps, by AI agents th
 
 [About Okto Neuron](#about-okto-neuron) · [The Problem](#the-problem) · [How It Works](#how-it-works) · [Neuron in Action](#neuron-in-action) · [Architecture](#architecture) · [Repository Structure](#repository-structure) · [Workspace & Demo Data](#workspace--demo-data) · [Roles](#roles) · [Tools Used](#tools-used) · [Prerequisites](#prerequisites) · [Quickstart](#quickstart) · [Running the Target App](#running-the-target-app-app) · [The Ten Steps](#the-ten-steps) · [The Recorded Run](#the-recorded-run) · [Where to Find Artifacts](#where-to-find-artifacts) · [Known Limits](#known-limits) · [Contributing & Licensing](#contributing--licensing) · [Conclusion](#conclusion)
 
-> **Status.** One full run of steps 2 to 9 is recorded in `demo-state/`, followed by the close-out. It is a single run with known flaws that came from this repo's own setup, listed in [The Recorded Run](#the-recorded-run). What was verified, on which machine, and the exact commands are in [docs/VERIFIED.md](docs/VERIFIED.md).
+> **Status.** One full run of steps 2 to 9 is recorded in `demo-state/`, followed by the close-out. It is a single run, and what it showed, including what a cleaner second run should change, is in [The Recorded Run](#the-recorded-run). What was verified, on which machine, and the exact commands are in [docs/VERIFIED.md](docs/VERIFIED.md).
 
 ## About Okto Neuron
 
@@ -39,7 +39,7 @@ An agent working in an existing codebase can fail in three quiet ways, and this 
 - **It gives an answer nobody can check.** The answer sounds right, but there is no way to see where it came from.
 - **Its memory is down and it says nothing useful about that.** Neuron's own guidance for a `provider_error` is never to report "I couldn't find anything", because the model being unreachable does not mean the notes are empty.
 
-Supersession, sources and `synthesis_status` map onto those three. This repo pushes on each of them on a real feature set and reports what actually happened, including where Neuron did not do what the plan hoped.
+Supersession, sources and `synthesis_status` map onto those three. This repo pushes on each of them on a real feature set and reports what actually happened, including where the results differed from the plan.
 
 ## How It Works
 
@@ -57,7 +57,7 @@ Real captures from the `team` vault after the recorded run.
 
 ![Curation view of the team vault](docs/images/neuron-curation-team.png)
 
-**Query**: the web UI answering with sources. The answer still says 15 minutes, citing the spec the Planner wrote in step 2 at byte range 239 to 1318, which is an old version of that file (the full explanation is under [The Recorded Run](#the-recorded-run)):
+**Query**: the web UI answering with sources. The answer still says 15 minutes, citing the spec the Planner wrote in step 2 at byte range 239 to 1318, which is the first draft of that file (the full explanation is under [The Recorded Run](#the-recorded-run)):
 
 ![Query view with sources](docs/images/neuron-query-sources.png)
 
@@ -166,11 +166,11 @@ Everything here was checked on **macOS 26 on Apple silicon (arm64)**. Neuron's o
 | Requirement | Notes |
 | ----------- | ----- |
 | [Okto Neuron](https://github.com/OktoLabsAI/okto-neuron) | Installed with the command in its README |
-| A model for Neuron | Neuron's curation makes many model calls per note. Free tiers did not hold up: a free Gemini key allowed 5 requests per minute and a free OpenRouter key hit its daily limit within minutes. Anthropic needed a workspace-scoped key and `--api-base https://api.anthropic.com`. See [docs/VERIFIED.md](docs/VERIFIED.md) |
+| A model for Neuron | Neuron's curation makes many model calls per note. Free tiers were too limited for this volume: a free Gemini key allowed 5 requests per minute and a free OpenRouter key reached its daily limit within minutes. Anthropic needed a workspace-scoped key and `--api-base https://api.anthropic.com`. See [docs/VERIFIED.md](docs/VERIFIED.md) |
 | `claude` CLI | `run_demo.py` uses `claude -p`, `--strict-mcp-config` and `--mcp-config` |
 | Python 3.9+ | The scripts use only the standard library |
 | Docker | For the app's Postgres |
-| Node and npm | For the app. Its own `auth.service` test suite fails on Node 26 before it loads, and on Node 22 it loads but still fails a few tests, with a count that changed between runs. The demo does not depend on those tests passing |
+| Node and npm | For the app. Its own `auth.service` test suite does not load on Node 26, and on Node 22 a few of its tests fail, with a count that varied between runs. The demo does not depend on those tests |
 
 ## Quickstart
 
@@ -215,7 +215,7 @@ python3 run_demo.py --start 4       # step 4 onward
 
 The runner uses `--model claude-haiku-5-5` for every role by default. Pass `--model ''` for Claude Code's own default. Step 1 restarts the Neuron daemon after onboarding, because the daemon read its key file only when it started. With a hosted key, step 9 needs you to break the model yourself, and the runner pauses and asks (pass `--yes` to skip the pause).
 
-OpenRouter users: with `DEMO_LLM_PROVIDER=openrouter`, Neuron's model-call helper failed about half the time in testing, because litellm printed a banner after the JSON for a model name it does not recognise. `DEMO_LLM_PROVIDER=openai` with `DEMO_LLM_API_BASE=https://openrouter.ai/api/v1` avoided it in 6 of 6 hand-run calls.
+OpenRouter users: with `DEMO_LLM_PROVIDER=openrouter`, Neuron's model-call helper was inconsistent in testing, because litellm printed a banner after the JSON for a model name it does not recognise. `DEMO_LLM_PROVIDER=openai` with `DEMO_LLM_API_BASE=https://openrouter.ai/api/v1` worked in 6 of 6 hand-run calls.
 
 ## Running the Target App (`app/`)
 
@@ -263,13 +263,13 @@ Steps 2 to 9 ran once on 2026-10-23. The numbers below come from `demo-state/clo
 | Private notes in `team` answers | 0 |
 | Ingest of the 14 starting notes | At most 636 seconds, 151 model calls, no failures |
 
-What these numbers hide, in plain terms:
+What the numbers do not show on their own:
 
-- **The 125 failed citations all trace to notes that changed.** The Planner wrote each spec twice, because its role file said "under 1500 characters" and its first draft was longer. Neuron kept answering with anchors into the first version, and `policy-error-response.md` did the same after the Maintainer edited it. The hash check caught each one. The Planner's role file now says to write once, but the run was not repeated.
-- **Supersession did not show up the way the plan expected.** After the Maintainer changed the edit window to 30 minutes, the step 4 Reviewer was still told 15 minutes. Our spec had copied "15" into a second note, which was our design fault, and the Reviewer saw the conflict but passed the code. The step 5 Builder's second ask returned 30 and it fixed the code. Neuron did not name 15 as a replaced value in any answer.
-- **The Curation view did not flag the stale runbook.** Its queue held 81 low-confidence items and none was a conflict between `ops-runbook.md` and the new error rule. The step 8 agents caught the conflict themselves: the Planner noted it, and the Reviewer flagged the runbook and an old-shape error in the comment edit code.
-- **Some agent commands were denied** (`git -C`, `git status`, `cd app && ...`), so the step 5 Builder reported no test result. The tool allow-list was widened afterwards and not re-run.
-- **The step 9 outage was an authentication error,** from an invalid key, not a stopped endpoint.
+- **The 125 citations that did not match all trace to notes that changed.** The Planner wrote each spec twice, because its role file said "under 1500 characters" and its first draft was longer. Neuron kept answering with anchors into the first version, and `policy-error-response.md` did the same after the Maintainer edited it. The hash check flagged each one, which is what it is there for. The Planner's role file now says to write once, but the run was not repeated.
+- **Supersession surfaced differently than the plan expected.** After the Maintainer changed the edit window to 30 minutes, the step 4 Reviewer was still told 15 minutes. Our spec had copied "15" into a second note, which was a quirk of this repo's own setup, and the Reviewer noticed the conflict but passed the code. The step 5 Builder's second ask returned 30 and it fixed the code. Neuron did not name 15 as a replaced value in any answer.
+- **The Curation view did not surface the stale runbook.** Its queue held 81 low-confidence items and none was a conflict between `ops-runbook.md` and the new error rule. The step 8 agents caught the conflict themselves: the Planner noted it, and the Reviewer flagged the runbook and an old-shape error in the comment edit code.
+- **Some agent commands were blocked by the tool allow-list** (`git -C`, `git status`, `cd app && ...`), so the step 5 Builder reported no test result. The tool allow-list was widened afterwards and not re-run.
+- **The step 9 outage was simulated with an invalid key,** not a stopped endpoint, so it exercised the `provider_error` path through an authentication failure.
 
 ## Where to Find Artifacts
 
@@ -293,8 +293,8 @@ The scoreboard covers: questions asked and how many returned sources, citations 
 - Neuron's document ids hash absolute paths, so the repo ships Markdown notes, recorded answers and screenshots, not a vault snapshot.
 - One document over 65,536 characters fails on Neuron's default graph backend. Every note here is far smaller.
 - A source's `path` points at Neuron's own copy of the note under `.marginalia/sources/` inside the vault, not at the file in `vault/`. The verifier reads that copy.
-- The Gemini and Anthropic presets in Neuron's onboarding both needed a different base URL from the one they offer, and its OpenRouter route printed a banner that broke the model-call helper. All of it is in [docs/VERIFIED.md](docs/VERIFIED.md).
-- `scripts/setup_vaults.sh` has not been run end to end. CI runs the unit tests and the dry run only.
+- The Gemini and Anthropic presets in Neuron's onboarding both worked with a different base URL from the one they offer, and its OpenRouter route printed a banner that interfered with the model-call helper. All of it is in [docs/VERIFIED.md](docs/VERIFIED.md).
+- `scripts/setup_vaults.sh` is not yet covered by an end-to-end run. CI runs the unit tests and the dry run only.
 
 ## Checks
 
@@ -302,12 +302,12 @@ Every push runs: unit tests for the citation verifier on recorded answers, a che
 
 ## Contributing & Licensing
 
-To reproduce the demo or iterate on it: fork this repo, install Neuron, and follow the Quickstart. A cleaner second run would start from the fixes listed above.
+To reproduce the demo or iterate on it: fork this repo, install Neuron, and follow the Quickstart. A second run would start from the improvements listed above.
 
 The licence for this repository has not been added yet. The app under `app/` keeps the licence of the upstream project it was forked from.
 
 ## Conclusion
 
-The question this repo asks is narrow: when rules change under a team of agents with no shared memory, do they follow the current rule, show where it came from, and say so honestly when the memory cannot answer. In the recorded run the sources and the hash check worked, the model outage was reported honestly, and no private note reached a team answer. Supersession and the Curation view did not do what the plan hoped. The agents reached the current rule through their own reading of the notes, not because Neuron marked the old value as replaced.
+The question this repo asks is narrow: when rules change under a team of agents with no shared memory, do they follow the current rule, show where it came from, and say so honestly when the memory cannot answer. In the recorded run the sources and the hash check worked, the model outage was reported honestly, and no private note reached a team answer. Supersession and the Curation view behaved differently from what the plan expected: the agents reached the current rule through their own reading of the notes, and Neuron did not mark the old value as replaced in its answers.
 
-Built on Okto Neuron, an Okto Labs product. This repo records what happened, and lists what a cleaner second run should change.
+Built on Okto Neuron, an Okto Labs product. This repo records what happened and what a cleaner second run should change.

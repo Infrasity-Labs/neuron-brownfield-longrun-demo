@@ -90,26 +90,7 @@ The same setup check also produced a real `provider_error`: the model hit a rate
 
 Three roles talk to one Neuron daemon over MCP. The daemon serves two vaults, each fed by its own watched folder. Nothing the agents do is trusted on its own: the recorder reads their transcripts, and the verifier re-reads the cited bytes.
 
-```mermaid
-flowchart TD
-    S1[1 Setup: onboard, two vaults, 14 notes] --> S2[2 Planner writes spec 1]
-    S2 --> S3[3 Builder builds feature 1]
-    S3 --> S4{4 Maintainer: 15 to 30 minutes}
-    S4 --> R4[Reviewer checks the diff]
-    R4 --> S5[5 Builder fixes, Reviewer approves, private finding]
-    S5 --> S6[6 Feature 2: article list limit]
-    S6 --> S7{7 Maintainer replaces error rule, adds ops-runbook}
-    S7 --> S8[8 Feature 3: soft delete]
-    S8 --> S9{9 Model unreachable}
-    S9 --> E[Reviewer reports provider_error, falls back to explore]
-    E --> S10[10 Close-out: totals and citation check]
-
-    style S1 fill:#4338ca,stroke:#1e1b4b,color:#ffffff
-    style S4 fill:#b45309,stroke:#451a03,color:#ffffff
-    style S7 fill:#b45309,stroke:#451a03,color:#ffffff
-    style S9 fill:#b91c1c,stroke:#450a0a,color:#ffffff
-    style S10 fill:#1d4ed8,stroke:#172554,color:#ffffff
-```
+![The ten steps: setup, three features, two Maintainer edits, the outage and the close-out](docs/images/flow.png)
 
 **Reading the flow**
 

@@ -1,0 +1,1 @@
+Build feature 3, soft delete for comments, from the spec in vault/specs/feature-3-soft-delete.md. Ask Neuron for the soft delete rule and the current error response rule before you write any error path. Add the migration, change the delete and list code, and add unit tests. Run the app tests and report the exact result. Finish with each rule you applied, its value and its source.

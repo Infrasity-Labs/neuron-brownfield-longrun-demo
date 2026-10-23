@@ -1,0 +1,7 @@
+{"label": "initial 14 notes", "vault": "team", "seconds_upper_bound": 636.0, "sampled_every_s": null, "note": "daemon start 2026-10-23T05:13:25Z, status first seen idle 14/14 at 05:24:01Z; 151 successful model calls, 0 failed; provider anthropic, model claude-haiku-5-5", "finished_at": "2026-10-23T05:24:01Z"}
+{"label": "step 4 edit", "vault": "team", "seconds_upper_bound": 680.0, "sampled_every_s": 5.0, "settle_s": 8.0, "finished_at": "2026-10-23T05:39:40Z"}
+{"label": "after step 4", "vault": "team", "seconds_upper_bound": 66.4, "sampled_every_s": 5.0, "settle_s": 8.0, "finished_at": "2026-10-23T05:41:51Z"}
+{"label": "after step 5", "vault": "team", "seconds_upper_bound": 161.8, "sampled_every_s": 5.0, "settle_s": 8.0, "finished_at": "2026-10-23T05:46:19Z"}
+{"label": "after step 6", "vault": "team", "seconds_upper_bound": 87.5, "sampled_every_s": 5.0, "settle_s": 8.0, "finished_at": "2026-10-23T05:49:45Z"}
+{"label": "step 7 edit", "vault": "team", "seconds_upper_bound": 98.4, "sampled_every_s": 5.0, "settle_s": 8.0, "finished_at": "2026-10-23T05:51:23Z"}
+{"label": "after step 8", "vault": "team", "seconds_upper_bound": 130.4, "sampled_every_s": 5.0, "settle_s": 8.0, "finished_at": "2026-10-23T05:57:06Z"}

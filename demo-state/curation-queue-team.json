@@ -1,0 +1,655 @@
+{
+ "recorded_at": "2026-10-23",
+ "vault": "team",
+ "count": 81,
+ "items": [
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Article list paging",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "code-article-paging.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "getArticles",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "code-article-paging.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "JWT",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "code-auth-header.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "app/src/prisma/schema.prisma",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "code-comment-model.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Comment Ownership",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "code-comment-ownership.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Generic Error Response",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "code-error-shape.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "schema.prisma",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "code-migrations.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "DATABASE_URL",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "code-migrations.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "npx prisma migrate deploy",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "code-migrations.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Test layout",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "code-test-layout.md"
+  },
+  {
+   "kind": "node",
+   "type": "Place",
+   "title": "app/src/tests/services",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "code-test-layout.md"
+  },
+  {
+   "kind": "node",
+   "type": "Place",
+   "title": "app/src/tests/utils",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "code-test-layout.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "npx nx test api",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "code-test-layout.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Postgres",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "code-test-layout.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "End to end tests",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "code-test-layout.md"
+  },
+  {
+   "kind": "node",
+   "type": "Place",
+   "title": "app/e2e",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "code-test-layout.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Article list limit policy",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "policy-article-list-limit.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Edit Window",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "policy-edit-window.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Comment Author",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "policy-edit-window.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Edited Marker Demo Policy",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "policy-edited-at-marker.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Error Response Rule",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "policy-error-response.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Soft Delete Rule",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "policy-soft-delete.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "deletedAt",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "policy-soft-delete.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "PUT/api/articles/:slug/comments/:id",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Comment Model Module",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "policy-edit-window",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "code-comment-ownership",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "policy-edited-at-marker",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "code-error-shape",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "policy-error-response",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "code-migrations",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "policy-release-checklist",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "code-test-layout",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "code-comment-model",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": ".marginalia/sources/14bfef7e474715c5/<name>",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "Agent",
+   "title": "Vault Team",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Demo Policy",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "PUT/api/articles/:slug/comments/:id",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "policy-edit-window",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "code-comment-ownership",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "policy-edited-at-marker",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "code-error-shape",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "policy-error-response",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "code-migrations",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "policy-release-checklist",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "code-test-layout",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "code-comment-model",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Jest Test Layout",
+   "reason": "low_confidence",
+   "confidence": 0.9100790220541413,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "API Error Shape",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Edit After Window",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Non-Author Edit",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-1-comment-editing.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Comment Editing Window",
+   "reason": "low_confidence",
+   "confidence": 0.8787338490522054,
+   "source_note": "policy-edit-window.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Comment Author",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "policy-edit-window.md"
+  },
+  {
+   "kind": "node",
+   "type": "Activity",
+   "title": "Feature 2: cap on the article list limit",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-2-article-limit.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "GET/api/articles/feed",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-2-article-limit.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Article list limit",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-2-article-limit.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "Demo Policy File",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-2-article-limit.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "getArticles",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-2-article-limit.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Demo Policy",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-2-article-limit.md"
+  },
+  {
+   "kind": "node",
+   "type": "Agent",
+   "title": "Builder",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-2-article-limit.md"
+  },
+  {
+   "kind": "node",
+   "type": "Agent",
+   "title": "Maintainer",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-2-article-limit.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "GET/api/articles/feed",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-2-article-limit.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Limit Parameter",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-2-article-limit.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Ops runbook",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "ops-runbook.md"
+  },
+  {
+   "kind": "node",
+   "type": "InformationObject",
+   "title": "policy-soft-delete document",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-3-soft-delete.md"
+  },
+  {
+   "kind": "node",
+   "type": "Agent",
+   "title": "Neuron",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-3-soft-delete.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Error Body Policy",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-3-soft-delete.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Hard Delete",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-3-soft-delete.md"
+  },
+  {
+   "kind": "node",
+   "type": "Concept",
+   "title": "Prisma Model",
+   "reason": "low_confidence",
+   "confidence": 0.0,
+   "source_note": "feature-3-soft-delete.md"
+  },
+  {
+   "kind": "relation",
+   "type": "defines",
+   "title": "3aa5c337f492fc2363a17de63a51fbdd7a7998f4ffe031ee9ba584ff4cc96b03 defines a comment belongs to the user in its authorId field",
+   "reason": "queue_grounding",
+   "confidence": null,
+   "source_note": ""
+  },
+  {
+   "kind": "relation",
+   "type": "located_in",
+   "title": "b57b6c5d55370fa817fb418f6b16181b7c6880956b6b2a6635f72ef472386208 located_in 30f2f372989d11a9084564702f1c7e6f09005261c7788a9cb89ab8b422753534",
+   "reason": "queue_predicate",
+   "confidence": null,
+   "source_note": ""
+  },
+  {
+   "kind": "relation",
+   "type": "runs_via",
+   "title": "b57b6c5d55370fa817fb418f6b16181b7c6880956b6b2a6635f72ef472386208 runs_via 7b4fe218ec5912ddec42dc8265b1683cfa78b74efd9fcf7001fa49fc611dcdfa",
+   "reason": "queue_predicate",
+   "confidence": null,
+   "source_note": ""
+  },
+  {
+   "kind": "relation",
+   "type": "uses",
+   "title": "10840cb7f4dd2e2054f4e3f2fbc141497c33b657b3cc70097ea5a47dd2e36902 uses ee0e71d57bc3223dd3676eea7ef59061bc7f04ec484d64bc18f5a42244dbcd40",
+   "reason": "queue_grounding",
+   "confidence": null,
+   "source_note": ""
+  },
+  {
+   "kind": "relation",
+   "type": "has_status",
+   "title": "fd440ca7565ef22ca101481153e2988f75db9240b7d337b12a4fe7c1281a8481 has_status no comment PUT route exists yet",
+   "reason": "queue_predicate",
+   "confidence": null,
+   "source_note": ""
+  },
+  {
+   "kind": "relation",
+   "type": "has_measurement",
+   "title": "002e14eee82442ff947b1dc6ccc50746a47f43bb9ed9817840f8e0a2be311033 has_measurement 15 minutes after createdAt",
+   "reason": "queue_predicate",
+   "confidence": null,
+   "source_note": ""
+  },
+  {
+   "kind": "relation",
+   "type": "includes",
+   "title": "fd440ca7565ef22ca101481153e2988f75db9240b7d337b12a4fe7c1281a8481 includes 2d32863cdb1a638d611744104e078e431461bedeb0d9c33e079add5ac30c76bd",
+   "reason": "queue_predicate",
+   "confidence": null,
+   "source_note": ""
+  },
+  {
+   "kind": "relation",
+   "type": "includes",
+   "title": "3e942b810fba9df00e50371748d29cc67db286f94fd17c4698d2e8f01a961bb7 includes 285636015a7abe46a5c32ed1bad649f205298ca22c9de30d92fe065f0d22fe5a",
+   "reason": "queue_grounding",
+   "confidence": null,
+   "source_note": ""
+  },
+  {
+   "kind": "relation",
+   "type": "has_status",
+   "title": "21bdb23524450d1dabaca2ea23fbbd577b3d2c16f13b68d0757662321a578cc3 has_status after the window expires the API refuses the edit",
+   "reason": "queue_predicate",
+   "confidence": null,
+   "source_note": ""
+  },
+  {
+   "kind": "relation",
+   "type": "has_value",
+   "title": "f088ed216c9f1905ffb8c7499bc899f825067b520e848e40df6833ccd509483e has_value self-described as a demo policy",
+   "reason": "queue_grounding",
+   "confidence": null,
+   "source_note": ""
+  },
+  {
+   "kind": "relation",
+   "type": "sourced_from",
+   "title": "726bc46fd70ae8df5bf58ce9cf399a9a559bf66bfe3c598efea6f89867f9b0fb sourced_from 8eb90ad8a9e834d82718a43d4364b06d9d58b9de38f17c0e184e7ac9ee77f996",
+   "reason": "queue_predicate",
+   "confidence": null,
+   "source_note": ""
+  },
+  {
+   "kind": "relation",
+   "type": "blocked_by",
+   "title": "14ef57388984fcd1f7a287c486a220177acc65d082e74731e49fd8d163d4e65d blocked_by 6c0dda65ee4fa4622452a5a53b5b33841578fc98d852868f97a3ddd9f31244fc",
+   "reason": "queue_predicate",
+   "confidence": null,
+   "source_note": ""
+  }
+ ]
+}

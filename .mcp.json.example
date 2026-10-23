@@ -1,0 +1,12 @@
+{
+  "_comment": "run_demo.py writes this file for each role at run time, reading the token from the file Neuron documents (~/.okto-neuron/daemon-7777.token), and passes it with --strict-mcp-config. You only need to copy it by hand to try a role yourself. Never commit a real token.",
+  "mcpServers": {
+    "okto-neuron": {
+      "type": "http",
+      "url": "http://127.0.0.1:8201/mcp?vault=team",
+      "headers": {
+        "Authorization": "Bearer <contents of ~/.okto-neuron/daemon-7777.token>"
+      }
+    }
+  }
+}

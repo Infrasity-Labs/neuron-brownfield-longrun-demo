@@ -1,0 +1,1 @@
+Build feature 2, the article list limit cap, from the spec in vault/specs/feature-2-article-limit.md. Ask Neuron for each rule the spec names. Change the article service and add unit tests. Run the app tests and report the exact result. Finish with each rule you applied, its value and its source.

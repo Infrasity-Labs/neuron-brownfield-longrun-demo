@@ -1,0 +1,72 @@
+
+STEP 2: Planner asks the rules for feature 1 (comment editing) and writes the spec
+running planner ...
+Traceback (most recent call last):
+  File "/Users/apple/Infrasity/neu/scripts/neuron_asks.py", line 160, in <module>
+    sys.exit(main())
+  File "/Users/apple/Infrasity/neu/scripts/neuron_asks.py", line 154, in main
+    counts = record(args.transcript, args.step, args.role, args.out, args.explores_out, roots)
+  File "/Users/apple/Infrasity/neu/scripts/neuron_asks.py", line 127, in record
+    for call in extract_calls(transcript):
+  File "/Users/apple/Infrasity/neu/scripts/neuron_asks.py", line 53, in extract_calls
+    content = (event.get("message") or {}).get("content")
+AttributeError: 'str' object has no attribute 'get'
+Traceback (most recent call last):
+  File "/Users/apple/Infrasity/neu/run_demo.py", line 171, in <module>
+    sys.exit(main())
+  File "/Users/apple/Infrasity/neu/run_demo.py", line 163, in main
+    code = run_step(step, args)
+  File "/Users/apple/Infrasity/neu/run_demo.py", line 127, in run_step
+    subprocess.check_call([sys.executable, os.path.join(REPO, "scripts/neuron_asks.py"), transcript,
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 373, in check_call
+    raise CalledProcessError(retcode, cmd)
+subprocess.CalledProcessError: Command '['/Applications/Xcode.app/Contents/Developer/usr/bin/python3', '/Users/apple/Infrasity/neu/scripts/neuron_asks.py', '/Users/apple/Infrasity/neu/demo-state/transcripts/step02-planner.jsonl', '--step', '2', '--role', 'planner']' returned non-zero exit status 1.
+
+STEP 3: Builder adds the edit endpoint and the editedAt migration
+running builder ...
+recorded 7 ask(s) and 0 explore(s)
+
+STEP 4: Maintainer changes the edit window to 30 minutes; a fresh Reviewer checks the diff
+wrote vault/policy-edit-window.md
+ingest idle after 680.0 s (team, step 4 edit)
+running reviewer ...
+recorded 4 ask(s) and 1 explore(s)
+ingest idle after 66.4 s (team, after step 4)
+
+STEP 5: A fresh Builder fixes the window; Reviewer approves and logs a private finding
+running builder ...
+recorded 2 ask(s) and 1 explore(s)
+running reviewer ...
+recorded 3 ask(s) and 0 explore(s)
+ingest idle after 161.8 s (team, after step 5)
+
+STEP 6: Feature 2, the article list limit cap, planned, built and reviewed
+running planner ...
+recorded 1 ask(s) and 0 explore(s)
+running builder ...
+recorded 2 ask(s) and 0 explore(s)
+running reviewer ...
+recorded 2 ask(s) and 0 explore(s)
+ingest idle after 87.5 s (team, after step 6)
+
+STEP 7: Maintainer replaces the error response rule and adds ops-runbook.md
+wrote vault/policy-error-response.md
+wrote vault/ops-runbook.md
+ingest idle after 98.4 s (team, step 7 edit)
+
+STEP 8: Feature 3, soft delete for comments, built to the new error rule and reviewed
+running planner ...
+recorded 5 ask(s) and 2 explore(s)
+running builder ...
+recorded 3 ask(s) and 2 explore(s)
+running reviewer ...
+recorded 4 ask(s) and 1 explore(s)
+ingest idle after 130.4 s (team, after step 8)
+
+STEP 9: Model endpoint stopped: agents report provider_error and fall back to explore
+Stop the model endpoint now so every ask returns provider_error.
+A local endpoint: stop its server. A hosted one: disconnect the network or set a bad key.
+Neuron's README does not document a switch for this, so it is done by hand and recorded in docs/VERIFIED.md.
+running reviewer ...
+Warning: no stdin data received in 3s, proceeding without it. If piping from a slow command, redirect stdin explicitly: < /dev/null to skip, or wait longer.
+recorded 1 ask(s) and 1 explore(s)

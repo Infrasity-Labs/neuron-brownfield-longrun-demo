@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+node_modules/
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+# local Neuron state and private vault
+vault-private/
+.okto-neuron/
+.mcp.json

@@ -306,6 +306,10 @@ To reproduce the demo or iterate on it: fork this repo, install Neuron, and foll
 
 The licence for this repository has not been added yet. The app under `app/` keeps the licence of the upstream project it was forked from.
 
+### Okto Neuron licence
+
+From 0.3.0, [Okto Neuron](https://github.com/OktoLabsAI/okto-neuron) is licensed under the Elastic License 2.0 with the Okto Labs SaaS, Competing Service, Internal Use, and Branding addendum. The addendum asks that the "Okto Neuron by Okto Labs" attribution stays visible in the UI and CLI; see `TRADEMARKS.md` in the Neuron repository. Releases up to and including 0.2.0 were published as `marginalia` under Apache 2.0, and that grant still applies to those releases. Third-party material is listed in `THIRD_PARTY_NOTICES.md` in the same repository.
+
 ## Conclusion
 
 The question this repo asks is narrow: when rules change under a team of agents with no shared memory, do they follow the current rule, show where it came from, and say so honestly when the memory cannot answer. In the recorded run the sources and the hash check worked, the model outage was reported honestly, and no private note reached a team answer. Supersession and the Curation view behaved differently from what the plan expected: the agents reached the current rule through their own reading of the notes, and Neuron did not mark the old value as replaced in its answers.

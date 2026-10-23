@@ -1,0 +1,51 @@
+{
+  "status": "degraded",
+  "text": "",
+  "citations": [
+    "85b334ea29ccde133d893859cf76f757816d1f2e7656f031b8da453efbbad3fb",
+    "29a79f9b3116bdc0855c800d6153c2356e0c48a68164ac1d7901cdbb148eca2d"
+  ],
+  "subgraph_evidence_ids": [],
+  "retrieval": {
+    "mode": "block",
+    "seed_k": 20,
+    "source_block_policy": "always",
+    "source_blocks_used": true,
+    "seed_diversity": false,
+    "path": "block_with_sources",
+    "source_block_budget_tokens": null,
+    "context_tokens_estimate": 148,
+    "synthesis_retries": [
+      {
+        "attempt": 1,
+        "category": "rate_limited",
+        "retry_after_s": null,
+        "delay_s": 0,
+        "error": "litellm completion failed for gemini/gemini-3.5-flash: litellm.RateLimitError: litellm.RateLimitError: geminiException - { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.\u2026"
+      }
+    ],
+    "synthesis_status": "provider_error",
+    "provider_error": "litellm completion failed for gemini/gemini-3.5-flash: litellm.RateLimitError: litellm.RateLimitError: geminiException - { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.\u2026",
+    "enable_subgraph": false,
+    "hops": null,
+    "vault": "team"
+  },
+  "sources": [
+    {
+      "id": "85b334ea29ccde133d893859cf76f757816d1f2e7656f031b8da453efbbad3fb",
+      "block_id": "",
+      "byte_start": 0,
+      "byte_end": 177,
+      "content_hash": "sha256:5d698c556e6788e55147ce816e5efd51f65bec38024eea6a75b78dc8475a9f0f",
+      "path": ".marginalia/sources/14bfef7e474715c5/setup-test.md"
+    },
+    {
+      "id": "29a79f9b3116bdc0855c800d6153c2356e0c48a68164ac1d7901cdbb148eca2d",
+      "block_id": "33b965073c7f4062df85169dbccb56c0dc80ff9b8d292661710aee61e1426805",
+      "byte_start": 0,
+      "byte_end": 177,
+      "content_hash": "sha256:5d698c556e6788e55147ce816e5efd51f65bec38024eea6a75b78dc8475a9f0f",
+      "path": ".marginalia/sources/14bfef7e474715c5/setup-test.md"
+    }
+  ]
+}

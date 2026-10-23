@@ -1,0 +1,25 @@
+# Brings up only the target app's database. Neuron is a local install, not containerized here.
+# Usage:
+#   docker compose up -d
+#   cd app && npx prisma migrate deploy
+# Exposed on 5433 so it does not collide with a Postgres you may already run locally.
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: neuron-longrun-demo-postgres
+    environment:
+      POSTGRES_USER: realworld
+      POSTGRES_PASSWORD: realworld
+      POSTGRES_DB: realworld
+    ports:
+      - "5433:5432"
+    volumes:
+      - neuron-longrun-demo-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U realworld"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  neuron-longrun-demo-pgdata:

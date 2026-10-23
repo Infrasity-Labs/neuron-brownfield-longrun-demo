@@ -1,0 +1,120 @@
+{
+  "questions_asked": 36,
+  "questions_with_sources": 36,
+  "synthesis_status_counts": {
+    "ok": 35,
+    "no_llm": 0,
+    "empty": 0,
+    "provider_error": 1,
+    "truncated": 0,
+    "abnormal_stop": 0,
+    "unparsed": 0
+  },
+  "finish_reason_not_stop": 0,
+  "finish_reason_missing": 1,
+  "vault_override_ignored_count": 0,
+  "vault_override_ignored_same_vault_count": 22,
+  "citations_checked_at_record_time": 763,
+  "citations_passed_at_record_time": 638,
+  "citations_passed_on_recheck": 616,
+  "claims_replaced": [
+    "edit-window",
+    "error-response"
+  ],
+  "stale_rule_answers_after_replacement": [
+    {
+      "rule": "edit-window",
+      "step": 4,
+      "role": "reviewer"
+    },
+    {
+      "rule": "edit-window",
+      "step": 4,
+      "role": "reviewer"
+    },
+    {
+      "rule": "edit-window",
+      "step": 5,
+      "role": "builder"
+    },
+    {
+      "rule": "edit-window",
+      "step": 5,
+      "role": "reviewer"
+    },
+    {
+      "rule": "edit-window",
+      "step": 5,
+      "role": "reviewer"
+    }
+  ],
+  "provider_error_answers": [
+    {
+      "step": 9,
+      "role": "reviewer",
+      "agent_followup": "The ask returned `degraded` with a `provider_error`, so I'll run explore on the same topic as you asked.",
+      "claimed_nothing_found": false
+    }
+  ],
+  "asks_to_vaults_other_than_the_two_demo_vaults": 0,
+  "private_notes_in_team_answers": 0,
+  "private_leak_details": [],
+  "ingest_seconds_per_note": [
+    {
+      "label": "initial 14 notes",
+      "vault": "team",
+      "seconds_upper_bound": 636.0,
+      "sampled_every_s": null,
+      "note": "daemon start 2026-10-23T05:13:25Z, status first seen idle 14/14 at 05:24:01Z; 151 successful model calls, 0 failed; provider anthropic, model claude-haiku-5-5",
+      "finished_at": "2026-10-23T05:24:01Z"
+    },
+    {
+      "label": "step 4 edit",
+      "vault": "team",
+      "seconds_upper_bound": 680.0,
+      "sampled_every_s": 5.0,
+      "settle_s": 8.0,
+      "finished_at": "2026-10-23T05:39:40Z"
+    },
+    {
+      "label": "after step 4",
+      "vault": "team",
+      "seconds_upper_bound": 66.4,
+      "sampled_every_s": 5.0,
+      "settle_s": 8.0,
+      "finished_at": "2026-10-23T05:41:51Z"
+    },
+    {
+      "label": "after step 5",
+      "vault": "team",
+      "seconds_upper_bound": 161.8,
+      "sampled_every_s": 5.0,
+      "settle_s": 8.0,
+      "finished_at": "2026-10-23T05:46:19Z"
+    },
+    {
+      "label": "after step 6",
+      "vault": "team",
+      "seconds_upper_bound": 87.5,
+      "sampled_every_s": 5.0,
+      "settle_s": 8.0,
+      "finished_at": "2026-10-23T05:49:45Z"
+    },
+    {
+      "label": "step 7 edit",
+      "vault": "team",
+      "seconds_upper_bound": 98.4,
+      "sampled_every_s": 5.0,
+      "settle_s": 8.0,
+      "finished_at": "2026-10-23T05:51:23Z"
+    },
+    {
+      "label": "after step 8",
+      "vault": "team",
+      "seconds_upper_bound": 130.4,
+      "sampled_every_s": 5.0,
+      "settle_s": 8.0,
+      "finished_at": "2026-10-23T05:57:06Z"
+    }
+  ]
+}

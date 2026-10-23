@@ -1,0 +1,18 @@
+name: validate
+
+on: [push, pull_request]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      - name: Compile check
+        run: python -m compileall -q scripts run_demo.py tests
+      - name: Unit tests, JSON, link and secret checks
+        run: python -m unittest discover -s tests -v
+      - name: Dry run of all ten steps (needs no Neuron)
+        run: python run_demo.py --dry-run > /dev/null

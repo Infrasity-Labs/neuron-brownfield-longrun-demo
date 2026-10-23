@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 520" role="img" aria-label="Three Claude Code roles talk to one Neuron daemon, which serves two vaults fed by two watched folders.">
+  <style>
+    text { font-family: Helvetica, Arial, sans-serif; fill: #0f172a; }
+    .box { fill: #f1f5f9; stroke: #475569; stroke-width: 2; rx: 10; }
+    .priv { fill: #fef3c7; stroke: #b45309; stroke-width: 2; rx: 10; }
+    .line { stroke: #475569; stroke-width: 2; fill: none; marker-end: url(#a); }
+    .dash { stroke: #b45309; stroke-width: 2; fill: none; stroke-dasharray: 6 5; marker-end: url(#a); }
+    .t { font-size: 18px; font-weight: 700; }
+    .s { font-size: 14px; }
+  </style>
+  <defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker></defs>
+  <rect width="1000" height="520" fill="#ffffff"/>
+
+  <rect class="box" x="30" y="40" width="200" height="70"/><text class="t" x="130" y="72" text-anchor="middle">Planner</text><text class="s" x="130" y="94" text-anchor="middle">connects with ?vault=team</text>
+  <rect class="box" x="30" y="150" width="200" height="70"/><text class="t" x="130" y="182" text-anchor="middle">Builder</text><text class="s" x="130" y="204" text-anchor="middle">connects with ?vault=team</text>
+  <rect class="box" x="30" y="260" width="200" height="70"/><text class="t" x="130" y="292" text-anchor="middle">Reviewer</text><text class="s" x="130" y="314" text-anchor="middle">names the vault on each call</text>
+
+  <rect class="box" x="360" y="120" width="230" height="130"/><text class="t" x="475" y="155" text-anchor="middle">Neuron daemon</text>
+  <text class="s" x="475" y="180" text-anchor="middle">MCP :8201 (bearer token)</text><text class="s" x="475" y="202" text-anchor="middle">ask, explore, list_vaults</text><text class="s" x="475" y="224" text-anchor="middle">folder watcher</text>
+
+  <rect class="box" x="720" y="60" width="250" height="90"/><text class="t" x="845" y="95" text-anchor="middle">Vault: team</text><text class="s" x="845" y="120" text-anchor="middle">fed by vault/ (14 notes + specs)</text>
+  <rect class="priv" x="720" y="230" width="250" height="90"/><text class="t" x="845" y="265" text-anchor="middle">Vault: reviewer-private</text><text class="s" x="845" y="290" text-anchor="middle">fed by vault-private/ (not shipped)</text>
+
+  <path class="line" d="M230 75 L360 150"/><path class="line" d="M230 185 L360 185"/><path class="line" d="M230 295 L360 225"/>
+  <path class="line" d="M590 160 L720 110"/><path class="dash" d="M590 215 L720 270"/>
+
+  <rect class="box" x="30" y="400" width="940" height="90"/>
+  <text class="t" x="50" y="432">Recorded outside the agents</text>
+  <text class="s" x="50" y="458">Each role's transcript goes to scripts/neuron_asks.py, which writes demo-state/asks.jsonl and checks each cited hash.</text>
+  <text class="s" x="50" y="478">scripts/closeout.py totals that file into demo-state/closeout-result.json.</text>
+</svg>

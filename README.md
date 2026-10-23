@@ -1,6 +1,6 @@
 # neuron-brownfield-longrun-demo
 
-![Neuron Brownfield Longrun Demo: three agents, two vaults, every answer shows its source](docs/images/banner.png)
+![Neuron Brownfield Longrun Demo: three agents, two vaults, every answer shows its source](docs/images/banner-flat.png)
 
 Three agents. Two vaults. Every answer shows its source.
 
@@ -93,28 +93,15 @@ Three roles talk to one Neuron daemon over MCP. The daemon serves two vaults, ea
 The same architecture as a diagram you can edit in place:
 
 ```mermaid
-flowchart LR
-    M(["Maintainer"]) -->|"1 edits notes"| N["vault/ and vault-private/"]
-    N -->|"2 folder watcher"| W
-
-    subgraph D["Okto Neuron daemon"]
-        W["Claims from blocks"] --> G[("Graph: team and reviewer-private")]
-        G --> S["MCP server"]
-    end
-
-    W <-->|"3 extract claims, synthesise answers"| L["Your LLM provider"]
-
-    subgraph C["Claude Code sessions, fresh each step"]
-        P["Planner"]
-        B["Builder"]
-        R["Reviewer"]
-    end
-
-    P & B & R <-->|"4 ask, 5 answer with sources"| S
-    P & B & R -->|"6 transcripts"| REC["Recorder"]
+flowchart TD
+    M(["Maintainer"]) -->|"1 edits notes"| N["Notes on disk<br/>vault/ and vault-private/"]
+    N -->|"2 folder watcher ingests"| D["Okto Neuron daemon<br/>claims, graph, MCP server"]
+    D <-->|"3 claims and answers"| L["Your LLM"]
+    R["Planner, Builder, Reviewer<br/>fresh sessions"] <-->|"4 ask, 5 answer with sources"| D
+    R -->|"6 transcripts"| REC["Recorder"]
     REC --> A[("asks.jsonl")]
     A --> V["Verifier"]
-    G -.->|"7 cited bytes re-read"| V
+    D -.->|"7 cited bytes re-read"| V
     V -->|"8 totals"| X["Close-out"]
 
     classDef person fill:#334155,stroke:#1e293b,color:#ffffff
@@ -122,8 +109,8 @@ flowchart LR
     classDef data fill:#0d9488,stroke:#134e4a,color:#ffffff
     classDef check fill:#16a34a,stroke:#14532d,color:#ffffff
     class M person
-    class W,S,P,B,R,L svc
-    class N,G,A data
+    class D,R,L svc
+    class N,A data
     class REC,V,X check
 ```
 

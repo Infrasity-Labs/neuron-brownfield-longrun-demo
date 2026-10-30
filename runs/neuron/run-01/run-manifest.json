@@ -1,0 +1,322 @@
+{
+  "schema": "neuron-demo-run-manifest/1",
+  "run_id": "run-01",
+  "arm": "neuron",
+  "started_at": "2026-10-29T20:56:31.832Z",
+  "finished_at": "2026-10-29T21:25:33.528Z",
+  "repo": {
+    "commit": "6b29e7ffc077df41902dbbc5be17bd85137961d0",
+    "dirty": true,
+    "harness": {
+      "sha256": "40b41c0cb40046a1e9b8409f8f195c06d20ba1e1a3b38aa1207fee27a026b247",
+      "files": 150
+    }
+  },
+  "versions": {
+    "neuron": "0.3.1",
+    "neuron_pinned": "0.3.1",
+    "claude_cli": "2.1.312",
+    "claude_cli_pinned": "2.1.309",
+    "node": "v22.23.4",
+    "npm": "11.19.0",
+    "python": "3.9.6",
+    "os": "Darwin 25.3.0 arm64"
+  },
+  "model": "claude-haiku-5-5",
+  "model_pinned": "claude-haiku-5-5",
+  "max_turns": 25,
+  "claude_flags": {
+    "bare": false,
+    "setting_sources": "project",
+    "permission_mode": "acceptEdits",
+    "partial_run": false
+  },
+  "metric": {
+    "sha256": "4a5fc4fb9fc711e16a98bdcdcccb36bd12b171a51d5c28901ffda6d1c7b8cb1d",
+    "files": [
+      "docs/METRIC.md",
+      "scenarios/work_products.json"
+    ]
+  },
+  "pins_sha256": "b00cc43dd5b98232077e575cafab2e2fab15e656bdb553a8f07cdf360fb73dc9",
+  "nondeterminism": "Model output is not deterministic. claude -p is run without a seed or temperature setting because the CLI offers none. Repeat runs and report the spread (docs/METRIC.md).",
+  "sessions": [
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-planner-fa4jfywr/w",
+      "total_cost_usd": 0.008017695,
+      "duration_ms": 36460,
+      "num_turns": 8,
+      "is_error": false,
+      "result_subtype": "success",
+      "step": 2,
+      "role": "planner",
+      "transcript": "transcripts/step02-planner.jsonl",
+      "visible_files": 67,
+      "collected": {
+        "role": "planner",
+        "specs": [
+          "feature-1-comment-editing.md"
+        ]
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-builder-5iri0wa6/w",
+      "total_cost_usd": 0.02245716,
+      "duration_ms": 89748,
+      "num_turns": 26,
+      "is_error": false,
+      "result_subtype": "success",
+      "step": 3,
+      "role": "builder",
+      "transcript": "transcripts/step03-builder.jsonl",
+      "visible_files": 69,
+      "collected": {
+        "role": "builder",
+        "app_changed": true
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-reviewer-ix7uyjaz/w",
+      "total_cost_usd": 0.009794335,
+      "duration_ms": 50338,
+      "num_turns": 9,
+      "is_error": false,
+      "result_subtype": "success",
+      "step": 4,
+      "role": "reviewer",
+      "transcript": "transcripts/step04-reviewer.jsonl",
+      "visible_files": 70,
+      "collected": {
+        "role": "reviewer",
+        "private": [
+          "comment-edit-review.md"
+        ]
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-builder-xg5rqqw8/w",
+      "total_cost_usd": 0.00429189,
+      "duration_ms": 15641,
+      "num_turns": 6,
+      "is_error": false,
+      "result_subtype": "success",
+      "step": 5,
+      "role": "builder",
+      "transcript": "transcripts/step05-builder.jsonl",
+      "visible_files": 71,
+      "collected": {
+        "role": "builder",
+        "app_changed": true
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-reviewer-7ru83m50/w",
+      "total_cost_usd": 0.00576417,
+      "duration_ms": 23379,
+      "num_turns": 7,
+      "is_error": false,
+      "result_subtype": "success",
+      "step": 5,
+      "role": "reviewer",
+      "transcript": "transcripts/step05-reviewer.jsonl",
+      "visible_files": 70,
+      "collected": {
+        "role": "reviewer",
+        "private": [
+          "step5-finding.md"
+        ]
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-planner-0bnt7t0n/w",
+      "total_cost_usd": 0.0048173899999999995,
+      "duration_ms": 23026,
+      "num_turns": 7,
+      "is_error": false,
+      "result_subtype": "success",
+      "step": 6,
+      "role": "planner",
+      "transcript": "transcripts/step06-planner.jsonl",
+      "visible_files": 69,
+      "collected": {
+        "role": "planner",
+        "specs": [
+          "feature-2-article-limit.md"
+        ]
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-builder-2g6b739i/w",
+      "total_cost_usd": 0.007127950000000001,
+      "duration_ms": 31157,
+      "num_turns": 9,
+      "is_error": false,
+      "result_subtype": "success",
+      "step": 6,
+      "role": "builder",
+      "transcript": "transcripts/step06-builder.jsonl",
+      "visible_files": 72,
+      "collected": {
+        "role": "builder",
+        "app_changed": true
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-reviewer-b_sqfcy8/w",
+      "total_cost_usd": 0.00517984,
+      "duration_ms": 29162,
+      "num_turns": 4,
+      "is_error": false,
+      "result_subtype": "success",
+      "step": 6,
+      "role": "reviewer",
+      "transcript": "transcripts/step06-reviewer.jsonl",
+      "visible_files": 71,
+      "collected": {
+        "role": "reviewer"
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-planner-b1ab6eo3/w",
+      "total_cost_usd": 0.008441829999999999,
+      "duration_ms": 41032,
+      "num_turns": 10,
+      "is_error": false,
+      "result_subtype": "success",
+      "step": 8,
+      "role": "planner",
+      "transcript": "transcripts/step08-planner.jsonl",
+      "visible_files": 70,
+      "collected": {
+        "role": "planner",
+        "specs": [
+          "feature-3-soft-delete.md"
+        ]
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-builder-6n41cqw7/w",
+      "total_cost_usd": 0.014192055,
+      "duration_ms": 58645,
+      "num_turns": 19,
+      "is_error": false,
+      "result_subtype": "success",
+      "step": 8,
+      "role": "builder",
+      "transcript": "transcripts/step08-builder.jsonl",
+      "visible_files": 74,
+      "collected": {
+        "role": "builder",
+        "app_changed": true
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-reviewer-6ank3ayy/w",
+      "total_cost_usd": 0.01241132,
+      "duration_ms": 61212,
+      "num_turns": 9,
+      "is_error": false,
+      "result_subtype": "success",
+      "step": 8,
+      "role": "reviewer",
+      "transcript": "transcripts/step08-reviewer.jsonl",
+      "visible_files": 73,
+      "collected": {
+        "role": "reviewer"
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-reviewer-izw65gil/w",
+      "total_cost_usd": 0.003336475,
+      "duration_ms": 14195,
+      "num_turns": 3,
+      "is_error": false,
+      "result_subtype": "success",
+      "step": 9,
+      "role": "reviewer",
+      "transcript": "transcripts/step09-reviewer.jsonl",
+      "visible_files": 73,
+      "collected": {
+        "role": "reviewer"
+      }
+    }
+  ],
+  "checks": {
+    "code_outcome_baseline": {
+      "edit-window/accepts-inside": "fail",
+      "edit-window/refuses-outside": "pass",
+      "article-limit/caps-above": "fail",
+      "article-limit/keeps-below": "pass",
+      "article-limit/keeps-default": "pass"
+    },
+    "spec_rule_values": [
+      {
+        "step": 8,
+        "spec": "feature-3-soft-delete.md",
+        "rule": "edited-marker-name",
+        "match": "editedAt"
+      }
+    ],
+    "code_outcome_step3": {
+      "edit-window/accepts-inside": "pass",
+      "edit-window/refuses-outside": "pass",
+      "article-limit/caps-above": "fail",
+      "article-limit/keeps-below": "pass",
+      "article-limit/keeps-default": "pass"
+    },
+    "code_outcome_step5": {
+      "edit-window/accepts-inside": "pass",
+      "edit-window/refuses-outside": "pass",
+      "article-limit/caps-above": "fail",
+      "article-limit/keeps-below": "pass",
+      "article-limit/keeps-default": "pass"
+    },
+    "code_outcome_step6": {
+      "edit-window/accepts-inside": "pass",
+      "edit-window/refuses-outside": "pass",
+      "article-limit/caps-above": "pass",
+      "article-limit/keeps-below": "pass",
+      "article-limit/keeps-default": "pass"
+    },
+    "code_outcome_step8": {
+      "edit-window/accepts-inside": "pass",
+      "edit-window/refuses-outside": "pass",
+      "article-limit/caps-above": "pass",
+      "article-limit/keeps-below": "pass",
+      "article-limit/keeps-default": "pass"
+    },
+    "isolation": {
+      "transcripts": 12,
+      "violations": 0,
+      "blocked_attempts": 1
+    },
+    "event_order_problems": [],
+    "rule_values_in_recorded_questions": 0,
+    "hard_failures": [],
+    "outcome_failures": []
+  }
+}

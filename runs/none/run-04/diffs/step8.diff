@@ -1,0 +1,388 @@
+diff --git a/app/src/app/routes/article/article.controller.ts b/app/src/app/routes/article/article.controller.ts
+index ff03702..5abd23c 100644
+--- a/app/src/app/routes/article/article.controller.ts
++++ b/app/src/app/routes/article/article.controller.ts
+@@ -12,6 +12,7 @@ import {
+   getFeed,
+   unfavoriteArticle,
+   updateArticle,
++  updateComment,
+ } from './article.service';
+ 
+ const router = Router();
+@@ -180,6 +181,33 @@ router.post(
+   },
+ );
+ 
++/**
++ * Update comment
++ * @auth required
++ * @route {PUT} /articles/:slug/comments/:id
++ * @param slug slug of the article (based on the title)
++ * @param id id of the comment
++ * @bodyparam body new content of the comment
++ * @returns comment updated comment
++ */
++router.put(
++  '/articles/:slug/comments/:id',
++  auth.required,
++  async (req: Request, res: Response, next: NextFunction) => {
++    try {
++      const comment = await updateComment(
++        req.body.comment?.body,
++        req.params.slug,
++        Number(req.params.id),
++        req.auth?.user?.id,
++      );
++      res.json({ comment });
++    } catch (error) {
++      next(error);
++    }
++  },
++);
++
+ /**
+  * Delete comment
+  * @auth required
+diff --git a/app/src/app/routes/article/article.service.ts b/app/src/app/routes/article/article.service.ts
+index c8fdc0c..85c1396 100644
+--- a/app/src/app/routes/article/article.service.ts
++++ b/app/src/app/routes/article/article.service.ts
+@@ -437,6 +437,7 @@ export const getCommentsByArticle = async (slug: string, id?: number) => {
+     include: {
+       comments: {
+         where: {
++          deletedAt: null,
+           OR: queries,
+         },
+         select: {
+@@ -528,6 +529,7 @@ export const deleteComment = async (id: number, userId: number) => {
+   const comment = await prisma.comment.findFirst({
+     where: {
+       id,
++      deletedAt: null,
+       author: {
+         id: userId,
+       },
+@@ -543,7 +545,7 @@ export const deleteComment = async (id: number, userId: number) => {
+   });
+ 
+   if (!comment) {
+-    throw new HttpException(404, {});
++    throw new HttpException(404, { errors: { comment: ['not found'] } });
+   }
+ 
+   if (comment.author.id !== userId) {
+@@ -552,11 +554,80 @@ export const deleteComment = async (id: number, userId: number) => {
+     });
+   }
+ 
+-  await prisma.comment.delete({
++  await prisma.comment.update({
+     where: {
+       id,
+     },
++    data: {
++      deletedAt: new Date(),
++    },
++  });
++};
++
++export const updateComment = async (body: string, slug: string, id: number, userId: number) => {
++  if (!body) {
++    throw new HttpException(422, { errors: { body: ["can't be blank"] } });
++  }
++
++  const existingComment = await prisma.comment.findFirst({
++    where: {
++      id,
++      deletedAt: null,
++      article: {
++        slug,
++      },
++    },
++    select: {
++      author: {
++        select: {
++          id: true,
++        },
++      },
++    },
+   });
++
++  if (!existingComment) {
++    throw new HttpException(404, { errors: { comment: ['not found'] } });
++  }
++
++  if (existingComment.author.id !== userId) {
++    throw new HttpException(403, {
++      message: 'You are not authorized to update this comment',
++    });
++  }
++
++  const comment = await prisma.comment.update({
++    where: {
++      id,
++    },
++    data: {
++      body,
++      updatedAt: new Date(),
++    },
++    include: {
++      author: {
++        select: {
++          username: true,
++          bio: true,
++          image: true,
++          followedBy: true,
++        },
++      },
++    },
++  });
++
++  return {
++    id: comment.id,
++    createdAt: comment.createdAt,
++    updatedAt: comment.updatedAt,
++    body: comment.body,
++    author: {
++      username: comment.author.username,
++      bio: comment.author.bio,
++      image: comment.author.image,
++      following: comment.author.followedBy.some((follow: any) => follow.id === userId),
++    },
++  };
+ };
+ 
+ export const favoriteArticle = async (slugPayload: string, id: number) => {
+diff --git a/app/src/prisma/migrations/20261030120000_comment_soft_delete/migration.sql b/app/src/prisma/migrations/20261030120000_comment_soft_delete/migration.sql
+new file mode 100644
+index 0000000..98f04f3
+--- /dev/null
++++ b/app/src/prisma/migrations/20261030120000_comment_soft_delete/migration.sql
+@@ -0,0 +1,2 @@
++-- AlterTable
++ALTER TABLE "Comment" ADD COLUMN     "deletedAt" TIMESTAMP(3);
+diff --git a/app/src/prisma/schema.prisma b/app/src/prisma/schema.prisma
+index 3d767b7..76bae30 100644
+--- a/app/src/prisma/schema.prisma
++++ b/app/src/prisma/schema.prisma
+@@ -32,6 +32,7 @@ model Comment {
+   articleId Int
+   author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+   authorId  Int
++  deletedAt DateTime?
+ }
+ 
+ model Tag {
+diff --git a/app/src/tests/services/article.comment-soft-delete.test.ts b/app/src/tests/services/article.comment-soft-delete.test.ts
+new file mode 100644
+index 0000000..1b2683d
+--- /dev/null
++++ b/app/src/tests/services/article.comment-soft-delete.test.ts
+@@ -0,0 +1,104 @@
++import prismaMock from '../prisma-mock';
++import {
++  deleteComment,
++  getCommentsByArticle,
++  updateComment,
++} from '../../app/routes/article/article.service';
++
++describe('ArticleService comment soft delete', () => {
++  const slug = 'How-to-train-your-dragon';
++  const commentId = 123;
++  const authorId = 456;
++
++  describe('deleteComment', () => {
++    test('should set deletedAt on the comment instead of removing it', async () => {
++      // Given
++      // When
++      // @ts-ignore
++      prismaMock.comment.findFirst.mockResolvedValue({
++        author: { id: authorId, username: 'RealWorld' },
++      });
++
++      // Then
++      await expect(deleteComment(commentId, authorId)).resolves.toBeUndefined();
++      expect(prismaMock.comment.update).toHaveBeenCalledWith({
++        where: { id: commentId },
++        data: { deletedAt: expect.any(Date) },
++      });
++      expect(prismaMock.comment.delete).not.toHaveBeenCalled();
++    });
++
++    test('should only find comments that are not deleted', async () => {
++      // When
++      // @ts-ignore
++      prismaMock.comment.findFirst.mockResolvedValue(null);
++
++      // Then
++      await expect(deleteComment(commentId, authorId)).rejects.toHaveProperty('errorCode', 404);
++      expect(prismaMock.comment.findFirst).toHaveBeenCalledWith(
++        expect.objectContaining({
++          where: expect.objectContaining({ id: commentId, deletedAt: null }),
++        }),
++      );
++      expect(prismaMock.comment.update).not.toHaveBeenCalled();
++    });
++
++    test('should throw a 404 with the errors body when the comment is missing or deleted', async () => {
++      // When
++      // @ts-ignore
++      prismaMock.comment.findFirst.mockResolvedValue(null);
++
++      // Then
++      await expect(deleteComment(commentId, authorId)).rejects.toMatchObject({
++        errorCode: 404,
++        message: { errors: { comment: ['not found'] } },
++      });
++    });
++  });
++
++  describe('getCommentsByArticle', () => {
++    test('should ask only for comments that are not deleted', async () => {
++      // Given
++      // @ts-ignore
++      prismaMock.article.findUnique.mockResolvedValue({ comments: [] });
++
++      // When
++      await getCommentsByArticle(slug, authorId);
++
++      // Then
++      expect(prismaMock.article.findUnique).toHaveBeenCalledWith(
++        expect.objectContaining({
++          include: {
++            comments: expect.objectContaining({
++              where: expect.objectContaining({
++                deletedAt: null,
++                OR: expect.any(Array),
++              }),
++            }),
++          },
++        }),
++      );
++    });
++  });
++
++  describe('updateComment', () => {
++    test('should not find a deleted comment and should throw a 404', async () => {
++      // Given
++      // When
++      // @ts-ignore
++      prismaMock.comment.findFirst.mockResolvedValue(null);
++
++      // Then
++      await expect(updateComment('Edited body', slug, commentId, authorId)).rejects.toMatchObject({
++        errorCode: 404,
++        message: { errors: { comment: ['not found'] } },
++      });
++      expect(prismaMock.comment.findFirst).toHaveBeenCalledWith(
++        expect.objectContaining({
++          where: expect.objectContaining({ id: commentId, deletedAt: null }),
++        }),
++      );
++      expect(prismaMock.comment.update).not.toHaveBeenCalled();
++    });
++  });
++});
+diff --git a/app/src/tests/services/article.service.test.ts b/app/src/tests/services/article.service.test.ts
+index 4f39562..af1ffed 100644
+--- a/app/src/tests/services/article.service.test.ts
++++ b/app/src/tests/services/article.service.test.ts
+@@ -3,6 +3,7 @@ import {
+   deleteComment,
+   favoriteArticle,
+   unfavoriteArticle,
++  updateComment,
+ } from '../../app/routes/article/article.service';
+ 
+ describe('ArticleService', () => {
+@@ -21,6 +22,88 @@ describe('ArticleService', () => {
+     });
+   });
+ 
++  describe('updateComment', () => {
++    const slug = 'How-to-train-your-dragon';
++    const commentId = 123;
++    const authorId = 456;
++
++    const mockedUpdatedComment = {
++      id: commentId,
++      body: 'Edited body',
++      createdAt: new Date('2026-01-01T10:00:00Z'),
++      updatedAt: new Date('2026-01-02T10:00:00Z'),
++      authorId,
++      articleId: 789,
++      author: {
++        username: 'RealWorld',
++        bio: null,
++        image: null,
++        followedBy: [],
++      },
++    };
++
++    test('should update the body and set updatedAt when the author edits', async () => {
++      // When
++      // @ts-ignore
++      prismaMock.comment.findFirst.mockResolvedValue({ author: { id: authorId } });
++      // @ts-ignore
++      prismaMock.comment.update.mockResolvedValue(mockedUpdatedComment);
++
++      // Then
++      await expect(updateComment('Edited body', slug, commentId, authorId)).resolves.toHaveProperty(
++        'body',
++        'Edited body',
++      );
++      expect(prismaMock.comment.update).toHaveBeenCalledWith(
++        expect.objectContaining({
++          where: { id: commentId },
++          data: expect.objectContaining({
++            body: 'Edited body',
++            updatedAt: expect.any(Date),
++          }),
++        }),
++      );
++    });
++
++    test('should throw a 422 when the body is blank', async () => {
++      // Then
++      await expect(updateComment('', slug, commentId, authorId)).rejects.toHaveProperty(
++        'errorCode',
++        422,
++      );
++      expect(prismaMock.comment.update).not.toHaveBeenCalled();
++    });
++
++    test('should throw a 404 when the comment is not found in the article', async () => {
++      // Given
++      // When
++      // @ts-ignore
++      prismaMock.comment.findFirst.mockResolvedValue(null);
++
++      // Then
++      await expect(updateComment('Edited body', slug, commentId, authorId)).rejects.toHaveProperty(
++        'errorCode',
++        404,
++      );
++      expect(prismaMock.comment.update).not.toHaveBeenCalled();
++    });
++
++    test('should throw a 403 when the user is not the author', async () => {
++      // Given
++      const otherUserId = 999;
++
++      // When
++      // @ts-ignore
++      prismaMock.comment.findFirst.mockResolvedValue({ author: { id: authorId } });
++
++      // Then
++      await expect(
++        updateComment('Edited body', slug, commentId, otherUserId),
++      ).rejects.toHaveProperty('errorCode', 403);
++      expect(prismaMock.comment.update).not.toHaveBeenCalled();
++    });
++  });
++
+   describe('favoriteArticle', () => {
+     test('should return the favorited article', async () => {
+       // Given

@@ -1,0 +1,13 @@
+{
+  "label": "step8",
+  "edit_window_minutes": 30,
+  "article_limit_cap": 50,
+  "jest_exit_code": 1,
+  "outcomes": {
+    "edit-window/accepts-inside": "error",
+    "edit-window/refuses-outside": "error",
+    "article-limit/caps-above": "error",
+    "article-limit/keeps-below": "error",
+    "article-limit/keeps-default": "error"
+  }
+}

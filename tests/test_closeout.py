@@ -68,7 +68,7 @@ class Closeout(unittest.TestCase):
         self.assertEqual(flags, [True, False])
 
     def test_asks_to_other_vaults_are_counted(self):
-        result = self.build([ask("ok", vault="mynotes"), ask("ok", vault="team"), ask("ok", vault="reviewer-private")])
+        result = self.build([ask("ok", vault="<other-vault>"), ask("ok", vault="team"), ask("ok", vault="reviewer-private")])
         self.assertEqual(result["asks_to_vaults_other_than_the_two_demo_vaults"], 1)
 
     def test_missing_ingest_times_stay_null(self):

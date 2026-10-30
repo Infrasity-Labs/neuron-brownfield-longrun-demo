@@ -18,6 +18,7 @@ import sys
 from typing import Dict, Iterator, List, Optional
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import events as event_log  # noqa: E402
 import verify_citations  # noqa: E402
 
 SYNTHESIS_STATUSES = ("ok", "no_llm", "empty", "provider_error", "truncated", "abnormal_stop")
@@ -44,6 +45,20 @@ def _result_text(block: dict) -> str:
     return ""
 
 
+def _utc(stamp: Optional[str]) -> Optional[str]:
+    """Normalise a transcript timestamp (ISO 8601, usually already UTC with a Z) to UTC milliseconds, or None."""
+    if not isinstance(stamp, str) or not stamp:
+        return None
+    try:
+        parsed = datetime.datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        return None
+    parsed = parsed.astimezone(datetime.timezone.utc)
+    return parsed.strftime("%Y-%m-%dT%H:%M:%S.") + "%03dZ" % (parsed.microsecond // 1000)
+
+
 def extract_calls(path: str) -> List[dict]:
     """Pair each ask/explore tool call with its result and the agent's next sentence."""
     calls: Dict[str, dict] = {}
@@ -67,6 +82,8 @@ def extract_calls(path: str) -> List[dict]:
                     "result_text": None,
                     "is_error": False,
                     "followup": "",
+                    "asked_at": _utc(event.get("timestamp")),
+                    "answered_at": None,
                 }
                 calls[block.get("id")] = call
                 ordered.append(call)
@@ -74,6 +91,7 @@ def extract_calls(path: str) -> List[dict]:
                 call = calls[block["tool_use_id"]]
                 call["result_text"] = _result_text(block)
                 call["is_error"] = bool(block.get("is_error"))
+                call["answered_at"] = _utc(event.get("timestamp"))
                 pending = call
             elif kind == "text" and event.get("type") == "assistant" and pending is not None:
                 if not pending["followup"]:
@@ -101,6 +119,8 @@ def build_ask_record(call: dict, step: int, role: str, roots: Optional[Dict[str,
 
     return {
         "recorded_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "asked_at": call.get("asked_at"),
+        "answered_at": call.get("answered_at"),
         "step": step,
         "role": role,
         "tool_use_id": call["tool_use_id"],
@@ -124,7 +144,7 @@ def build_ask_record(call: dict, step: int, role: str, roots: Optional[Dict[str,
 
 
 def record(transcript: str, step: int, role: str, out: str, explores_out: str,
-           roots: Optional[Dict[str, str]] = None) -> Dict[str, int]:
+           roots: Optional[Dict[str, str]] = None, events_path: Optional[str] = None) -> Dict[str, int]:
     counts = {"asks": 0, "explores": 0}
     os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
     for call in extract_calls(transcript):
@@ -133,6 +153,7 @@ def record(transcript: str, step: int, role: str, out: str, explores_out: str,
             counts["asks"] += 1
         else:
             line = {
+                "asked_at": call.get("asked_at"), "answered_at": call.get("answered_at"),
                 "step": step, "role": role, "tool_use_id": call["tool_use_id"],
                 "request": call["request"], "result_text": call["result_text"],
                 "agent_followup": call["followup"],
@@ -141,6 +162,10 @@ def record(transcript: str, step: int, role: str, out: str, explores_out: str,
             counts["explores"] += 1
         with open(target, "a") as handle:
             handle.write(json.dumps(line) + "\n")
+        if events_path:
+            event_log.log_event(events_path, call["tool"], ts=call.get("asked_at"), step=step, role=role,
+                                tool_use_id=call["tool_use_id"], answered_at=call.get("answered_at"),
+                                vault=(call["request"] or {}).get("vault"))
     return counts
 
 
@@ -149,12 +174,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("transcript")
     parser.add_argument("--step", type=int, required=True)
     parser.add_argument("--role", required=True)
-    parser.add_argument("--out", default="demo-state/asks.jsonl")
-    parser.add_argument("--explores-out", default="demo-state/explores.jsonl")
+    parser.add_argument("--out", required=True, help="asks.jsonl to append to (the pilot file in demo-state/ is not a default)")
+    parser.add_argument("--explores-out", required=True)
     parser.add_argument("--vault-root", action="append", default=[])
+    parser.add_argument("--events", help="also append an ask/explore event per call to this events.jsonl")
     args = parser.parse_args(argv)
     roots = dict(item.split("=", 1) for item in args.vault_root)
-    counts = record(args.transcript, args.step, args.role, args.out, args.explores_out, roots)
+    counts = record(args.transcript, args.step, args.role, args.out, args.explores_out, roots, args.events)
     print("recorded %(asks)d ask(s) and %(explores)d explore(s)" % counts)
     return 0
 

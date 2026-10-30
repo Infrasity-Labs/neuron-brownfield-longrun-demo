@@ -1,0 +1,36 @@
+{
+  "schema": "neuron-demo-rule-values/1",
+  "description": "Rule values that an agent must obtain from its memory arm, never from a prompt. scripts/scan_rule_values.py fails when any of these patterns appears in a prompt, a fixed question, an agent file, or a question recorded in asks.jsonl.",
+  "patterns": [
+    {
+      "id": "edit-window-minutes",
+      "regex": "\\b(?:15|30|fifteen|thirty)[- ]?(?:min|minutes?)\\b",
+      "flags": "i"
+    },
+    {
+      "id": "article-limit-cap",
+      "regex": "\\b(?:50|fifty)\\b",
+      "flags": "i"
+    },
+    {
+      "id": "edited-marker-name",
+      "regex": "\\beditedAt\\b",
+      "flags": ""
+    },
+    {
+      "id": "soft-delete-field",
+      "regex": "\\bdeletedAt\\b",
+      "flags": ""
+    },
+    {
+      "id": "error-object-shape",
+      "regex": "\"error\"\\s*:\\s*\\{",
+      "flags": ""
+    },
+    {
+      "id": "errors-by-field-shape",
+      "regex": "\"errors\"\\s*:",
+      "flags": ""
+    }
+  ]
+}

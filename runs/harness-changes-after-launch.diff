@@ -1,0 +1,794 @@
+--- run_demo.py	2026-10-30 02:23:56.000000000 +0530
++++ b/run_demo.py	2026-10-30 03:15:17.947499408 +0530
+@@ -183,6 +183,9 @@
+                 neuron_version = neuron_ctl.installed_version()
+             else:
+                 neuron_version = neuron_ctl.require_version(neuron_ctl.load_pins()["neuron"]["version"])
++        # Reset BEFORE the manifest is made: the manifest fingerprints vault/, and the second run of a series would otherwise
++        # fingerprint the notes the first run left edited (found in the live study: runs 2 to 5 of two arms got another hash).
++        reset_mod.reset()
+         flags = {"bare": bool(self.args.bare), "setting_sources": "project", "permission_mode": "acceptEdits",
+                  "partial_run": self.partial}
+         self.manifest = manifest_mod.collect(self.arm, self.run_id, self.args.model, self.args.max_turns, flags, neuron_version)
+@@ -191,7 +194,6 @@
+         if found and found != pinned:
+             print("note: claude CLI is %s, the pin is %s (recorded in the manifest)" % (found, pinned))
+         manifest_mod.write(os.path.join(self.dir, "run-manifest.json"), self.manifest)
+-        reset_mod.reset()
+         build_workdir.init_canonical(self.canonical)
+         event_log.log_event(self.events, "run_start", arm=self.arm, run_id=self.run_id)
+         self.baseline_outcome()
+diff -r scripts/check_readme.py b/scripts/check_readme.py
+--- scripts/check_readme.py	2026-10-30 00:38:35.000000000 +0530
++++ b/scripts/check_readme.py	2026-10-30 03:25:13.439271224 +0530
+@@ -9,7 +9,9 @@
+   * the pilot's recorded Reviewer verdicts named in the README's per-step table match the final report of each Reviewer
+     transcript (Approved, Not approved, or no approval verdict);
+   * the number of recorded asks and explore calls in the artifacts table equals the line count of the files;
+-  * README.md states no hard-coded unit test count (a count goes stale; the command is given instead).
++  * README.md states no hard-coded unit test count (a count goes stale; the command is given instead);
++  * every generated study block in README.md and docs/METRIC.md (scripts/study_summary.py) equals what the recorded runs under
++    runs/ and labels/ give, and README.md has the alignment block as soon as any run is recorded.
+ 
+   python3 scripts/check_readme.py            exit 1 and a list of differences when the README disagrees
+   python3 scripts/check_readme.py --print    print the expected table to paste into the README
+@@ -165,6 +167,18 @@
+         problems.append("README never states the starting note count (%d)" % notes)
+     if re.search(r"\b\d+ (?:unit )?tests\b", readme):
+         problems.append("README hard-codes a unit test count: give the command instead, a count goes stale")
++
++    # The study tables are generated from runs/ by scripts/study_summary.py; a table that differs from the runs fails.
++    import study_summary
++    summary = study_summary.summarize(os.path.join(repo, "runs"), os.path.join(repo, "labels"))
++    for rel in ("README.md", os.path.join("docs", "METRIC.md")):
++        if not os.path.isfile(os.path.join(repo, rel)):
++            continue
++        with open(os.path.join(repo, rel)) as handle:
++            text = handle.read()
++        problems.extend("%s: %s" % (rel, p) for p in study_summary.check_text(text, summary))
++    if any(summary["arms"][arm]["runs"] for arm in summary["arms"]) and study_summary.block_in(readme, "study-alignment") is None:
++        problems.append("runs are recorded but README.md has no study-alignment block")
+     return problems
+ 
+ 
+diff -r scripts/check_transcripts.py b/scripts/check_transcripts.py
+--- scripts/check_transcripts.py	2026-10-30 02:15:08.000000000 +0530
++++ b/scripts/check_transcripts.py	2026-10-30 03:14:44.004707095 +0530
+@@ -123,6 +123,7 @@
+     if hit:
+         return "command names %s: %s" % (hit.group(1), command[:120])
+     for token in tokens:
++        token = token.rstrip(";&|)")  # `cd /own/workdir; ls` is one token ending in ';', not a different path
+         if os.path.isabs(token) and cwd and not (token == cwd or token.startswith(cwd.rstrip("/") + "/")):
+             # An absolute path whose first component is no top-level directory of this machine (a grep pattern such as
+             # '/node_modules/') cannot reach any file.
+@@ -144,14 +145,20 @@
+             yield match.group("path")
+ 
+ 
+-def result_problem(tool: str, text: str, cwd: Optional[str]) -> Optional[str]:
+-    """A Grep or Glob result that lists forbidden paths. Names every distinct one (at most eight)."""
++def result_problem(tool: str, text: str, cwd: Optional[str], base: Optional[str] = None) -> Optional[str]:
++    """A Grep or Glob result that lists forbidden paths. Names every distinct one (at most eight).
++
++    Grep and Glob print paths relative to the directory they searched (their `path` input). A result line `tests/x.test.ts`
++    from a search of app/src is app/src/tests/x.test.ts, a file of the app, so relative result paths are resolved against
++    `base` before they are judged (seen in a live run, where the app's own src/tests folder looked like the harness tests/)."""
+     if tool not in ("Grep", "Glob"):
+         return None
+     found = []
+     for path in _result_paths(text):
+         if "/" not in path and "." not in path:
+             continue
++        if base and not os.path.isabs(path) and not path.startswith(".."):
++            path = os.path.join(base, path)
+         if path_problem(path, cwd) and path not in found:
+             found.append(path)
+     return "result lists " + ", ".join(found[:8]) if found else None
+@@ -199,7 +206,7 @@
+                 reasons.append(problem)
+         result = results.get(use_id)
+         if result and not result["is_error"] and use_id not in denied and name in ("Grep", "Glob"):
+-            problem = result_problem(name, result["text"], session_cwd)
++            problem = result_problem(name, result["text"], session_cwd, data.get("path") if isinstance(data.get("path"), str) else None)
+             if problem:
+                 reasons.append(problem)
+         if not reasons:
+diff -r scripts/code_outcome.py b/scripts/code_outcome.py
+--- scripts/code_outcome.py	2026-10-30 02:25:43.000000000 +0530
++++ b/scripts/code_outcome.py	2026-10-30 03:07:51.402903276 +0530
+@@ -29,6 +29,7 @@
+ import argparse
+ import json
+ import os
++import re
+ import shutil
+ import subprocess
+ import sys
+@@ -81,6 +82,22 @@
+     return outcomes
+ 
+ 
++def parse_failures(report: dict) -> Dict[str, str]:
++    """{outcome id: first line of jest's failure message} for every check that failed. A diagnostic, never a score: it keeps what
++    the check saw (for example "Received: 500") so that a person can tell a missing window from a refusal with the wrong status."""
++    details: Dict[str, str] = {}
++    for suite in report.get("testResults") or []:
++        for assertion in suite.get("assertionResults") or []:
++            if assertion.get("status") == "passed" or not assertion.get("failureMessages"):
++                continue
++            for prefix, outcome in TITLES:
++                if assertion.get("title", "").startswith(prefix):
++                    text = re.sub(r"\x1b\[[0-9;]*m", "", assertion["failureMessages"][0])
++                    lines = [" ".join(line.split()) for line in text.splitlines() if re.match(r"\s*(Expected|Received)\b", line)]
++                    details[outcome] = " | ".join(lines)[:300] or " ".join(text.split())[:300]
++    return details
++
++
+ def run(canonical: str, run_dir: str, label: str, edit_window: int, article_cap: int = 50,
+         node_modules: str = os.path.join(REPO, "app", "node_modules")) -> dict:
+     if not os.path.isdir(node_modules):
+@@ -115,6 +132,9 @@
+         # support) leaves every outcome at "error". Keep jest's own message so the cause is in the record.
+         failed_suites = [suite.get("message", "") for suite in report.get("testResults") or []
+                          if suite.get("status") == "failed" and not suite.get("assertionResults")]
++        failures = parse_failures(report)
++        if failures:
++            record["failure_details"] = failures
+         if failed_suites:
+             record["suite_failure"] = failed_suites[0][:1200]
+     finally:
+diff -r scripts/daemon_usage.py b/scripts/daemon_usage.py
+--- scripts/daemon_usage.py	1970-01-01 05:30:00.000000000 +0530
++++ b/scripts/daemon_usage.py	2026-10-30 03:03:40.059508699 +0530
+@@ -0,0 +1,75 @@
++#!/usr/bin/env python3
++"""Count the model calls an isolated Neuron daemon made, from its own log, and write daemon-usage.json into a run folder.
++
++The daemon logs one `litellm usage model=... prompt_tokens=N completion_tokens=M ... step=S` line per successful model call
++and one `litellm completion failed ...` line per failed one (okto-neuron 0.3.1, `<HOME>/.okto-neuron/logs/okto-neuron-serve.log`).
++Tokens only: nothing is converted to dollars. Run it before the isolated HOME is deleted.
++
++  python3 scripts/daemon_usage.py --log <HOME>/.okto-neuron/logs/okto-neuron-serve.log --out runs/neuron/run-01/daemon-usage.json
++"""
++from __future__ import annotations
++
++import argparse
++import collections
++import json
++import os
++import re
++import sys
++from typing import List, Optional
++
++USAGE = re.compile(r"litellm usage model=(\S+) prompt_tokens=(\d+) completion_tokens=(\d+).*?step=(\w+)")
++EXCEPTION = re.compile(r"(\w+Error)")
++
++
++def summarize(log_path: str) -> dict:
++    calls: "collections.Counter[str]" = collections.Counter()
++    failed_by: "collections.Counter[str]" = collections.Counter()
++    levels: "collections.Counter[str]" = collections.Counter()
++    prompt = completion = 0
++    models = set()
++    first = last = None
++    with open(log_path) as handle:
++        for line in handle:
++            try:
++                event = json.loads(line)
++            except ValueError:
++                continue
++            first = first or event.get("ts")
++            last = event.get("ts")
++            levels[event.get("level", "?")] += 1
++            message = event.get("msg", "")
++            usage = USAGE.search(message)
++            if usage:
++                models.add(usage.group(1))
++                prompt += int(usage.group(2))
++                completion += int(usage.group(3))
++                calls[usage.group(4)] += 1
++            elif "litellm completion failed" in message:
++                kind = EXCEPTION.search(message)
++                failed_by[kind.group(1) if kind else "other"] += 1
++    return {
++        "source": "daemon log okto-neuron-serve.log of this run's isolated daemon ('litellm usage ...' and 'litellm completion failed ...' lines)",
++        "models": sorted(models), "successful_model_calls": sum(calls.values()), "calls_by_step": dict(calls),
++        "prompt_tokens": prompt, "completion_tokens": completion, "failed_model_calls": sum(failed_by.values()),
++        "failed_by_exception": dict(failed_by), "log_first_ts": first, "log_last_ts": last, "log_levels": dict(levels),
++        "note": "tokens only: not converted to dollars. In a full run the failed calls are the scripted step 9 outage (invalid key).",
++    }
++
++
++def main(argv: Optional[List[str]] = None) -> int:
++    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
++    parser.add_argument("--log", required=True)
++    parser.add_argument("--out", required=True)
++    args = parser.parse_args(argv)
++    result = summarize(args.log)
++    os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
++    with open(args.out, "w") as handle:
++        json.dump(result, handle, indent=2)
++        handle.write("\n")
++    print("%d successful calls, %d failed, %d prompt and %d completion tokens" % (
++        result["successful_model_calls"], result["failed_model_calls"], result["prompt_tokens"], result["completion_tokens"]))
++    return 0
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff -r scripts/install_neuron.sh b/scripts/install_neuron.sh
+--- scripts/install_neuron.sh	2026-10-30 00:27:15.000000000 +0530
++++ b/scripts/install_neuron.sh	2026-10-30 03:24:23.628848312 +0530
+@@ -14,8 +14,8 @@
+ # The release page lists the wheel and its SHA-256: https://github.com/OktoLabsAI/okto-neuron/releases/tag/v0.3.1 .
+ # Installing "the exact wheel file or release URL" with uv is the path the public README describes for direct installs.
+ #
+-# Needs: uv, curl, python3 (any 3.9+). Status: written from the README's uv command and the release page; NOT yet run (no
+-# network was used while writing it). The integration workflow runs it.
++# Needs: uv, curl, python3 (any 3.9+). Status: run live on 2026-10-29 into a temporary DEMO_NEURON_HOME: 7 s, SHA-256 matched,
++# okto-neuron 0.3.1 (docs/VERIFIED.md, "Live study").
+ set -euo pipefail
+ 
+ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+diff -r scripts/mcp_client.py b/scripts/mcp_client.py
+--- scripts/mcp_client.py	2026-10-30 00:17:44.000000000 +0530
++++ b/scripts/mcp_client.py	2026-10-30 03:24:23.629277730 +0530
+@@ -7,7 +7,7 @@
+ a file and is never printed.
+ 
+ Status: the framing follows the MCP streamable-HTTP transport. It is tested against a local fake server in
+-tests/test_mcp_client.py. It has NOT been run against a live Neuron daemon.
++tests/test_mcp_client.py, and it ran against live Neuron 0.3.1 daemons on 2026-10-29 (state probes of all 5 Neuron-arm runs).
+ """
+ from __future__ import annotations
+ 
+diff -r scripts/metric.py b/scripts/metric.py
+--- scripts/metric.py	2026-10-30 00:21:24.000000000 +0530
++++ b/scripts/metric.py	2026-10-30 03:19:50.982755170 +0530
+@@ -8,17 +8,36 @@
+ 
+ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ METRIC_FILES = ["docs/METRIC.md", "scenarios/work_products.json"]
++# docs/METRIC.md ends its definition with this line. What follows it (the results of recorded runs) is not part of the
++# definition and is left out of the fingerprint, so that reporting a result never invalidates the runs it reports.
++DEFINITION_END = "<!-- END definition -->"
++EQUIVALENTS = os.path.join("scenarios", "metric-equivalents.json")
+ 
+ 
+ def metric_fingerprint(repo: str = REPO) -> str:
+-    """SHA-256 over the written definition and the product list. Stored in every run manifest."""
++    """SHA-256 over the written definition (docs/METRIC.md up to DEFINITION_END) and the product list. Stored in every run manifest."""
+     digest = hashlib.sha256()
+     for rel in METRIC_FILES:
+         with open(os.path.join(repo, rel), "rb") as handle:
+-            digest.update(rel.encode("utf-8") + b"\0" + handle.read() + b"\0")
++            raw = handle.read()
++        if rel == METRIC_FILES[0] and DEFINITION_END.encode() in raw:
++            raw = raw[:raw.index(DEFINITION_END.encode()) + len(DEFINITION_END)]
++        digest.update(rel.encode("utf-8") + b"\0" + raw + b"\0")
+     return digest.hexdigest()
+ 
+ 
++def accepted_fingerprints(repo: str = REPO) -> List[str]:
++    """The current fingerprint plus every earlier one that scenarios/metric-equivalents.json declares to be the same metric,
++    each with the reason. A listed fingerprint is an earlier text of the same definition (a changed status paragraph, nothing
++    that changes what is scored); a changed definition is never listed."""
++    accepted = [metric_fingerprint(repo)]
++    path = os.path.join(repo, EQUIVALENTS)
++    if os.path.isfile(path):
++        with open(path) as handle:
++            accepted.extend(item["sha256"] for item in json.load(handle)["equivalent"])
++    return accepted
++
++
+ def load_products(repo: str = REPO) -> dict:
+     with open(os.path.join(repo, "scenarios", "work_products.json")) as handle:
+         return json.load(handle)
+diff -r scripts/negative_test.py b/scripts/negative_test.py
+--- scripts/negative_test.py	2026-10-30 00:24:58.000000000 +0530
++++ b/scripts/negative_test.py	2026-10-30 03:24:23.629647565 +0530
+@@ -21,7 +21,7 @@
+ the result file lists, per ask, the vault that was requested, the vault that answered, whether an override was reported,
+ and whether the decoy or private note text came back.
+ 
+-Status: NOT yet run. Needs a live daemon and model calls.
++Status: run once on 2026-10-29, runs/negative/neg-01/ (README, "Roles"; docs/VERIFIED.md, "Live study").
+ """
+ from __future__ import annotations
+ 
+diff -r scripts/rescore_outcomes.py b/scripts/rescore_outcomes.py
+--- scripts/rescore_outcomes.py	1970-01-01 05:30:00.000000000 +0530
++++ b/scripts/rescore_outcomes.py	2026-10-30 02:33:32.087479195 +0530
+@@ -0,0 +1,99 @@
++#!/usr/bin/env python3
++"""Re-run the executable outcome check on every recorded Builder tree, rebuilt from the run's own diffs.
++
++A run records `diffs/stepN.diff`, the `git diff` of the code after each Builder step against the starting app. This script
++rebuilds that tree (the starting app/ of this repository plus the diff), runs scenarios/checks/outcome.check.ts on it with
++the same edit window the live run used, and writes `code-outcome/rescore-stepN.json`. It then compares the outcomes with the
++ones the live run recorded in `code-outcome/stepN.json`.
++
++Why: it shows that the scored numbers can be reproduced from the recorded files alone (the live trees are deleted after a run),
++and the rescored files carry `failure_details` (what the check saw, for example "Received: 500"), which runs recorded before
++that field existed do not have. The scorer reads the live files, not these.
++
++  python3 scripts/rescore_outcomes.py                    every run under runs/
++  python3 scripts/rescore_outcomes.py --runs-dir DIR --arm notes
++
++Needs Node 22 and `cd app && npm ci` (see scripts/code_outcome.py).
++"""
++from __future__ import annotations
++
++import argparse
++import json
++import os
++import shutil
++import subprocess
++import sys
++import tempfile
++from typing import List, Optional
++
++sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++import build_workdir  # noqa: E402
++import code_outcome  # noqa: E402
++
++REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
++EDIT_WINDOW_AT_STEP = {3: 15, 5: 30, 6: 30, 8: 30}
++
++
++def rebuild(diff_path: str, repo: str = REPO) -> str:
++    """A temporary canonical tree: the starting app/ plus the recorded diff. The caller deletes it."""
++    root = tempfile.mkdtemp(prefix="neuron-demo-rescore-")
++    build_workdir.copy_tree(os.path.join(repo, "app"), os.path.join(root, "app"), build_workdir.APP_EXCLUDE)
++    if os.path.getsize(diff_path):
++        done = subprocess.run(["git", "apply", "--whitespace=nowarn", os.path.abspath(diff_path)], cwd=root, capture_output=True, text=True)
++        if done.returncode != 0:
++            shutil.rmtree(root, ignore_errors=True)
++            raise RuntimeError("could not apply %s: %s" % (diff_path, done.stderr.strip()[:300]))
++    return root
++
++
++def rescore_run(run_dir: str) -> List[dict]:
++    rows = []
++    for number, window in sorted(EDIT_WINDOW_AT_STEP.items()):
++        diff = os.path.join(run_dir, "diffs", "step%d.diff" % number)
++        if not os.path.isfile(diff):
++            continue
++        root = rebuild(diff)
++        try:
++            record = code_outcome.run(root, run_dir, "rescore-step%d" % number, window)
++        finally:
++            shutil.rmtree(root, ignore_errors=True)
++        live_path = os.path.join(run_dir, "code-outcome", "step%d.json" % number)
++        live = None
++        if os.path.isfile(live_path):
++            with open(live_path) as handle:
++                live = json.load(handle)["outcomes"]
++        record["live_outcomes"] = live
++        record["matches_live"] = (live == record["outcomes"]) if live is not None else None
++        path = os.path.join(run_dir, "code-outcome", "rescore-step%d.json" % number)
++        with open(path, "w") as handle:
++            json.dump(record, handle, indent=2)
++            handle.write("\n")
++        rows.append({"run": run_dir, "step": number, "matches_live": record["matches_live"], "outcomes": record["outcomes"], "live": live})
++    return rows
++
++
++def main(argv: Optional[List[str]] = None) -> int:
++    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
++    parser.add_argument("--runs-dir", default=os.path.join(REPO, "runs"))
++    parser.add_argument("--arm", action="append", help="only this arm (repeatable)")
++    args = parser.parse_args(argv)
++    total = mismatched = 0
++    for arm in sorted(os.listdir(args.runs_dir)):
++        arm_dir = os.path.join(args.runs_dir, arm)
++        if not os.path.isdir(arm_dir) or arm == "negative" or (args.arm and arm not in args.arm):
++            continue
++        for run_id in sorted(os.listdir(arm_dir)):
++            run_dir = os.path.join(arm_dir, run_id)
++            if not os.path.isdir(os.path.join(run_dir, "diffs")):
++                continue
++            for row in rescore_run(run_dir):
++                total += 1
++                if row["matches_live"] is False:
++                    mismatched += 1
++                    print("DIFFERS %s/%s step %d: live %s, rescored %s" % (arm, run_id, row["step"], row["live"], row["outcomes"]))
++    print("rescored %d tree(s); %d differ from the live result" % (total, mismatched))
++    return 1 if mismatched else 0
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff -r scripts/score_runs.py b/scripts/score_runs.py
+--- scripts/score_runs.py	2026-10-30 00:21:24.000000000 +0530
++++ b/scripts/score_runs.py	2026-10-30 03:19:50.983736881 +0530
+@@ -104,6 +104,7 @@
+ 
+ def collect(runs_dir: str, labels_dir: str, allow_metric_change: bool = False) -> dict:
+     current = metric.metric_fingerprint()
++    accepted = metric.accepted_fingerprints()
+     arms: Dict[str, dict] = {}
+     skipped: List[dict] = []
+     if not os.path.isdir(runs_dir):
+@@ -118,7 +119,7 @@
+             manifest = _load(os.path.join(run_dir, "run-manifest.json"))
+             if manifest is None:
+                 continue
+-            if not allow_metric_change and (manifest.get("metric") or {}).get("sha256") != current:
++            if not allow_metric_change and (manifest.get("metric") or {}).get("sha256") not in accepted:
+                 skipped.append({"arm": arm, "run_id": run_id, "reason": "recorded under a different metric definition"})
+                 continue
+             labels = _load(os.path.join(labels_dir, arm, "%s.json" % run_id))
+diff -r scripts/setup_vaults.sh b/scripts/setup_vaults.sh
+--- scripts/setup_vaults.sh	2026-10-30 00:27:15.000000000 +0530
++++ b/scripts/setup_vaults.sh	2026-10-30 03:24:23.629998524 +0530
+@@ -13,8 +13,8 @@
+ # Settings come from the environment, see .env.example. DEMO_WITH_DECOY=1 also creates a third vault, decoy, for the
+ # negative boundary test (scripts/negative_test.py).
+ #
+-# Status: written from the documented onboard and watch-folder commands. Not yet run end to end by the maintainers; the
+-# integration workflow (.github/workflows/integration.yml) is the first place it is meant to run.
++# Status: run end to end live on 2026-10-29 in every Neuron-arm run and in the negative test (docs/VERIFIED.md, "Live study"); it
++# needed DEMO_LLM_API_BASE=https://api.anthropic.com for the anthropic provider.
+ set -euo pipefail
+ 
+ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+diff -r scripts/state_probe.py b/scripts/state_probe.py
+--- scripts/state_probe.py	2026-10-30 00:17:44.000000000 +0530
++++ b/scripts/state_probe.py	2026-10-30 03:24:23.630341817 +0530
+@@ -16,8 +16,7 @@
+ 
+   python3 scripts/state_probe.py --rule edit-window --label step4 --step 4 --run-dir runs/neuron/run-01
+ 
+-Status: written against the documented tool surface (ask with include_sources, explore with topic and vault).
+-NOT yet run against a live daemon.
++Status: run against live Neuron 0.3.1 daemons on 2026-10-29, after each edit in the 5 Neuron-arm runs (runs/neuron/run-0N/probes/).
+ """
+ from __future__ import annotations
+ 
+diff -r scripts/study_summary.py b/scripts/study_summary.py
+--- scripts/study_summary.py	1970-01-01 05:30:00.000000000 +0530
++++ b/scripts/study_summary.py	2026-10-30 03:08:03.386359108 +0530
+@@ -0,0 +1,327 @@
++#!/usr/bin/env python3
++"""Summarise every recorded run per arm and render the tables that README.md and docs/METRIC.md embed.
++
++Everything here is read from files a run wrote (run-manifest.json, code-outcome/, probes/, closeout-result.json,
++labels/). Nothing is estimated. The alignment numbers come from scripts/score_runs.py, so a product that needs a hand
++label and has none is left out, exactly as docs/METRIC.md says; the tables state how many products that leaves.
++
++  python3 scripts/study_summary.py                          print the tables
++  python3 scripts/study_summary.py --out runs/study-summary.json
++  python3 scripts/study_summary.py --write README.md        replace the blocks between the study markers
++  python3 scripts/study_summary.py --check README.md        exit 1 when a block differs from what the runs give
++                                                            (scripts/check_readme.py does this)
++
++A block in a document sits between `<!-- BEGIN study-<name> -->` and `<!-- END study-<name> -->` (names in BLOCKS). It is
++generated: edit the runs or this script, not the block.
++"""
++from __future__ import annotations
++
++import argparse
++import datetime
++import json
++import os
++import re
++import statistics
++import sys
++from typing import Dict, List, Optional
++
++sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
++import check_transcripts  # noqa: E402
++import score_runs  # noqa: E402
++
++REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
++ARMS = [("none", "A, no memory"), ("notes", "B, notes in the prompt"), ("neuron", "C, Neuron")]
++OUTCOME_STEPS = ["step3", "step5", "step6"]
++PROBES = [("step4", "edit window, after step 4"), ("step7", "error response, after step 7")]
++
++
++def _load(path: str) -> Optional[dict]:
++    if not os.path.isfile(path):
++        return None
++    with open(path) as handle:
++        return json.load(handle)
++
++
++def _parse(ts: Optional[str]) -> Optional[datetime.datetime]:
++    if not ts:
++        return None
++    return datetime.datetime.strptime(ts, "%Y-%m-%dT%H:%M:%S.%fZ")
++
++
++def spread(values: List[float], digits: int = 3) -> dict:
++    if not values:
++        return {"n": 0, "mean": None, "stdev": None, "min": None, "max": None}
++    return {"n": len(values), "mean": round(statistics.mean(values), digits),
++            "stdev": round(statistics.stdev(values), digits) if len(values) >= 2 else None,
++            "min": round(min(values), digits), "max": round(max(values), digits)}
++
++
++def run_facts(run_dir: str) -> dict:
++    manifest = _load(os.path.join(run_dir, "run-manifest.json")) or {}
++    checks = manifest.get("checks") or {}
++    started, finished = _parse(manifest.get("started_at")), _parse(manifest.get("finished_at"))
++    sessions = manifest.get("sessions") or []
++    outcomes = {}
++    for label in OUTCOME_STEPS:
++        record = _load(os.path.join(run_dir, "code-outcome", "%s.json" % label))
++        outcomes[label] = (record or {}).get("outcomes")
++    probes = {}
++    for label, _text in PROBES:
++        probes[label] = _load(os.path.join(run_dir, "probes", "%s.summary.json" % label))
++    # The isolation numbers are recomputed from the recorded transcripts with the checker as it is now, not copied from the
++    # manifest: the checker was corrected during the study (docs/VERIFIED.md), and a manifest keeps what the checker of the
++    # day said. The manifest's own figure is kept as isolation_at_run_time.
++    folder = os.path.join(run_dir, "transcripts")
++    reports = [check_transcripts.check_transcript(os.path.join(folder, n)) for n in sorted(os.listdir(folder))] if os.path.isdir(folder) else []
++    isolation = {"transcripts": len(reports), "violations": sum(len(r["violations"]) for r in reports),
++                 "blocked_attempts": sum(len(r["blocked"]) for r in reports)}
++    return {
++        "run_id": os.path.basename(run_dir),
++        "isolation_at_run_time": checks.get("isolation") or {},
++        "complete": bool(manifest.get("finished_at")) and not (manifest.get("claude_flags") or {}).get("partial_run"),
++        "hard_failures": checks.get("hard_failures") or [],
++        "isolation": isolation,
++        "spec_rule_values": checks.get("spec_rule_values") or [],
++        "outcomes": outcomes,
++        "rescore_step5": _load(os.path.join(run_dir, "code-outcome", "rescore-step5.json")),
++        "probes": probes,
++        "closeout": _load(os.path.join(run_dir, "closeout-result.json")),
++        "wall_seconds": round((finished - started).total_seconds(), 1) if started and finished else None,
++        "sessions": len(sessions),
++        "session_cost_usd": round(sum(s.get("total_cost_usd") or 0 for s in sessions), 4),
++        "session_seconds": round(sum((s.get("duration_ms") or 0) for s in sessions) / 1000.0, 1),
++        "versions": manifest.get("versions") or {},
++        "model": manifest.get("model"),
++        "commit": (manifest.get("repo") or {}).get("commit"),
++        "harness_sha256": ((manifest.get("repo") or {}).get("harness") or {}).get("sha256"),
++    }
++
++
++def summarize(runs_dir: str, labels_dir: str) -> dict:
++    scored = score_runs.collect(runs_dir, labels_dir)
++    arms: Dict[str, dict] = {}
++    for arm, title in ARMS:
++        arm_dir = os.path.join(runs_dir, arm)
++        run_ids = sorted(d for d in os.listdir(arm_dir) if os.path.isfile(os.path.join(arm_dir, d, "run-manifest.json"))) \
++            if os.path.isdir(arm_dir) else []
++        facts = [run_facts(os.path.join(arm_dir, rid)) for rid in run_ids]
++        arms[arm] = {"title": title, "runs": facts, "score": scored["arms"].get(arm)}
++    return {"schema": "neuron-demo-study-summary/1", "arms": arms, "skipped": scored["skipped"],
++            "metric_sha256": scored["metric_sha256"]}
++
++
++# ---- rendering ---------------------------------------------------------------------------------------------------------
++
++
++def _fmt(x: Optional[float], digits: int = 3) -> str:
++    return "-" if x is None else ("%%.%df" % digits) % x
++
++
++def _spread_cell(d: dict, digits: int = 3) -> str:
++    if not d["n"]:
++        return "none"
++    return "mean %s, sd %s, min %s, max %s" % (_fmt(d["mean"], digits), _fmt(d["stdev"], digits), _fmt(d["min"], digits), _fmt(d["max"], digits))
++
++
++def block_alignment(summary: dict) -> str:
++    lines = ["| Arm | Runs recorded | Alignment, rules that change (n, spread) | Alignment, rule that does not change (n, spread) | Products scored per run | Hand labels |",
++             "| --- | ------------- | ----------------------------------------- | ------------------------------------------------ | ----------------------- | ----------- |"]
++    for arm, title in ARMS:
++        data = summary["arms"][arm]
++        score = data["score"]
++        if not score:
++            lines.append("| %s | %d | none | none | none | 0 of %d runs labeled |" % (title, len(data["runs"]), len(data["runs"])))
++            continue
++        labeled = sum(1 for r in score["runs"] if r["labeled"])
++        per_run = ", ".join("%d of %d" % c for c in sorted({(r["scored"], r["of"]) for r in score["runs"]}))
++        lines.append("| %s | %d | n=%d, %s | n=%d, %s | %s | %d of %d runs labeled |" % (
++            title, len(data["runs"]), score["alignment_changed"]["n"], _spread_cell(score["alignment_changed"]),
++            score["alignment_stable"]["n"], _spread_cell(score["alignment_stable"]), per_run, labeled, len(data["runs"])))
++    return "\n".join(lines)
++
++
++OUTCOME_COLUMNS = [("step3", "accepts-inside", "edit-window/accepts-inside"), ("step3", "refuses-outside", "edit-window/refuses-outside"),
++                   ("step5", "accepts-inside", "edit-window/accepts-inside"), ("step5", "refuses-outside", "edit-window/refuses-outside"),
++                   ("step6", "caps-above", "article-limit/caps-above"), ("step6", "keeps-below", "article-limit/keeps-below"),
++                   ("step6", "keeps-default", "article-limit/keeps-default")]
++
++
++def block_outcomes(summary: dict) -> str:
++    header = "| Arm | Runs | " + " | ".join("step %s %s" % (label[-1], name) for label, name, _ in OUTCOME_COLUMNS) + " |"
++    lines = [header, "| --- | ---- | " + " | ".join("---" for _ in OUTCOME_COLUMNS) + " |"]
++    for arm, title in ARMS:
++        facts = summary["arms"][arm]["runs"]
++        cells = []
++        for label, _name, outcome in OUTCOME_COLUMNS:
++            states = [(f["outcomes"].get(label) or {}).get(outcome) for f in facts]
++            passed = sum(1 for s in states if s == "pass")
++            errored = sum(1 for s in states if s in ("error", None))
++            cells.append("%d of %d%s" % (passed, len(facts), " (%d not run)" % errored if errored else ""))
++        lines.append("| %s | %d | %s |" % (title, len(facts), " | ".join(cells)))
++    return "\n".join(lines)
++
++
++def refusal_kind(facts: dict) -> str:
++    """How one run's step 5 code treated an edit made one minute outside the 30 minute window, from the rescored check."""
++    record = facts.get("rescore_step5")
++    if not record:
++        return "not rescored"
++    outcomes = record.get("outcomes") or {}
++    if outcomes.get("edit-window/refuses-outside") == "pass":
++        return "refused with a 4xx"
++    if outcomes.get("edit-window/refuses-outside") != "fail":
++        return "not run"
++    detail = (record.get("failure_details") or {}).get("edit-window/refuses-outside", "")
++    status = re.search(r"Received:\s*(\d+)", detail)
++    if not status:
++        return "failed, status unknown"
++    return "refused with a 5xx (an unhandled error)" if int(status.group(1)) >= 500 else "did not refuse (status %s)" % status.group(1)
++
++
++def block_refusal(summary: dict) -> str:
++    kinds = ["refused with a 4xx", "refused with a 5xx (an unhandled error)", "did not refuse (status 200)"]
++    lines = ["| Arm | Runs | Step 5 code accepts minute 29 | Edit at minute 31: refused with a 4xx (counts as aligned) | refused with a 5xx (an unhandled error; does not count) | not refused, the edit went through | other |",
++             "| --- | ---- | ----------------------------- | ---------------------------------------------------------- | -------------------------------------------------------- | ---------------------------------- | ----- |"]
++    for arm, title in ARMS:
++        facts = summary["arms"][arm]["runs"]
++        got = [refusal_kind(f) for f in facts]
++        accepts = sum(1 for f in facts if ((f.get("rescore_step5") or {}).get("outcomes") or {}).get("edit-window/accepts-inside") == "pass")
++        counted = [sum(1 for k in got if k == kind) for kind in kinds]
++        other = len(got) - sum(counted)
++        lines.append("| %s | %d | %d of %d | %d | %d | %d | %d |" % (title, len(facts), accepts, len(facts), counted[0], counted[1], counted[2], other))
++    return "\n".join(lines)
++
++
++def block_conduct(summary: dict) -> str:
++    lines = ["| Arm | Runs | Role sessions | Sessions that reached a note, plan or outside path | Blocked attempts | Runs whose specs carry a rule value | Hard failures | Cost in USD per run | Wall time per run (s) |",
++             "| --- | ---- | ------------- | -------------------------------------------------- | ---------------- | ----------------------------------- | ------------- | ------------------- | -------------------- |"]
++    for arm, title in ARMS:
++        facts = summary["arms"][arm]["runs"]
++        sessions = sum(f["sessions"] for f in facts)
++        violations = sum((f["isolation"] or {}).get("violations", 0) for f in facts)
++        blocked = sum((f["isolation"] or {}).get("blocked_attempts", 0) for f in facts)
++        with_values = sum(1 for f in facts if f["spec_rule_values"])
++        hard = sum(len(f["hard_failures"]) for f in facts)
++        cost = spread([f["session_cost_usd"] for f in facts], 3)
++        wall = spread([f["wall_seconds"] for f in facts if f["wall_seconds"] is not None], 0)
++        lines.append("| %s | %d | %d | %d | %d | %d of %d | %d | %s | %s |" % (
++            title, len(facts), sessions, violations, blocked, with_values, len(facts), hard,
++            _spread_cell(cost, 3), _spread_cell(wall, 0)))
++    return "\n".join(lines)
++
++
++def block_probes(summary: dict) -> str:
++    facts = summary["arms"]["neuron"]["runs"]
++    lines = ["| Neuron's own state right after the edit was ingested | Runs probed | Answer gives the new value | Answer gives the replaced value | `explore` result has the new value | `explore` result has the replaced value | Word \"supersed\" in either result |",
++             "| ---------------------------------------------------- | ----------- | -------------------------- | ------------------------------- | ---------------------------------- | ---------------------------------------- | -------------------------------- |"]
++    for label, text in PROBES:
++        probed = [f["probes"][label] for f in facts if f["probes"].get(label)]
++
++        def count(key: str) -> str:
++            return "%d of %d" % (sum(1 for p in probed if p.get(key)), len(probed))
++        lines.append("| %s | %d | %s | %s | %s | %s | %s |" % (
++            text, len(probed), count("ask_text_matches_new"), count("ask_text_matches_old"), count("explore_matches_new"),
++            count("explore_matches_old"), count("supersedes_marker_seen")))
++    return "\n".join(lines)
++
++
++def block_citations(summary: dict) -> str:
++    facts = [f for f in summary["arms"]["neuron"]["runs"] if f["closeout"]]
++    lines = ["| Neuron arm | Questions | Sources and a non-empty answer | Citations passing the hash check (record time) | Stale anchors | Other citation failures | Answers still giving a replaced value after its edit | `provider_error` answers (step 9) | of which the agent claimed nothing was found |",
++             "| ---------- | --------- | ------------------------------ | ---------------------------------------------- | ------------- | ----------------------- | ----------------------------------------------------- | --------------------------------- | ------------------------------------------- |"]
++
++    def row(label: str, group: List[dict]) -> str:
++        def total(key: str) -> int:
++            return sum(f["closeout"][key] for f in group)
++
++        def length(key: str) -> int:
++            return sum(len(f["closeout"].get(key) or []) for f in group)
++        claimed = sum(1 for f in group for p in (f["closeout"].get("provider_error_answers") or []) if p.get("claimed_nothing_found"))
++        return "| %s | %d | %d | %d of %d | %d | %d | %d | %d | %d |" % (
++            label, total("questions_asked"), total("questions_with_sources_and_answer"), total("citations_passed_at_record_time"),
++            total("citations_checked_at_record_time"), total("stale_anchor_failures"), total("other_citation_failures"),
++            length("stale_rule_answers_after_replacement"), length("provider_error_answers"), claimed)
++    for f in facts:
++        lines.append(row(f["run_id"], [f]))
++    if facts:
++        lines.append(row("all %d runs" % len(facts), facts))
++    return "\n".join(lines)
++
++
++BLOCKS = {
++    "study-alignment": block_alignment,
++    "study-outcomes": block_outcomes,
++    "study-refusal": block_refusal,
++    "study-conduct": block_conduct,
++    "study-probes": block_probes,
++    "study-citations": block_citations,
++}
++
++
++def marker(name: str, begin: bool) -> str:
++    return "<!-- %s %s -->" % ("BEGIN" if begin else "END", name)
++
++
++def render(summary: dict) -> Dict[str, str]:
++    return {name: fn(summary) for name, fn in BLOCKS.items()}
++
++
++def _pattern(name: str) -> "re.Pattern[str]":
++    return re.compile(re.escape(marker(name, True)) + r"\n(.*?)\n" + re.escape(marker(name, False)), re.S)
++
++
++def block_in(text: str, name: str) -> Optional[str]:
++    match = _pattern(name).search(text)
++    return match.group(1) if match else None
++
++
++def replace_block(text: str, name: str, body: str) -> str:
++    return _pattern(name).sub(lambda _m: marker(name, True) + "\n" + body + "\n" + marker(name, False), text, count=1)
++
++
++def check_text(text: str, summary: dict) -> List[str]:
++    """Differences between the generated blocks and the blocks present in `text` (a block that is absent is not an error)."""
++    problems = []
++    for name, body in render(summary).items():
++        present = block_in(text, name)
++        if present is not None and present != body:
++            problems.append("the %s block differs from what the recorded runs give; run scripts/study_summary.py --write" % name)
++    return problems
++
++
++def main(argv: Optional[List[str]] = None) -> int:
++    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
++    parser.add_argument("--runs-dir", default=os.path.join(REPO, "runs"))
++    parser.add_argument("--labels-dir", default=os.path.join(REPO, "labels"))
++    parser.add_argument("--out")
++    parser.add_argument("--write", nargs="+", metavar="FILE", help="replace the study blocks in these documents")
++    parser.add_argument("--check", nargs="+", metavar="FILE")
++    args = parser.parse_args(argv)
++    summary = summarize(args.runs_dir, args.labels_dir)
++    if args.out:
++        os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
++        with open(args.out, "w") as handle:
++            json.dump(summary, handle, indent=2)
++            handle.write("\n")
++    status = 0
++    for path in args.write or []:
++        with open(path) as handle:
++            text = handle.read()
++        for name, body in render(summary).items():
++            if block_in(text, name) is not None:
++                text = replace_block(text, name, body)
++        with open(path, "w") as handle:
++            handle.write(text)
++    for path in args.check or []:
++        with open(path) as handle:
++            for problem in check_text(handle.read(), summary):
++                print("%s: %s" % (path, problem))
++                status = 1
++    if not (args.write or args.check or args.out):
++        for name, body in render(summary).items():
++            print("## %s\n\n%s\n" % (name, body))
++    return status
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff -r scenarios/metric-equivalents.json b/scenarios/metric-equivalents.json
+--- scenarios/metric-equivalents.json	1970-01-01 05:30:00.000000000 +0530
++++ b/scenarios/metric-equivalents.json	2026-10-30 03:20:18.914125362 +0530
+@@ -0,0 +1,10 @@
++{
++  "schema": "neuron-demo-metric-equivalents/1",
++  "description": "Earlier texts of docs/METRIC.md that scripts/score_runs.py accepts as the same metric. A fingerprint is listed only when the scored quantities, the products and the checks are unchanged between the two texts. A changed definition is never listed: it invalidates the runs recorded under the earlier one.",
++  "equivalent": [
++    {
++      "sha256": "4a5fc4fb9fc711e16a98bdcdcccb36bd12b171a51d5c28901ffda6d1c7b8cb1d",
++      "reason": "docs/METRIC.md and scenarios/work_products.json as they were when the 15 runs of 2026-10-29 were recorded (the fingerprint then covered the whole file). Changes since: the opening paragraph and the status paragraph (the sentence that no run existed was replaced and moved to a results section after an END definition marker), and the results section itself. Sections 'What is measured', 'Per run', 'Per arm', 'Who scores what', 'What this metric does not measure' and 'Controls held equal across arms', and scenarios/work_products.json, are byte for byte unchanged."
++    }
++  ]
++}

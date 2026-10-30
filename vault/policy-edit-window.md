@@ -1,5 +1,3 @@
-# Edit window (demo policy)
+# Comment edit window
 
-This is a demo policy for this repo, not behaviour of the app.
-
-A comment author may edit their own comment for 30 minutes after the comment was created. After that the API refuses the edit.
+A comment author may edit their own comment for 15 minutes after the comment was created. After that the API refuses the edit.

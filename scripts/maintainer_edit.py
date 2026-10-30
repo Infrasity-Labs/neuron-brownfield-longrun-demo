@@ -1,62 +1,80 @@
 #!/usr/bin/env python3
-"""The Maintainer's own actions: the two rule changes and the model outage. Edits files in vault/ only."""
+"""The Maintainer's own actions: the two rule changes and the scripted model outage.
+
+A rule change is a copy of the files under scenarios/<step>/after/ into the watched vault/ folder. The starting
+state of every note is committed in vault/ itself (and in scenarios/<step>/before/ for the notes that change),
+so a fresh clone starts before the change and `python3 scripts/reset.py` goes back to it.
+
+  python3 scripts/maintainer_edit.py step4      edit window changes (scenarios/step04/after/)
+  python3 scripts/maintainer_edit.py step7      error rule replaced, ops-runbook.md added (scenarios/step07/after/)
+  python3 scripts/maintainer_edit.py step9      break the isolated daemon's model key, hold, restore in a finally block
+
+Each edit is recorded as a maintainer_edit event with a UTC timestamp when --events is given.
+"""
 from __future__ import annotations
 
 import argparse
 import os
+import shutil
 import sys
-from typing import List, Optional
+import time
+from typing import Dict, List, Optional
 
-VAULT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "vault")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import events as event_log  # noqa: E402
 
-EDIT_WINDOW_30 = """# Edit window (demo policy)
+REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SCENARIOS = os.path.join(REPO, "scenarios")
+VAULT = os.path.join(REPO, "vault")
 
-This is a demo policy for this repo, not behaviour of the app.
-
-A comment author may edit their own comment for 30 minutes after the comment was created. After that the API refuses the edit.
-"""
-
-ERROR_RULE_NEW = """# Error response rule (demo policy)
-
-This is a demo policy for this repo, not behaviour of the app.
-
-All new error responses use an error object: {"error":{"code":"<machine_code>","message":"<text>"}}. This replaces the older errors-by-field body. HTTP status codes do not change.
-"""
-
-OPS_RUNBOOK = """# Ops runbook
-
-When an API call fails, support reads the errors key in the response body. It maps each field name to a list of messages, for example {"errors":{"body":["can't be blank"]}}. New error responses should follow this shape.
-"""
+SCENARIO_DIRS: Dict[str, str] = {"step4": "step04", "step7": "step07"}
 
 
-def _write(name: str, text: str) -> None:
-    with open(os.path.join(VAULT, name), "w") as handle:
-        handle.write(text)
-    print("wrote vault/%s" % name)
+def scenario_files(action: str, scenarios: str = SCENARIOS) -> List[str]:
+    folder = os.path.join(scenarios, SCENARIO_DIRS[action], "after")
+    return sorted(n for n in os.listdir(folder) if n.endswith(".md"))
 
 
-def step4() -> None:
-    _write("policy-edit-window.md", EDIT_WINDOW_30)
+def apply_scenario(action: str, vault: str = VAULT, scenarios: str = SCENARIOS) -> List[str]:
+    """Copy the post-change notes of one step into the vault folder. Returns the file names written."""
+    folder = os.path.join(scenarios, SCENARIO_DIRS[action], "after")
+    written = scenario_files(action, scenarios)
+    for name in written:
+        shutil.copyfile(os.path.join(folder, name), os.path.join(vault, name))
+    return written
 
 
-def step7() -> None:
-    _write("policy-error-response.md", ERROR_RULE_NEW)
-    _write("ops-runbook.md", OPS_RUNBOOK)
+def edit(action: str, vault: str = VAULT, scenarios: str = SCENARIOS, events_path: Optional[str] = None) -> List[str]:
+    written = apply_scenario(action, vault, scenarios)
+    label = action
+    if events_path:
+        event_log.log_event(events_path, "maintainer_edit", label=label, step=int(action[-1]), files=written)
+    for name in written:
+        print("wrote vault/%s" % name)
+    return written
 
 
-def step9() -> None:
-    print("Stop the model endpoint now so every ask returns provider_error.")
-    print("A local endpoint: stop its server. A hosted one: disconnect the network or set a bad key.")
-    print("Neuron's README does not document a switch for this, so it is done by hand and recorded in docs/VERIFIED.md.")
-
-
-ACTIONS = {"step4": step4, "step7": step7, "step9": step9}
+def step9(hold: float, key_env: str, events_path: Optional[str] = None) -> None:
+    """Break the model key of the isolated daemon for `hold` seconds, and always restore it."""
+    import neuron_ctl
+    with neuron_ctl.outage(key_env, events_path):
+        print("isolated daemon restarted with an invalid key on port %d; holding %.0f s" % (neuron_ctl.rest_port(), hold))
+        time.sleep(hold)
+    print("daemon restored with the saved key")
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=sorted(ACTIONS))
-    ACTIONS[parser.parse_args(argv).action]()
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("action", choices=["step4", "step7", "step9"])
+    parser.add_argument("--vault", default=VAULT, help="the watched notes folder (default: vault/)")
+    parser.add_argument("--events", help="append a maintainer_edit event to this events.jsonl")
+    parser.add_argument("--hold", type=float, default=60.0, help="step9 only: seconds to keep the outage up")
+    parser.add_argument("--key-env", default=os.environ.get("DEMO_LLM_API_KEY_ENV", "OKTO_NEURON_LLM_API_KEY"))
+    args = parser.parse_args(argv)
+    if args.action == "step9":
+        step9(args.hold, args.key_env, args.events)
+    else:
+        edit(args.action, args.vault, SCENARIOS, args.events)
     return 0
 
 

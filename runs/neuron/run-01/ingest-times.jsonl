@@ -1,0 +1,5 @@
+{"label": "initial notes", "vault": "team", "seconds_upper_bound": 712.7, "sampled_every_s": 5.0, "settle_s": 5.0, "finished_at": "2026-10-29T21:08:43Z"}
+{"label": "step 4 edit", "vault": "team", "seconds_upper_bound": 76.8, "sampled_every_s": 5.0, "settle_s": 8.0, "finished_at": "2026-10-29T21:12:14Z"}
+{"label": "after step 4", "vault": "team", "seconds_upper_bound": 164.4, "sampled_every_s": 5.0, "settle_s": 8.0, "finished_at": "2026-10-29T21:15:52Z"}
+{"label": "after step 5", "vault": "team", "seconds_upper_bound": 80.8, "sampled_every_s": 5.0, "settle_s": 8.0, "finished_at": "2026-10-29T21:17:59Z"}
+{"label": "step 7 edit", "vault": "team", "seconds_upper_bound": 158.6, "sampled_every_s": 5.0, "settle_s": 8.0, "finished_at": "2026-10-29T21:22:08Z"}

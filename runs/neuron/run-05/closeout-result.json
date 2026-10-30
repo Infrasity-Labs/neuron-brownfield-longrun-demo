@@ -1,0 +1,123 @@
+{
+  "questions_asked": 41,
+  "questions_with_sources": 41,
+  "synthesis_status_counts": {
+    "ok": 40,
+    "no_llm": 0,
+    "empty": 0,
+    "provider_error": 1,
+    "truncated": 0,
+    "abnormal_stop": 0,
+    "unparsed": 0
+  },
+  "finish_reason_not_stop": 0,
+  "finish_reason_missing": 1,
+  "vault_override_ignored_count": 0,
+  "vault_override_ignored_same_vault_count": 27,
+  "citations_checked_at_record_time": 820,
+  "citations_passed_at_record_time": 801,
+  "citations_passed_on_recheck": 784,
+  "claims_replaced": [
+    "edit-window",
+    "error-response"
+  ],
+  "stale_rule_answers_after_replacement": [],
+  "provider_error_answers": [
+    {
+      "step": 9,
+      "role": "reviewer",
+      "agent_followup": "The ask came back degraded with a provider error, so I'm running explore on the same topic. Explore makes no model call.",
+      "claimed_nothing_found": false
+    }
+  ],
+  "asks_to_vaults_other_than_the_two_demo_vaults": 0,
+  "private_notes_in_team_answers": 0,
+  "private_leak_details": [],
+  "ingest_seconds_per_note": [
+    {
+      "label": "initial notes",
+      "vault": "team",
+      "seconds_upper_bound": 664.4,
+      "sampled_every_s": 5.0,
+      "settle_s": 5.0,
+      "finished_at": "2026-10-29T21:07:54Z"
+    },
+    {
+      "label": "step 4 edit",
+      "vault": "team",
+      "seconds_upper_bound": 86.9,
+      "sampled_every_s": 5.0,
+      "settle_s": 8.0,
+      "finished_at": "2026-10-29T21:12:31Z"
+    },
+    {
+      "label": "after step 4",
+      "vault": "team",
+      "seconds_upper_bound": 225.6,
+      "sampled_every_s": 5.0,
+      "settle_s": 8.0,
+      "finished_at": "2026-10-29T21:17:21Z"
+    },
+    {
+      "label": "after step 5",
+      "vault": "team",
+      "seconds_upper_bound": 153.2,
+      "sampled_every_s": 5.0,
+      "settle_s": 8.0,
+      "finished_at": "2026-10-29T21:21:06Z"
+    },
+    {
+      "label": "step 7 edit",
+      "vault": "team",
+      "seconds_upper_bound": 163.4,
+      "sampled_every_s": 5.0,
+      "settle_s": 8.0,
+      "finished_at": "2026-10-29T21:25:42Z"
+    }
+  ],
+  "questions_with_sources_and_answer": 40,
+  "stale_anchor_failures": 19,
+  "other_citation_failures": 0,
+  "stale_anchor_failures_by_note": {
+    "policy-error-response.md": 19
+  },
+  "stale_anchor_asks": [
+    {
+      "ask_number": 33,
+      "step": 8,
+      "role": "planner",
+      "stale_anchors": 3
+    },
+    {
+      "ask_number": 36,
+      "step": 8,
+      "role": "builder",
+      "stale_anchors": 3
+    },
+    {
+      "ask_number": 37,
+      "step": 8,
+      "role": "builder",
+      "stale_anchors": 1
+    },
+    {
+      "ask_number": 38,
+      "step": 8,
+      "role": "builder",
+      "stale_anchors": 6
+    },
+    {
+      "ask_number": 40,
+      "step": 8,
+      "role": "reviewer",
+      "stale_anchors": 3
+    },
+    {
+      "ask_number": 41,
+      "step": 9,
+      "role": "reviewer",
+      "stale_anchors": 3
+    }
+  ],
+  "private_fact_candidates_in_team_answers": []
+}

@@ -10,3 +10,12 @@ __pycache__/
 vault-private/
 .okto-neuron/
 .mcp.json
+# isolated Neuron daemon home of the demo (holds the saved model key and the MCP token): never commit
+.demo-home/
+# Nx output of the target app, also ignored by app/.gitignore (dist, tmp, .nx/cache); listed here so a root-level
+# check sees them too
+app/dist/
+app/tmp/
+app/.nx/
+app/coverage/
+app/out-tsc/

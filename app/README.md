@@ -1,6 +1,6 @@
 # ![Node/Express/Prisma Example App](project-logo.png)
 
-[![Build Status](https://travis-ci.org/anishkny/node-express-realworld-example-app.svg?branch=master)](https://travis-ci.org/anishkny/node-express-realworld-example-app)
+> This copy is the target app of the neuron-brownfield-longrun-demo. The upstream project's Travis build badge was removed: it reported on another repository, not on this copy. See THIRD_PARTY_NOTICES.md at the repository root for where the app comes from.
 
 > ### Example Node (Express + Prisma) codebase containing real world examples (CRUD, auth, advanced patterns, etc) that adheres to the [RealWorld](https://github.com/gothinkster/realworld-example-apps) API spec.
 

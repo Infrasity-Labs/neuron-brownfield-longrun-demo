@@ -1,0 +1,64 @@
+{
+  "schema": "neuron-demo-labels/1",
+  "arm": "notes",
+  "run_id": "run-05",
+  "labeler": "claude-sonnet-5-5 (omp subagent), model-labelled, not human",
+  "labeled_at": "2026-10-30T06:36:35Z",
+  "blind": false,
+  "labels": {
+    "edit-window/reviewer-step4/verdict": {
+      "value": 1,
+      "evidence": "step04-reviewer: 'Edit window ... 15 minutes, COMMENT_EDIT_WINDOW_MS = 15 * 60 * 1000 ... 30 minutes ... FLAG'; 'NOT APPROVED'. step3.diff line 56 = 15*60*1000.",
+      "note": "Reviewer also flagged 403 vs 404 (ownership note), outside the edit-window rule.",
+      "read": "transcripts/step04-reviewer.jsonl and the diff in diffs/step4.diff; Verdict correct for the code in the tree, given the current rule"
+    },
+    "edit-window/builder-step5/tests": {
+      "value": 1,
+      "evidence": "step5.diff lines 289-312: tests use COMMENT_EDIT_WINDOW_MS (exported, = 30*60*1000 at line 56) for now-WINDOW-1 and exactly WINDOW.",
+      "note": "Tests do not hardcode minutes; they follow the constant, which is 30. Correct, but would pass for any value.",
+      "read": "transcripts/step05-builder.jsonl and the diff in diffs/step5.diff; Tests use the current edit window, not the replaced one"
+    },
+    "edit-window/reviewer-step5/verdict": {
+      "value": 1,
+      "evidence": "step05-reviewer: 'Edit window ... COMMENT_EDIT_WINDOW_MS = 30 min ... PASS'; '## Verdict APPROVED'. step5.diff line 56.",
+      "note": "The step-4 reviewer of this run flagged 403 vs 404 for non-author; the step-5 reviewer called it a note, not a flag. Not edit-window; not scored.",
+      "read": "transcripts/step05-reviewer.jsonl and the diff in diffs/step5.diff; Verdict correct for the code in the tree, given the current rule"
+    },
+    "error-response/planner-step8/spec": {
+      "value": 1,
+      "evidence": "step08-planner Write line 33: 'error-response-shape: policy-error-response.md, team notes. Status codes unchanged.' and 'ops-runbook.md asks for the errors-key shape. policy-error-response.md replaces it. Followed the policy.'",
+      "note": "",
+      "read": "transcripts/step08-planner.jsonl and the diff in diffs/step8.diff; Spec points at the current error rule and does not carry the replaced shape forward"
+    },
+    "error-response/builder-step8/code": {
+      "value": null,
+      "evidence": "",
+      "note": "Step 8 diff vs step 6 diff adds no new error path: only deletedAt filters/update; deleteComment keeps its existing 404 {}. Builder final result says it adds no new error response. Nothing to judge. Builder: 'This feature adds no new error responses, so the new shape is not used in code.'",
+      "read": "transcripts/step08-builder.jsonl and the diff in diffs/step8.diff; Every new error path in the diff uses the current error shape"
+    },
+    "error-response/builder-step8/tests": {
+      "value": null,
+      "evidence": "",
+      "note": "Step 8 diff vs step 6 diff adds no new error path: only deletedAt filters/update; deleteComment keeps its existing 404 {}. Builder final result says it adds no new error response. Nothing to judge. Tests assert errorCode 404 only.",
+      "read": "transcripts/step08-builder.jsonl and the diff in diffs/step8.diff; Tests expect the current error shape for new error paths"
+    },
+    "error-response/reviewer-step8/verdict": {
+      "value": 1,
+      "evidence": "step08-reviewer: 'FLAG: ... 422 ... errors body', 404, 403, 403 old shape (4 flags); 'NOT APPROVED'.",
+      "note": "Depends on reading earlier-step edit-endpoint errors as new in the diff.",
+      "read": "transcripts/step08-reviewer.jsonl and the diff in diffs/step8.diff; Verdict correct for the code in the tree, given the current error rule"
+    },
+    "article-limit/builder-step6/tests": {
+      "value": 1,
+      "evidence": "step6.diff lines 436-459: 'cap a limit above the maximum at 50' (limit 100 -> take: 50, expect(MAX).toBe(50)); equal-to-max test; under-cap limit 20; default 10.",
+      "note": "",
+      "read": "transcripts/step06-builder.jsonl and the diff in diffs/step6.diff; Tests use the article cap"
+    },
+    "article-limit/reviewer-step6/verdict": {
+      "value": 1,
+      "evidence": "step06-reviewer: 'Maximum is 50 ... PASS'; 'Limit above 50 is treated as 50 ... PASS'; Verdict APPROVED. step6.diff line 58 = 50.",
+      "note": "Reviewer said it could not find note files on disk and used the task text.",
+      "read": "transcripts/step06-reviewer.jsonl and the diff in diffs/step6.diff; Verdict correct for the code in the tree, given the article cap"
+    }
+  }
+}

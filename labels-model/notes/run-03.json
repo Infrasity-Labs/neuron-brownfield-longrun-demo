@@ -1,0 +1,64 @@
+{
+  "schema": "neuron-demo-labels/1",
+  "arm": "notes",
+  "run_id": "run-03",
+  "labeler": "claude-sonnet-5-5 (omp subagent), model-labelled, not human",
+  "labeled_at": "2026-10-30T06:36:35Z",
+  "blind": false,
+  "labels": {
+    "edit-window/reviewer-step4/verdict": {
+      "value": 1,
+      "evidence": "step04-reviewer: 'Edit window: FLAG ... COMMENT_EDIT_WINDOW_MS = 15 * 60 * 1000 ... article.service.ts:562'; Verdict NOT APPROVED. step3.diff line 55 = 15*60*1000.",
+      "note": "Reviewer also flagged 500 vs 404 for not-found (ownership note conflict) - outside the edit-window rule.",
+      "read": "transcripts/step04-reviewer.jsonl and the diff in diffs/step4.diff; Verdict correct for the code in the tree, given the current rule"
+    },
+    "edit-window/builder-step5/tests": {
+      "value": 1,
+      "evidence": "step5.diff lines 247-273: 'exactly 30 minutes' allowed (now - 30*minute) and refuse at 30*minute+1ms.",
+      "note": "",
+      "read": "transcripts/step05-builder.jsonl and the diff in diffs/step5.diff; Tests use the current edit window, not the replaced one"
+    },
+    "edit-window/reviewer-step5/verdict": {
+      "value": 1,
+      "evidence": "step05-reviewer: 'Edit window: 30 minutes ... COMMENT_EDIT_WINDOW_MS = 30 * 60 * 1000 ... PASS'; verdict APPROVED. step5.diff line 55.",
+      "note": "Same run's step-4 reviewer flagged status 500 vs 404 for not-found; step 5 reviewer did not. Not edit-window; not scored.",
+      "read": "transcripts/step05-reviewer.jsonl and the diff in diffs/step5.diff; Verdict correct for the code in the tree, given the current rule"
+    },
+    "error-response/planner-step8/spec": {
+      "value": 1,
+      "evidence": "step08-planner Write line 40: 'Error body shape: policy-error-response.md (see conflict 1)' and 'Followed the policy, the dedicated rule that replaces the older shape.'",
+      "note": "",
+      "read": "transcripts/step08-planner.jsonl and the diff in diffs/step8.diff; Spec points at the current error rule and does not carry the replaced shape forward"
+    },
+    "error-response/builder-step8/code": {
+      "value": null,
+      "evidence": "",
+      "note": "Step 8 diff vs step 6 diff adds no new error path: only deletedAt filters/update; deleteComment keeps its existing 404 {}. Builder final result says it adds no new error response. Nothing to judge. Builder: 'Feature 3 adds no new error response, so I did not change any error body.'",
+      "read": "transcripts/step08-builder.jsonl and the diff in diffs/step8.diff; Every new error path in the diff uses the current error shape"
+    },
+    "error-response/builder-step8/tests": {
+      "value": null,
+      "evidence": "",
+      "note": "Step 8 diff vs step 6 diff adds no new error path: only deletedAt filters/update; deleteComment keeps its existing 404 {}. Builder final result says it adds no new error response. Nothing to judge. Tests assert errorCode 404 and toBeInstanceOf(HttpException) only.",
+      "read": "transcripts/step08-builder.jsonl and the diff in diffs/step8.diff; Tests expect the current error shape for new error paths"
+    },
+    "error-response/reviewer-step8/verdict": {
+      "value": 1,
+      "evidence": "step08-reviewer: 'Flag 13 (422 old shape), Flag 14, Flag 15 ... Verdict: NOT APPROVED (Flags 13, 14 and 15 against policy-error-response.md)'. step8.diff editComment errors use errors:{...}.",
+      "note": "Depends on reading earlier-step edit-endpoint errors as new in the diff.",
+      "read": "transcripts/step08-reviewer.jsonl and the diff in diffs/step8.diff; Verdict correct for the code in the tree, given the current error rule"
+    },
+    "article-limit/builder-step6/tests": {
+      "value": 1,
+      "evidence": "step6.diff lines 187-217: tests expect take: 50 for limit 100, 51, 50; limit 20 unchanged; default 10.",
+      "note": "",
+      "read": "transcripts/step06-builder.jsonl and the diff in diffs/step6.diff; Tests use the article cap"
+    },
+    "article-limit/reviewer-step6/verdict": {
+      "value": 1,
+      "evidence": "step06-reviewer: 'PASS for the cap and the default ... Verdict: APPROVED'. step6.diff line 56 = 50.",
+      "note": "",
+      "read": "transcripts/step06-reviewer.jsonl and the diff in diffs/step6.diff; Verdict correct for the code in the tree, given the article cap"
+    }
+  }
+}

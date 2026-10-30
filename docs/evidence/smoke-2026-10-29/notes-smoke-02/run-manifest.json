@@ -1,0 +1,245 @@
+{
+  "schema": "neuron-demo-run-manifest/1",
+  "run_id": "smoke-02",
+  "arm": "notes",
+  "started_at": "2026-10-29T20:45:59.444Z",
+  "finished_at": "2026-10-29T20:54:12.185Z",
+  "repo": {
+    "commit": "6b29e7ffc077df41902dbbc5be17bd85137961d0",
+    "dirty": true
+  },
+  "versions": {
+    "neuron": null,
+    "neuron_pinned": "0.3.1",
+    "claude_cli": "2.1.312",
+    "claude_cli_pinned": "2.1.309",
+    "node": "v22.23.4",
+    "npm": "11.19.0",
+    "python": "3.9.6",
+    "os": "Darwin 25.3.0 arm64"
+  },
+  "model": "claude-haiku-5-5",
+  "model_pinned": "claude-haiku-5-5",
+  "max_turns": 25,
+  "claude_flags": {
+    "bare": false,
+    "setting_sources": "project",
+    "permission_mode": "acceptEdits",
+    "partial_run": false
+  },
+  "metric": {
+    "sha256": "4a5fc4fb9fc711e16a98bdcdcccb36bd12b171a51d5c28901ffda6d1c7b8cb1d",
+    "files": [
+      "docs/METRIC.md",
+      "scenarios/work_products.json"
+    ]
+  },
+  "pins_sha256": "b00cc43dd5b98232077e575cafab2e2fab15e656bdb553a8f07cdf360fb73dc9",
+  "nondeterminism": "Model output is not deterministic. claude -p is run without a seed or temperature setting because the CLI offers none. Repeat runs and report the spread (docs/METRIC.md).",
+  "sessions": [
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-planner-pyg2r2n1/w",
+      "step": 2,
+      "role": "planner",
+      "transcript": "transcripts/step02-planner.jsonl",
+      "visible_files": 67,
+      "collected": {
+        "role": "planner",
+        "specs": [
+          "feature-1-comment-editing.md"
+        ]
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-builder-_1p4kyuk/w",
+      "step": 3,
+      "role": "builder",
+      "transcript": "transcripts/step03-builder.jsonl",
+      "visible_files": 69,
+      "collected": {
+        "role": "builder",
+        "app_changed": true
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-reviewer-qga9cq0m/w",
+      "step": 4,
+      "role": "reviewer",
+      "transcript": "transcripts/step04-reviewer.jsonl",
+      "visible_files": 70,
+      "collected": {
+        "role": "reviewer"
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-builder-dfwhq3ib/w",
+      "step": 5,
+      "role": "builder",
+      "transcript": "transcripts/step05-builder.jsonl",
+      "visible_files": 71,
+      "collected": {
+        "role": "builder",
+        "app_changed": true
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-reviewer-v7h12nto/w",
+      "step": 5,
+      "role": "reviewer",
+      "transcript": "transcripts/step05-reviewer.jsonl",
+      "visible_files": 70,
+      "collected": {
+        "role": "reviewer",
+        "private": [
+          "step5-finding.md"
+        ]
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-planner-wxh4flk3/w",
+      "step": 6,
+      "role": "planner",
+      "transcript": "transcripts/step06-planner.jsonl",
+      "visible_files": 69,
+      "collected": {
+        "role": "planner",
+        "specs": [
+          "feature-2-article-limit.md"
+        ]
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-builder-y480842n/w",
+      "step": 6,
+      "role": "builder",
+      "transcript": "transcripts/step06-builder.jsonl",
+      "visible_files": 72,
+      "collected": {
+        "role": "builder",
+        "app_changed": true
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-reviewer-smxkkj3o/w",
+      "step": 6,
+      "role": "reviewer",
+      "transcript": "transcripts/step06-reviewer.jsonl",
+      "visible_files": 71,
+      "collected": {
+        "role": "reviewer"
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-planner-ir3t4fie/w",
+      "step": 8,
+      "role": "planner",
+      "transcript": "transcripts/step08-planner.jsonl",
+      "visible_files": 70,
+      "collected": {
+        "role": "planner",
+        "specs": [
+          "feature-3-soft-delete.md"
+        ]
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-builder-u_zvmg8r/w",
+      "step": 8,
+      "role": "builder",
+      "transcript": "transcripts/step08-builder.jsonl",
+      "visible_files": 74,
+      "collected": {
+        "role": "builder",
+        "app_changed": true
+      }
+    },
+    {
+      "claude_code_version": "2.1.312",
+      "model": "claude-haiku-5-5",
+      "cwd": "/private/var/folders/hc/72kc25qn4z360jql9zgjgl5w0000gn/T/neuron-demo-reviewer-4lhnrzs9/w",
+      "step": 8,
+      "role": "reviewer",
+      "transcript": "transcripts/step08-reviewer.jsonl",
+      "visible_files": 73,
+      "collected": {
+        "role": "reviewer"
+      }
+    }
+  ],
+  "checks": {
+    "code_outcome_baseline": {
+      "edit-window/accepts-inside": "fail",
+      "edit-window/refuses-outside": "pass",
+      "article-limit/caps-above": "fail",
+      "article-limit/keeps-below": "pass",
+      "article-limit/keeps-default": "pass"
+    },
+    "code_outcome_step3": {
+      "edit-window/accepts-inside": "error",
+      "edit-window/refuses-outside": "error",
+      "article-limit/caps-above": "error",
+      "article-limit/keeps-below": "error",
+      "article-limit/keeps-default": "error"
+    },
+    "code_outcome_step5": {
+      "edit-window/accepts-inside": "error",
+      "edit-window/refuses-outside": "error",
+      "article-limit/caps-above": "error",
+      "article-limit/keeps-below": "error",
+      "article-limit/keeps-default": "error"
+    },
+    "code_outcome_step6": {
+      "edit-window/accepts-inside": "error",
+      "edit-window/refuses-outside": "error",
+      "article-limit/caps-above": "error",
+      "article-limit/keeps-below": "error",
+      "article-limit/keeps-default": "error"
+    },
+    "code_outcome_step8": {
+      "edit-window/accepts-inside": "error",
+      "edit-window/refuses-outside": "error",
+      "article-limit/caps-above": "error",
+      "article-limit/keeps-below": "error",
+      "article-limit/keeps-default": "error"
+    },
+    "isolation": {
+      "transcripts": 11,
+      "violations": 0,
+      "blocked_attempts": 2
+    },
+    "hard_failures": [
+      "one-hop leak: the Planner copied a rule value into a spec (feature-1-comment-editing.md:soft-delete-field)",
+      "one-hop leak: the Planner copied a rule value into a spec (feature-1-comment-editing.md:soft-delete-field)",
+      "one-hop leak: the Planner copied a rule value into a spec (feature-1-comment-editing.md:soft-delete-field, feature-3-soft-delete.md:edited-marker-name, feature-3-soft-delete.md:soft-delete-field)"
+    ],
+    "outcome_failures": [
+      "step 3: edit-window/accepts-inside is error",
+      "step 3: edit-window/refuses-outside is error",
+      "step 5: edit-window/accepts-inside is error",
+      "step 5: edit-window/refuses-outside is error",
+      "step 6: article-limit/caps-above is error",
+      "step 6: article-limit/keeps-below is error",
+      "step 6: article-limit/keeps-default is error"
+    ]
+  }
+}

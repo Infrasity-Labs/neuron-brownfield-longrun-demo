@@ -1,5 +1,3 @@
-# Error response rule (demo policy)
+# Error response rule
 
-This is a demo policy for this repo, not behaviour of the app.
-
-All new error responses use an error object: {"error":{"code":"<machine_code>","message":"<text>"}}. This replaces the older errors-by-field body. HTTP status codes do not change.
+New error responses use the body the app already sends: an object with an errors key that maps a field name to a list of messages, for example {"errors":{"body":["can't be blank"]}}. There is no extra wrapper object.

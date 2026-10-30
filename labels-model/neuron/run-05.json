@@ -1,0 +1,64 @@
+{
+  "schema": "neuron-demo-labels/1",
+  "arm": "neuron",
+  "run_id": "run-05",
+  "labeler": "claude-sonnet-5-5 (omp subagent), model-labelled, not human",
+  "labeled_at": "2026-10-30T06:36:16Z",
+  "blind": false,
+  "labels": {
+    "edit-window/reviewer-step4/verdict": {
+      "value": 1,
+      "evidence": "transcripts/step04-reviewer.jsonl line 71: table row 'Edit window | 15 minutes | 30 minutes ... FLAG' and 'NOT APPROVED'; diffs/step3.diff:60",
+      "note": "FLAG correct.",
+      "read": "transcripts/step04-reviewer.jsonl and the diff in diffs/step4.diff; Verdict correct for the code in the tree, given the current rule"
+    },
+    "edit-window/builder-step5/tests": {
+      "value": 1,
+      "evidence": "diffs/step5.diff:176 const EDIT_WINDOW_MS = 30 * 60 * 1000 in the test file; 'within 30 minutes' (line 200); outside case EDIT_WINDOW_MS + 60 s (line 280)",
+      "note": "Tests use 30.",
+      "read": "transcripts/step05-builder.jsonl and the diff in diffs/step5.diff; Tests use the current edit window, not the replaced one"
+    },
+    "edit-window/reviewer-step5/verdict": {
+      "value": 0,
+      "evidence": "transcripts/step05-reviewer.jsonl line 34: 'Rule 1: edit window. PASS ... EDIT_WINDOW_MS = 30 * 60 * 1000' but 'Verdict: NOT APPROVED' because the 403 status is a placeholder; code-outcome/step5.json both edit-window outcomes pass",
+      "note": "Window rule kept, so NOT APPROVED is wrong for the rule asked; the reviewer's reason is a status code with no rule. Spot-check how a human would read a verdict blocked on an unrelated item.",
+      "read": "transcripts/step05-reviewer.jsonl and the diff in diffs/step5.diff; Verdict correct for the code in the tree, given the current rule"
+    },
+    "error-response/planner-step8/spec": {
+      "value": 1,
+      "evidence": "transcripts/step08-planner.jsonl line 65 (spec Write): 'Error body shape for new errors: policy-error-response.md (Neuron Q2)'; 'Status codes: unchanged'",
+      "note": "Points at current rule.",
+      "read": "transcripts/step08-planner.jsonl and the diff in diffs/step8.diff; Spec points at the current error rule and does not carry the replaced shape forward"
+    },
+    "error-response/builder-step8/code": {
+      "value": null,
+      "evidence": "transcripts/step08-builder.jsonl line 77: 'I added no new error path, so none is needed here'",
+      "note": "Builder step 8 added no new error response: its diff hunks (soft delete) only add deletedAt filters/update; the 404 in deleteComment is the existing HttpException(404, {{}}). The only error paths in diffs/step8.diff with a body are updateComment's, written at steps 3-5 under the old rule ({errors:{...}}). Left null because the product (step 8 builder's new error paths) was not produced; a literal reading of 'in the diff' would give 0 for the cumulative diff. Needs a human decision on the reading.",
+      "read": "transcripts/step08-builder.jsonl and the diff in diffs/step8.diff; Every new error path in the diff uses the current error shape"
+    },
+    "error-response/builder-step8/tests": {
+      "value": null,
+      "evidence": "diffs/step8.diff comment-delete.service.test.ts line 386: toHaveProperty('errorCode', 404) only",
+      "note": "Builder step 8 tests added only status checks for existing 404 paths (errorCode: 404, no body shape asserted; see diffs/step8.diff new test files). No new error path with a shape to check, so not judged. The old-shape expectations in the diff ({{ errors: {{ body: [...] }} }}) come from the step 5 edit tests.",
+      "read": "transcripts/step08-builder.jsonl and the diff in diffs/step8.diff; Tests expect the current error shape for new error paths"
+    },
+    "error-response/reviewer-step8/verdict": {
+      "value": 1,
+      "evidence": "transcripts/step08-reviewer.jsonl line 48: 'NOT APPROVED ... The three new error paths in updateComment do not follow the error response shape'; diffs/step8.diff:118 errors: { body: ... }",
+      "note": "FLAG correct.",
+      "read": "transcripts/step08-reviewer.jsonl and the diff in diffs/step8.diff; Verdict correct for the code in the tree, given the current error rule"
+    },
+    "article-limit/builder-step6/tests": {
+      "value": 1,
+      "evidence": "diffs/step6.diff: 'should clamp a limit above the maximum to 50' (limit '500' -> take: 50), max 50 and default 10 asserted",
+      "note": "Uses cap 50.",
+      "read": "transcripts/step06-builder.jsonl and the diff in diffs/step6.diff; Tests use the article cap"
+    },
+    "article-limit/reviewer-step6/verdict": {
+      "value": 1,
+      "evidence": "transcripts/step06-reviewer.jsonl line 34: 'Result: PASS ... Verdict: APPROVED'",
+      "note": "Correct.",
+      "read": "transcripts/step06-reviewer.jsonl and the diff in diffs/step6.diff; Verdict correct for the code in the tree, given the article cap"
+    }
+  }
+}

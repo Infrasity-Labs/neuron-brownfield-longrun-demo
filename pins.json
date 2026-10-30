@@ -1,0 +1,18 @@
+{
+  "schema": "neuron-demo-pins/1",
+  "neuron": {
+    "version": "0.3.1",
+    "wheel_url": "https://github.com/OktoLabsAI/okto-neuron/releases/download/v0.3.1/okto_neuron-0.3.1-py3-none-any.whl",
+    "wheel_sha256": "01cddb85d33d4ee7b13eda4842d48d319b35c4cdd2709bf44033dada7f8e6d8c",
+    "source": "Release page https://github.com/OktoLabsAI/okto-neuron/releases/tag/v0.3.1 (asset list and SHA-256)",
+    "python": "3.12"
+  },
+  "claude_cli": {
+    "npm_package": "@anthropic-ai/claude-code",
+    "expected_version": "2.1.309",
+    "note": "The pilot transcripts record 2.1.308 (2 sessions) and 2.1.309 (10 sessions) in their system/init events. docs/VERIFIED.md says 2.1.303, which was the version on the day the setup was checked (2026-10-19). The runner records the real version of every run in run-manifest.json and warns when it differs from this pin."
+  },
+  "model": "claude-haiku-5-5",
+  "ci_python": "3.9",
+  "node": {"integration_workflow": "22", "note": "The app's own test suite is flaky and is not used as a signal. Node is needed only for the executable outcome check in scenarios/checks/."}
+}

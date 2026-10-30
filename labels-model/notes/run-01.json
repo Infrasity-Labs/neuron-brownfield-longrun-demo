@@ -1,0 +1,64 @@
+{
+  "schema": "neuron-demo-labels/1",
+  "arm": "notes",
+  "run_id": "run-01",
+  "labeler": "claude-sonnet-5-5 (omp subagent), model-labelled, not human",
+  "labeled_at": "2026-10-30T06:36:35Z",
+  "blind": false,
+  "labels": {
+    "edit-window/reviewer-step4/verdict": {
+      "value": 1,
+      "evidence": "step04-reviewer final: 'FLAG, edit window too short' - 'COMMENT_EDIT_WINDOW_MS = 15 * 60 * 1000 at article.service.ts:563'; verdict NOT APPROVED. step3.diff line 56 has 15*60*1000; rule is 30.",
+      "note": "Reviewer also flagged error body of the window refusal (plain Error -> 500); that is the old errors rule current then, also correct.",
+      "read": "transcripts/step04-reviewer.jsonl and the diff in diffs/step4.diff; Verdict correct for the code in the tree, given the current rule"
+    },
+    "edit-window/builder-step5/tests": {
+      "value": 1,
+      "evidence": "step5.diff line 247/266 and bodies: tests use 29*MINUTE_MS (allow) and 31*MINUTE_MS (refuse), names say '30 minute window'.",
+      "note": "",
+      "read": "transcripts/step05-builder.jsonl and the diff in diffs/step5.diff; Tests use the current edit window, not the replaced one"
+    },
+    "edit-window/reviewer-step5/verdict": {
+      "value": 1,
+      "evidence": "step5.diff line 56: COMMENT_EDIT_WINDOW_MS = 30*60*1000; step05-reviewer: 'Edit window is 30 minutes ... PASS'.",
+      "note": "Reviewer verdict is NOT APPROVED but only for the refusal body (plain Error -> 500, errors-key rule current at step 5). Scored on the edit-window rule only: window correctly judged. Convention, see report.",
+      "read": "transcripts/step05-reviewer.jsonl and the diff in diffs/step5.diff; Verdict correct for the code in the tree, given the current rule"
+    },
+    "error-response/planner-step8/spec": {
+      "value": 1,
+      "evidence": "step08-planner Write line 51: '2. policy-error-response ... shape of new error bodies. ... It replaces the errors-by-field shape in ops-runbook, which is not followed.'",
+      "note": "Spec names the source and the replacement; values not copied.",
+      "read": "transcripts/step08-planner.jsonl and the diff in diffs/step8.diff; Spec points at the current error rule and does not carry the replaced shape forward"
+    },
+    "error-response/builder-step8/code": {
+      "value": null,
+      "evidence": "",
+      "note": "Step 8 diff vs step 6 diff adds no new error path: only deletedAt filters/update; deleteComment keeps its existing 404 {}. Builder final result says it adds no new error response. Nothing to judge.",
+      "read": "transcripts/step08-builder.jsonl and the diff in diffs/step8.diff; Every new error path in the diff uses the current error shape"
+    },
+    "error-response/builder-step8/tests": {
+      "value": null,
+      "evidence": "",
+      "note": "Step 8 diff vs step 6 diff adds no new error path: only deletedAt filters/update; deleteComment keeps its existing 404 {}. Builder final result says it adds no new error response. Nothing to judge. Tests (comment-soft-delete.service.test.ts) assert only errorCode: 404, no body shape.",
+      "read": "transcripts/step08-builder.jsonl and the diff in diffs/step8.diff; Tests expect the current error shape for new error paths"
+    },
+    "error-response/reviewer-step8/verdict": {
+      "value": 1,
+      "evidence": "step08-reviewer: 'FLAG 1 ... editComment blank body ... old errors-by-field', FLAG 2, FLAG 3 (bare string 500); 'Verdict NOT APPROVED'. step8.diff has errors:{body:[...]} at editComment and new Error(...) for window refusal.",
+      "note": "Judged on the whole tree in step8.diff: the edit-endpoint error paths (written steps 3/5 under the old rule) are old shape; reviewer treats them as new in the diff. Dependent on that reading.",
+      "read": "transcripts/step08-reviewer.jsonl and the diff in diffs/step8.diff; Verdict correct for the code in the tree, given the current error rule"
+    },
+    "article-limit/builder-step6/tests": {
+      "value": 1,
+      "evidence": "step6.diff line 206 etc: tests expect take: 50 for limit 1000 and limit 50; limit 20 unchanged; default 10.",
+      "note": "",
+      "read": "transcripts/step06-builder.jsonl and the diff in diffs/step6.diff; Tests use the article cap"
+    },
+    "article-limit/reviewer-step6/verdict": {
+      "value": 1,
+      "evidence": "step06-reviewer: 'PASS: maximum of 50 ... Math.min(..., ARTICLE_LIST_MAX_LIMIT)'; final 'APPROVED'. step6.diff line 57: ARTICLE_LIST_MAX_LIMIT = 50.",
+      "note": "Reviewer did not run tests (blocked).",
+      "read": "transcripts/step06-reviewer.jsonl and the diff in diffs/step6.diff; Verdict correct for the code in the tree, given the article cap"
+    }
+  }
+}

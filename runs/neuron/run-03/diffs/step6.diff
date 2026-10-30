@@ -1,0 +1,402 @@
+diff --git a/app/src/app/routes/article/article.controller.ts b/app/src/app/routes/article/article.controller.ts
+index ff03702..7000342 100644
+--- a/app/src/app/routes/article/article.controller.ts
++++ b/app/src/app/routes/article/article.controller.ts
+@@ -12,6 +12,7 @@ import {
+   getFeed,
+   unfavoriteArticle,
+   updateArticle,
++  updateComment,
+ } from './article.service';
+ 
+ const router = Router();
+@@ -180,6 +181,33 @@ router.post(
+   },
+ );
+ 
++/**
++ * Edit comment (author only, within the edit window after creation)
++ * @auth required
++ * @route {PUT} /articles/:slug/comments/:id
++ * @param slug slug of the article (based on the title)
++ * @param id id of the comment
++ * @bodyparam body new content of the comment
++ * @returns comment updated comment, with editedAt set
++ */
++router.put(
++  '/articles/:slug/comments/:id',
++  auth.required,
++  async (req: Request, res: Response, next: NextFunction) => {
++    try {
++      const comment = await updateComment(
++        req.body.comment?.body,
++        req.params.slug,
++        Number(req.params.id),
++        req.auth?.user?.id,
++      );
++      res.json({ comment });
++    } catch (error) {
++      next(error);
++    }
++  },
++);
++
+ /**
+  * Delete comment
+  * @auth required
+diff --git a/app/src/app/routes/article/article.service.ts b/app/src/app/routes/article/article.service.ts
+index c8fdc0c..7c77653 100644
+--- a/app/src/app/routes/article/article.service.ts
++++ b/app/src/app/routes/article/article.service.ts
+@@ -5,6 +5,11 @@ import profileMapper from '../profile/profile.utils';
+ import articleMapper from './article.mapper';
+ import { Tag } from '../tag/tag.model';
+ 
++// Article list page size. Source: Okto Neuron, team vault, policy-article-list-limit.md (bytes 0-144).
++// Default when limit is missing or not a number: 10. Largest limit allowed: 50. A larger limit is treated as 50.
++const DEFAULT_ARTICLES_LIMIT = 10;
++const MAX_ARTICLES_LIMIT = 50;
++
+ const buildFindAllQuery = (query: any, id: number | undefined) => {
+   const queries: any = [];
+   const orAuthorQuery = [];
+@@ -68,6 +73,7 @@ const buildFindAllQuery = (query: any, id: number | undefined) => {
+ 
+ export const getArticles = async (query: any, id?: number) => {
+   const andQueries = buildFindAllQuery(query, id);
++  const limit = Math.min(Number(query.limit) || DEFAULT_ARTICLES_LIMIT, MAX_ARTICLES_LIMIT);
+   const articlesCount = await prisma.article.count({
+     where: {
+       AND: andQueries,
+@@ -80,7 +86,7 @@ export const getArticles = async (query: any, id?: number) => {
+       createdAt: 'desc',
+     },
+     skip: Number(query.offset) || 0,
+-    take: Number(query.limit) || 10,
++    take: limit,
+     include: {
+       tagList: {
+         select: {
+@@ -559,6 +565,89 @@ export const deleteComment = async (id: number, userId: number) => {
+   });
+ };
+ 
++// Edit window after a comment is created. Source: team vault, policy-edit-window.md (bytes 0-150), 30 minutes.
++const COMMENT_EDIT_WINDOW_MINUTES = 30;
++
++// Status codes for the comment-edit errors. The team vault sets no status code for these cases
++// (it only says the API "refuses the edit" after the window). These values are placeholders
++// that match deleteComment and updateArticle, not confirmed rules. The user must confirm them.
++export const COMMENT_EDIT_STATUS = {
++  notFound: 404,
++  notAuthor: 403,
++  windowClosed: 403,
++};
++
++export const updateComment = async (body: string, slug: string, id: number, userId: number) => {
++  if (!body) {
++    throw new HttpException(422, { errors: { body: ["can't be blank"] } });
++  }
++
++  const comment = await prisma.comment.findFirst({
++    where: {
++      id,
++      article: {
++        slug,
++      },
++    },
++    select: {
++      createdAt: true,
++      authorId: true,
++    },
++  });
++
++  if (!comment) {
++    throw new HttpException(COMMENT_EDIT_STATUS.notFound, { errors: { comment: ['not found'] } });
++  }
++
++  if (comment.authorId !== userId) {
++    throw new HttpException(COMMENT_EDIT_STATUS.notAuthor, {
++      errors: { comment: ['only the author can edit this comment'] },
++    });
++  }
++
++  const windowEnd = comment.createdAt.getTime() + COMMENT_EDIT_WINDOW_MINUTES * 60 * 1000;
++
++  if (Date.now() > windowEnd) {
++    throw new HttpException(COMMENT_EDIT_STATUS.windowClosed, {
++      errors: { comment: ['can no longer be edited'] },
++    });
++  }
++
++  const updated = await prisma.comment.update({
++    where: {
++      id,
++    },
++    data: {
++      body,
++      editedAt: new Date(),
++    },
++    include: {
++      author: {
++        select: {
++          username: true,
++          bio: true,
++          image: true,
++          followedBy: true,
++        },
++      },
++    },
++  });
++
++  return {
++    id: updated.id,
++    createdAt: updated.createdAt,
++    updatedAt: updated.updatedAt,
++    editedAt: updated.editedAt,
++    body: updated.body,
++    author: {
++      username: updated.author.username,
++      bio: updated.author.bio,
++      image: updated.author.image,
++      following: updated.author.followedBy.some((follow: any) => follow.id === id),
++    },
++  };
++};
++
+ export const favoriteArticle = async (slugPayload: string, id: number) => {
+   const { _count, ...article } = await prisma.article.update({
+     where: {
+diff --git a/app/src/prisma/migrations/20261029211037_comment_edited_at/migration.sql b/app/src/prisma/migrations/20261029211037_comment_edited_at/migration.sql
+new file mode 100644
+index 0000000..7aea053
+--- /dev/null
++++ b/app/src/prisma/migrations/20261029211037_comment_edited_at/migration.sql
+@@ -0,0 +1,5 @@
++-- Undo: ALTER TABLE "Comment" DROP COLUMN "editedAt";
++
++-- AlterTable
++-- Nullable with no default, so existing rows stay NULL (never edited) and are not rewritten.
++ALTER TABLE "Comment" ADD COLUMN "editedAt" TIMESTAMP(3);
+diff --git a/app/src/prisma/schema.prisma b/app/src/prisma/schema.prisma
+index 3d767b7..3b546a8 100644
+--- a/app/src/prisma/schema.prisma
++++ b/app/src/prisma/schema.prisma
+@@ -24,9 +24,10 @@ model Article {
+ }
+ 
+ model Comment {
+-  id        Int      @id @default(autoincrement())
+-  createdAt DateTime @default(now())
+-  updatedAt DateTime @default(now())
++  id        Int       @id @default(autoincrement())
++  createdAt DateTime  @default(now())
++  updatedAt DateTime  @default(now())
++  editedAt  DateTime?
+   body      String
+   article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+   articleId Int
+diff --git a/app/src/tests/services/article.comment-edit.test.ts b/app/src/tests/services/article.comment-edit.test.ts
+new file mode 100644
+index 0000000..3fafef6
+--- /dev/null
++++ b/app/src/tests/services/article.comment-edit.test.ts
+@@ -0,0 +1,124 @@
++import prismaMock from '../prisma-mock';
++import { COMMENT_EDIT_STATUS, updateComment } from '../../app/routes/article/article.service';
++
++const MINUTE = 60 * 1000;
++
++describe('ArticleService', () => {
++  describe('updateComment', () => {
++    const id = 1;
++    const slug = 'How-to-train-your-dragon';
++    const authorId = 123;
++
++    const mockedUpdatedComment = (createdAt: Date) => ({
++      id,
++      body: 'edited body',
++      createdAt,
++      updatedAt: createdAt,
++      editedAt: new Date(),
++      authorId,
++      author: {
++        username: 'RealWorld',
++        bio: null,
++        image: null,
++        followedBy: [],
++      },
++    });
++
++    test('should update the body and set editedAt for the author within the window', async () => {
++      // Given
++      const createdAt = new Date(Date.now() - 5 * MINUTE);
++
++      // When
++      // @ts-ignore
++      prismaMock.comment.findFirst.mockResolvedValue({ createdAt, authorId });
++      // @ts-ignore
++      prismaMock.comment.update.mockResolvedValue(mockedUpdatedComment(createdAt));
++
++      const result = await updateComment('edited body', slug, id, authorId);
++
++      // Then
++      expect(prismaMock.comment.update).toHaveBeenCalledWith(
++        expect.objectContaining({
++          where: { id },
++          data: expect.objectContaining({
++            body: 'edited body',
++            editedAt: expect.any(Date),
++          }),
++        }),
++      );
++      expect(result).toMatchObject({
++        id,
++        body: 'edited body',
++        editedAt: expect.any(Date),
++        author: { username: 'RealWorld' },
++      });
++    });
++
++    test('should allow the edit just before the 30 minute window closes', async () => {
++      // Given
++      const createdAt = new Date(Date.now() - 29 * MINUTE);
++
++      // When
++      // @ts-ignore
++      prismaMock.comment.findFirst.mockResolvedValue({ createdAt, authorId });
++      // @ts-ignore
++      prismaMock.comment.update.mockResolvedValue(mockedUpdatedComment(createdAt));
++
++      // Then
++      await expect(updateComment('edited body', slug, id, authorId)).resolves.toHaveProperty(
++        'editedAt',
++      );
++    });
++
++    test('should reject a blank body with 422 and not update', async () => {
++      // Then
++      await expect(updateComment('', slug, id, authorId)).rejects.toMatchObject({
++        errorCode: 422,
++      });
++      expect(prismaMock.comment.update).not.toHaveBeenCalled();
++    });
++
++    test('should reject when no comment with that id is on the article', async () => {
++      // When
++      // @ts-ignore
++      prismaMock.comment.findFirst.mockResolvedValue(null);
++
++      // Then
++      await expect(updateComment('edited body', slug, id, authorId)).rejects.toMatchObject({
++        errorCode: COMMENT_EDIT_STATUS.notFound,
++      });
++      expect(prismaMock.comment.update).not.toHaveBeenCalled();
++    });
++
++    test('should reject when the requester is not the author and not update', async () => {
++      // Given
++      const createdAt = new Date(Date.now() - 5 * MINUTE);
++      const otherUserId = 999;
++
++      // When
++      // @ts-ignore
++      prismaMock.comment.findFirst.mockResolvedValue({ createdAt, authorId });
++
++      // Then
++      await expect(updateComment('edited body', slug, id, otherUserId)).rejects.toMatchObject({
++        errorCode: COMMENT_EDIT_STATUS.notAuthor,
++      });
++      expect(prismaMock.comment.update).not.toHaveBeenCalled();
++    });
++
++    test('should reject once 30 minutes have passed since creation and not update', async () => {
++      // Given
++      const createdAt = new Date(Date.now() - 31 * MINUTE);
++
++      // When
++      // @ts-ignore
++      prismaMock.comment.findFirst.mockResolvedValue({ createdAt, authorId });
++
++      // Then
++      await expect(updateComment('edited body', slug, id, authorId)).rejects.toMatchObject({
++        errorCode: COMMENT_EDIT_STATUS.windowClosed,
++      });
++      expect(prismaMock.comment.update).not.toHaveBeenCalled();
++    });
++  });
++});
+diff --git a/app/src/tests/services/article.limit.test.ts b/app/src/tests/services/article.limit.test.ts
+new file mode 100644
+index 0000000..f025e16
+--- /dev/null
++++ b/app/src/tests/services/article.limit.test.ts
+@@ -0,0 +1,68 @@
++import prismaMock from '../prisma-mock';
++import { getArticles } from '../../app/routes/article/article.service';
++
++describe('ArticleService', () => {
++  describe('getArticles limit', () => {
++    beforeEach(() => {
++      // @ts-ignore
++      prismaMock.article.count.mockResolvedValue(0);
++      // @ts-ignore
++      prismaMock.article.findMany.mockResolvedValue([]);
++    });
++
++    test('should use the default page size of 10 when limit is missing', async () => {
++      // Given
++      const query = {};
++
++      // When
++      await getArticles(query);
++
++      // Then
++      expect(prismaMock.article.findMany).toHaveBeenCalledWith(expect.objectContaining({ take: 10 }));
++    });
++
++    test('should use the default page size of 10 when limit is not a number', async () => {
++      // Given
++      const query = { limit: 'abc' };
++
++      // When
++      await getArticles(query);
++
++      // Then
++      expect(prismaMock.article.findMany).toHaveBeenCalledWith(expect.objectContaining({ take: 10 }));
++    });
++
++    test('should use the requested limit when it is within the maximum', async () => {
++      // Given
++      const query = { limit: '20' };
++
++      // When
++      await getArticles(query);
++
++      // Then
++      expect(prismaMock.article.findMany).toHaveBeenCalledWith(expect.objectContaining({ take: 20 }));
++    });
++
++    test('should allow a limit equal to the maximum of 50', async () => {
++      // Given
++      const query = { limit: '50' };
++
++      // When
++      await getArticles(query);
++
++      // Then
++      expect(prismaMock.article.findMany).toHaveBeenCalledWith(expect.objectContaining({ take: 50 }));
++    });
++
++    test('should treat a limit above the maximum as 50', async () => {
++      // Given
++      const query = { limit: '1000' };
++
++      // When
++      await getArticles(query);
++
++      // Then
++      expect(prismaMock.article.findMany).toHaveBeenCalledWith(expect.objectContaining({ take: 50 }));
++    });
++  });
++});

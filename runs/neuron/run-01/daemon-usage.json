@@ -1,0 +1,28 @@
+{
+  "source": "daemon log okto-neuron-serve.log of this run's isolated daemon ('litellm usage ...' and 'litellm completion failed ...' lines)",
+  "models": [
+    "anthropic/claude-haiku-5-5"
+  ],
+  "successful_model_calls": 311,
+  "calls_by_step": {
+    "extraction": 21,
+    "curator": 60,
+    "relation_curator": 92,
+    "judge": 92,
+    "predicate_judge": 14,
+    "ask": 32
+  },
+  "prompt_tokens": 962054,
+  "completion_tokens": 93278,
+  "failed_model_calls": 2,
+  "failed_by_exception": {
+    "AuthenticationError": 2
+  },
+  "log_first_ts": "2026-10-29T20:56:46.057524Z",
+  "log_last_ts": "2026-10-29T21:25:33.027698Z",
+  "log_levels": {
+    "info": 475,
+    "warning": 2
+  },
+  "note": "tokens only: not converted to dollars. In a full run the failed calls are the scripted step 9 outage (invalid key)."
+}

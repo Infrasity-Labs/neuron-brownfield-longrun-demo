@@ -1,0 +1,10 @@
+{
+  "type": "system",
+  "subtype": "permission_denied",
+  "tool_name": "Bash",
+  "tool_use_id": "toolu_01TnteULnFMc4Pw6aYGrBMjT",
+  "decision_reason_type": "subcommandResults",
+  "message": "This Bash command contains multiple operations. The following part requires approval: rtk ls -la app vault ; rtk ls vault/specs ; find app -type f -not -path '*/node_modules/*'",
+  "uuid": "3ce568fe-e61f-4006-8f03-398dda10c32f",
+  "session_id": "6b389258-9604-4847-82b1-4d899a979345"
+}

@@ -66,21 +66,6 @@ const buildFindAllQuery = (query: any, id: number | undefined) => {
   return queries;
 };
 
-const DEFAULT_ARTICLES_LIMIT = 10;
-const MAX_ARTICLES_LIMIT = 50;
-
-// Missing, zero, negative or non-numeric limits fall back to the default.
-// Limits above the maximum are capped at the maximum.
-const getArticlesTake = (limit: any) => {
-  const parsed = Number(limit);
-
-  if (!(parsed > 0)) {
-    return DEFAULT_ARTICLES_LIMIT;
-  }
-
-  return Math.min(parsed, MAX_ARTICLES_LIMIT);
-};
-
 export const getArticles = async (query: any, id?: number) => {
   const andQueries = buildFindAllQuery(query, id);
   const articlesCount = await prisma.article.count({
@@ -95,7 +80,7 @@ export const getArticles = async (query: any, id?: number) => {
       createdAt: 'desc',
     },
     skip: Number(query.offset) || 0,
-    take: getArticlesTake(query.limit),
+    take: Number(query.limit) || 10,
     include: {
       tagList: {
         select: {
@@ -453,7 +438,6 @@ export const getCommentsByArticle = async (slug: string, id?: number) => {
       comments: {
         where: {
           OR: queries,
-          deletedAt: null,
         },
         select: {
           id: true,
@@ -568,77 +552,11 @@ export const deleteComment = async (id: number, userId: number) => {
     });
   }
 
-  await prisma.comment.update({
+  await prisma.comment.delete({
     where: {
       id,
     },
-    data: {
-      deletedAt: new Date(),
-    },
   });
-};
-
-const COMMENT_EDIT_WINDOW_MS = 30 * 60 * 1000;
-
-export const editComment = async (body: string, id: number, userId: number) => {
-  const existingComment = await prisma.comment.findFirst({
-    where: {
-      id,
-      author: {
-        id: userId,
-      },
-    },
-    select: {
-      createdAt: true,
-    },
-  });
-
-  if (!existingComment) {
-    throw new HttpException(404, {});
-  }
-
-  if (!body) {
-    throw new HttpException(422, { errors: { body: ["can't be blank"] } });
-  }
-
-  if (Date.now() - existingComment.createdAt.getTime() > COMMENT_EDIT_WINDOW_MS) {
-    throw new HttpException(422, { errors: { body: ['edit window has closed'] } });
-  }
-
-  const comment = await prisma.comment.update({
-    where: {
-      id,
-    },
-    data: {
-      body,
-      editedAt: new Date(),
-      updatedAt: new Date(),
-    },
-    include: {
-      author: {
-        select: {
-          username: true,
-          bio: true,
-          image: true,
-          followedBy: true,
-        },
-      },
-    },
-  });
-
-  return {
-    id: comment.id,
-    createdAt: comment.createdAt,
-    updatedAt: comment.updatedAt,
-    editedAt: comment.editedAt,
-    body: comment.body,
-    author: {
-      username: comment.author.username,
-      bio: comment.author.bio,
-      image: comment.author.image,
-      following: comment.author.followedBy.some((follow: any) => follow.id === userId),
-    },
-  };
 };
 
 export const favoriteArticle = async (slugPayload: string, id: number) => {

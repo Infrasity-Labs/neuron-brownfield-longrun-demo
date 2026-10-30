@@ -1,0 +1,175 @@
+{
+  "schema": "neuron-demo-questions/1",
+  "description": "Fixed questions, asked verbatim in every arm. No question contains a rule value or says that a rule changed. scripts/scan_rule_values.py checks that.",
+  "steps": {
+    "02-planner": [
+      {
+        "id": "edit-who",
+        "vault": "team",
+        "text": "Who is allowed to edit a comment?"
+      },
+      {
+        "id": "edit-window",
+        "vault": "team",
+        "text": "How long after a comment is created may it still be edited?"
+      },
+      {
+        "id": "edit-marker",
+        "vault": "team",
+        "text": "How is an edited comment marked, and what must the migration that adds the mark do?"
+      },
+      {
+        "id": "errors",
+        "vault": "team",
+        "text": "How must an API error response be shaped, and which status codes does it use?"
+      },
+      {
+        "id": "migrations",
+        "vault": "team",
+        "text": "How are database migrations organised and applied?"
+      },
+      {
+        "id": "tests",
+        "vault": "team",
+        "text": "Where do unit tests live and how are they run?"
+      }
+    ],
+    "03-builder": [
+      {
+        "id": "edit-window",
+        "vault": "team",
+        "text": "How long after a comment is created may it still be edited?"
+      },
+      {
+        "id": "edit-marker",
+        "vault": "team",
+        "text": "How is an edited comment marked, and what must the migration that adds the mark do?"
+      },
+      {
+        "id": "errors",
+        "vault": "team",
+        "text": "How must an API error response be shaped, and which status codes does it use?"
+      },
+      {
+        "id": "migrations",
+        "vault": "team",
+        "text": "How are database migrations organised and applied?"
+      },
+      {
+        "id": "tests",
+        "vault": "team",
+        "text": "Where do unit tests live and how are they run?"
+      }
+    ],
+    "04-reviewer": [
+      {
+        "id": "edit-window",
+        "vault": "team",
+        "text": "How long after a comment is created may it still be edited?"
+      },
+      {
+        "id": "edit-marker",
+        "vault": "team",
+        "text": "How is an edited comment marked, and what must the migration that adds the mark do?"
+      },
+      {
+        "id": "errors",
+        "vault": "team",
+        "text": "How must an API error response be shaped, and which status codes does it use?"
+      },
+      {
+        "id": "ownership",
+        "vault": "team",
+        "text": "Who owns a comment, and what does the API return when a comment is not found or belongs to someone else?"
+      }
+    ],
+    "05-builder": [
+      {
+        "id": "edit-window",
+        "vault": "team",
+        "text": "How long after a comment is created may it still be edited?"
+      }
+    ],
+    "05-reviewer": [
+      {
+        "id": "edit-window",
+        "vault": "team",
+        "text": "How long after a comment is created may it still be edited?"
+      }
+    ],
+    "06-planner": [
+      {
+        "id": "limit",
+        "vault": "team",
+        "text": "What is the largest number of articles that GET /api/articles may return in one request?"
+      }
+    ],
+    "06-builder": [
+      {
+        "id": "limit",
+        "vault": "team",
+        "text": "What is the largest number of articles that GET /api/articles may return in one request?"
+      }
+    ],
+    "06-reviewer": [
+      {
+        "id": "limit",
+        "vault": "team",
+        "text": "What is the largest number of articles that GET /api/articles may return in one request?"
+      },
+      {
+        "id": "private-earlier",
+        "vault": "reviewer-private",
+        "text": "What did I record in earlier reviews?"
+      }
+    ],
+    "08-planner": [
+      {
+        "id": "soft-delete",
+        "vault": "team",
+        "text": "What happens to a comment when it is deleted, and which comments appear in comment lists?"
+      },
+      {
+        "id": "errors",
+        "vault": "team",
+        "text": "How must an API error response be shaped, and which status codes does it use?"
+      },
+      {
+        "id": "comment-model",
+        "vault": "team",
+        "text": "Which fields does the comment model have?"
+      }
+    ],
+    "08-builder": [
+      {
+        "id": "soft-delete",
+        "vault": "team",
+        "text": "What happens to a comment when it is deleted, and which comments appear in comment lists?"
+      },
+      {
+        "id": "errors",
+        "vault": "team",
+        "text": "How must an API error response be shaped, and which status codes does it use?"
+      }
+    ],
+    "08-reviewer": [
+      {
+        "id": "soft-delete",
+        "vault": "team",
+        "text": "What happens to a comment when it is deleted, and which comments appear in comment lists?"
+      },
+      {
+        "id": "errors",
+        "vault": "team",
+        "text": "How must an API error response be shaped, and which status codes does it use?"
+      }
+    ],
+    "09-reviewer": [
+      {
+        "id": "errors",
+        "vault": "team",
+        "text": "How must an API error response be shaped, and which status codes does it use?"
+      }
+    ]
+  }
+}

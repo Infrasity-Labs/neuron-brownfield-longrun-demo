@@ -1,0 +1,222 @@
+diff --git a/app/src/app/routes/article/article.controller.ts b/app/src/app/routes/article/article.controller.ts
+index ff03702..5abd23c 100644
+--- a/app/src/app/routes/article/article.controller.ts
++++ b/app/src/app/routes/article/article.controller.ts
+@@ -12,6 +12,7 @@ import {
+   getFeed,
+   unfavoriteArticle,
+   updateArticle,
++  updateComment,
+ } from './article.service';
+ 
+ const router = Router();
+@@ -180,6 +181,33 @@ router.post(
+   },
+ );
+ 
++/**
++ * Update comment
++ * @auth required
++ * @route {PUT} /articles/:slug/comments/:id
++ * @param slug slug of the article (based on the title)
++ * @param id id of the comment
++ * @bodyparam body new content of the comment
++ * @returns comment updated comment
++ */
++router.put(
++  '/articles/:slug/comments/:id',
++  auth.required,
++  async (req: Request, res: Response, next: NextFunction) => {
++    try {
++      const comment = await updateComment(
++        req.body.comment?.body,
++        req.params.slug,
++        Number(req.params.id),
++        req.auth?.user?.id,
++      );
++      res.json({ comment });
++    } catch (error) {
++      next(error);
++    }
++  },
++);
++
+ /**
+  * Delete comment
+  * @auth required
+diff --git a/app/src/app/routes/article/article.service.ts b/app/src/app/routes/article/article.service.ts
+index c8fdc0c..14a9df8 100644
+--- a/app/src/app/routes/article/article.service.ts
++++ b/app/src/app/routes/article/article.service.ts
+@@ -524,6 +524,71 @@ export const addComment = async (body: string, slug: string, id: number) => {
+   };
+ };
+ 
++export const updateComment = async (body: string, slug: string, commentId: number, id: number) => {
++  if (!body) {
++    throw new HttpException(422, { errors: { body: ["can't be blank"] } });
++  }
++
++  const existingComment = await prisma.comment.findFirst({
++    where: {
++      id: commentId,
++      article: {
++        slug,
++      },
++    },
++    select: {
++      author: {
++        select: {
++          id: true,
++        },
++      },
++    },
++  });
++
++  if (!existingComment) {
++    throw new HttpException(404, {});
++  }
++
++  if (existingComment.author.id !== id) {
++    throw new HttpException(403, {
++      message: 'You are not authorized to update this comment',
++    });
++  }
++
++  const comment = await prisma.comment.update({
++    where: {
++      id: commentId,
++    },
++    data: {
++      body,
++      updatedAt: new Date(),
++    },
++    include: {
++      author: {
++        select: {
++          username: true,
++          bio: true,
++          image: true,
++          followedBy: true,
++        },
++      },
++    },
++  });
++
++  return {
++    id: comment.id,
++    createdAt: comment.createdAt,
++    updatedAt: comment.updatedAt,
++    body: comment.body,
++    author: {
++      username: comment.author.username,
++      bio: comment.author.bio,
++      image: comment.author.image,
++      following: comment.author.followedBy.some((follow: any) => follow.id === id),
++    },
++  };
++};
++
+ export const deleteComment = async (id: number, userId: number) => {
+   const comment = await prisma.comment.findFirst({
+     where: {
+diff --git a/app/src/tests/services/article.service.test.ts b/app/src/tests/services/article.service.test.ts
+index 4f39562..96e8131 100644
+--- a/app/src/tests/services/article.service.test.ts
++++ b/app/src/tests/services/article.service.test.ts
+@@ -3,9 +3,95 @@ import {
+   deleteComment,
+   favoriteArticle,
+   unfavoriteArticle,
++  updateComment,
+ } from '../../app/routes/article/article.service';
+ 
+ describe('ArticleService', () => {
++  describe('updateComment', () => {
++    test('should update the body, set updatedAt and return the comment', async () => {
++      // Given
++      const slug = 'How-to-train-your-dragon';
++      const commentId = 123;
++      const userId = 456;
++      const newBody = 'An edited comment';
++
++      const mockedUpdatedComment = {
++        id: commentId,
++        createdAt: new Date('2026-01-01T10:00:00Z'),
++        updatedAt: new Date('2026-01-01T11:00:00Z'),
++        body: newBody,
++        authorId: userId,
++        articleId: 789,
++        author: {
++          username: 'RealWorld',
++          bio: null,
++          image: null,
++          followedBy: [{ id: 111 }],
++        },
++      };
++
++      // When
++      // @ts-ignore
++      prismaMock.comment.findFirst.mockResolvedValue({ author: { id: userId } });
++      // @ts-ignore
++      prismaMock.comment.update.mockResolvedValue(mockedUpdatedComment);
++
++      // Then
++      await expect(updateComment(newBody, slug, commentId, userId)).resolves.toEqual({
++        id: commentId,
++        createdAt: mockedUpdatedComment.createdAt,
++        updatedAt: mockedUpdatedComment.updatedAt,
++        body: newBody,
++        author: {
++          username: 'RealWorld',
++          bio: null,
++          image: null,
++          following: false,
++        },
++      });
++      expect(prismaMock.comment.update).toHaveBeenCalledWith(
++        expect.objectContaining({
++          where: { id: commentId },
++          data: expect.objectContaining({ body: newBody, updatedAt: expect.any(Date) }),
++        }),
++      );
++    });
++
++    test('should throw a 422 if the body is blank', async () => {
++      // Then
++      await expect(
++        updateComment('', 'How-to-train-your-dragon', 123, 456),
++      ).rejects.toMatchObject({
++        errorCode: 422,
++        message: { errors: { body: ["can't be blank"] } },
++      });
++    });
++
++    test('should throw a 404 if the comment is not found on the article', async () => {
++      // When
++      // @ts-ignore
++      prismaMock.comment.findFirst.mockResolvedValue(null);
++
++      // Then
++      await expect(
++        updateComment('edited', 'How-to-train-your-dragon', 123, 456),
++      ).rejects.toMatchObject({ errorCode: 404 });
++      expect(prismaMock.comment.update).not.toHaveBeenCalled();
++    });
++
++    test('should throw a 403 if the user is not the author', async () => {
++      // When
++      // @ts-ignore
++      prismaMock.comment.findFirst.mockResolvedValue({ author: { id: 999 } });
++
++      // Then
++      await expect(
++        updateComment('edited', 'How-to-train-your-dragon', 123, 456),
++      ).rejects.toMatchObject({ errorCode: 403 });
++      expect(prismaMock.comment.update).not.toHaveBeenCalled();
++    });
++  });
++
+   describe('deleteComment', () => {
+     test('should throw an error ', () => {
+       // Given

@@ -1,0 +1,135 @@
+{
+  "schema": "neuron-demo-notes/1",
+  "description": "Where every note in vault/ and scenarios/ comes from. 'code' = a summary written by the demo author from the named source file. 'synthetic' = a team rule invented for this demo; nothing in the app enforces it.",
+  "notes": [
+    {
+      "file": "vault/code-auth-header.md",
+      "origin": "code",
+      "derived_from": [
+        "app/src/app/routes/auth/auth.ts"
+      ]
+    },
+    {
+      "file": "vault/code-comment-model.md",
+      "origin": "code",
+      "derived_from": [
+        "app/src/prisma/schema.prisma"
+      ]
+    },
+    {
+      "file": "vault/code-comment-ownership.md",
+      "origin": "code",
+      "derived_from": [
+        "app/src/app/routes/article/article.service.ts"
+      ]
+    },
+    {
+      "file": "vault/code-error-shape.md",
+      "origin": "code",
+      "derived_from": [
+        "app/src/main.ts",
+        "app/src/app/models/http-exception.model.ts"
+      ]
+    },
+    {
+      "file": "vault/code-jwt-settings.md",
+      "origin": "code",
+      "derived_from": [
+        "app/src/app/routes/auth/auth.ts",
+        "app/src/app/routes/auth/token.utils.ts"
+      ]
+    },
+    {
+      "file": "vault/code-migrations.md",
+      "origin": "code",
+      "derived_from": [
+        "app/src/prisma/",
+        "app/package.json"
+      ]
+    },
+    {
+      "file": "vault/code-test-layout.md",
+      "origin": "code",
+      "derived_from": [
+        "app/src/tests/",
+        "app/jest.config.ts"
+      ]
+    },
+    {
+      "file": "vault/policy-article-list-limit.md",
+      "origin": "synthetic",
+      "rule": "article-limit"
+    },
+    {
+      "file": "vault/policy-edit-window.md",
+      "origin": "synthetic",
+      "rule": "edit-window",
+      "changes_at_step": 4
+    },
+    {
+      "file": "vault/policy-edited-at-marker.md",
+      "origin": "synthetic",
+      "rule": "edited-marker"
+    },
+    {
+      "file": "vault/policy-error-response.md",
+      "origin": "synthetic",
+      "rule": "error-response",
+      "changes_at_step": 7
+    },
+    {
+      "file": "vault/policy-release-checklist.md",
+      "origin": "synthetic",
+      "rule": "release-checklist"
+    },
+    {
+      "file": "vault/policy-soft-delete.md",
+      "origin": "synthetic",
+      "rule": "soft-delete"
+    },
+    {
+      "file": "scenarios/step04/after/policy-edit-window.md",
+      "origin": "synthetic",
+      "rule": "edit-window"
+    },
+    {
+      "file": "scenarios/step07/after/policy-error-response.md",
+      "origin": "synthetic",
+      "rule": "error-response"
+    },
+    {
+      "file": "scenarios/step07/after/ops-runbook.md",
+      "origin": "synthetic",
+      "rule": "error-response",
+      "note": "still describes the replaced error rule on purpose"
+    },
+    {
+      "file": "scenarios/private-notes/reviewer-finding-retry-helper.md",
+      "origin": "synthetic",
+      "vault": "reviewer-private"
+    },
+    {
+      "file": "scenarios/private-notes/reviewer-finding-seed-script.md",
+      "origin": "synthetic",
+      "vault": "reviewer-private"
+    },
+    {
+      "file": "scenarios/private-notes/reviewer-finding-tag-cache.md",
+      "origin": "synthetic",
+      "vault": "reviewer-private"
+    },
+    {
+      "file": "scenarios/decoy-notes/decoy-releases.md",
+      "origin": "synthetic",
+      "vault": "decoy",
+      "note": "loaded only for the negative boundary test"
+    }
+  ],
+  "code_only_rules": [
+    {
+      "id": "article-list-default",
+      "where": "app/src/app/routes/article/article.service.ts (getArticles: skip and take)",
+      "note": "The default limit and offset behaviour of GET /api/articles is stated in no note. A Builder that must cap the limit has to read the code to see how limit is used today and connect it with the cap in policy-article-list-limit.md. The pilot had a note for this (code-article-paging.md); it was removed for the next runs."
+    }
+  ]
+}

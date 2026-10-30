@@ -1,0 +1,525 @@
+{
+  "arms": {
+    "neuron": {
+      "runs": [
+        {
+          "alignment_changed": 0.8333333333333334,
+          "alignment_stable": 1.0,
+          "by_role": {
+            "builder": 1.0,
+            "planner": 1.0,
+            "reviewer": 0.6666666666666666
+          },
+          "by_rule": {
+            "edit-window": 0.75,
+            "error-response": 1.0,
+            "article-limit": 1.0
+          },
+          "scored": 9,
+          "of": 11,
+          "products": {
+            "edit-window/reviewer-step4/verdict": 1,
+            "edit-window/builder-step5/code": 1,
+            "edit-window/builder-step5/tests": 1,
+            "edit-window/reviewer-step5/verdict": 0,
+            "error-response/planner-step8/spec": 1,
+            "error-response/builder-step8/code": null,
+            "error-response/builder-step8/tests": null,
+            "error-response/reviewer-step8/verdict": 1,
+            "article-limit/builder-step6/code": 1,
+            "article-limit/builder-step6/tests": 1,
+            "article-limit/reviewer-step6/verdict": 1
+          },
+          "run_id": "run-01",
+          "labeled": true
+        },
+        {
+          "alignment_changed": 0.6666666666666666,
+          "alignment_stable": 1.0,
+          "by_role": {
+            "builder": 0.5,
+            "planner": 1.0,
+            "reviewer": 0.6666666666666666
+          },
+          "by_rule": {
+            "edit-window": 0.5,
+            "error-response": 1.0,
+            "article-limit": 1.0
+          },
+          "scored": 9,
+          "of": 11,
+          "products": {
+            "edit-window/reviewer-step4/verdict": 1,
+            "edit-window/builder-step5/code": 0,
+            "edit-window/builder-step5/tests": 1,
+            "edit-window/reviewer-step5/verdict": 0,
+            "error-response/planner-step8/spec": 1,
+            "error-response/builder-step8/code": null,
+            "error-response/builder-step8/tests": null,
+            "error-response/reviewer-step8/verdict": 1,
+            "article-limit/builder-step6/code": 1,
+            "article-limit/builder-step6/tests": 1,
+            "article-limit/reviewer-step6/verdict": 1
+          },
+          "run_id": "run-02",
+          "labeled": true
+        },
+        {
+          "alignment_changed": 1.0,
+          "alignment_stable": 1.0,
+          "by_role": {
+            "builder": 1.0,
+            "planner": 1.0,
+            "reviewer": 1.0
+          },
+          "by_rule": {
+            "edit-window": 1.0,
+            "error-response": 1.0,
+            "article-limit": 1.0
+          },
+          "scored": 9,
+          "of": 11,
+          "products": {
+            "edit-window/reviewer-step4/verdict": 1,
+            "edit-window/builder-step5/code": 1,
+            "edit-window/builder-step5/tests": 1,
+            "edit-window/reviewer-step5/verdict": 1,
+            "error-response/planner-step8/spec": 1,
+            "error-response/builder-step8/code": null,
+            "error-response/builder-step8/tests": null,
+            "error-response/reviewer-step8/verdict": 1,
+            "article-limit/builder-step6/code": 1,
+            "article-limit/builder-step6/tests": 1,
+            "article-limit/reviewer-step6/verdict": 1
+          },
+          "run_id": "run-03",
+          "labeled": true
+        },
+        {
+          "alignment_changed": 0.8333333333333334,
+          "alignment_stable": 1.0,
+          "by_role": {
+            "builder": 1.0,
+            "planner": 1.0,
+            "reviewer": 0.6666666666666666
+          },
+          "by_rule": {
+            "edit-window": 0.75,
+            "error-response": 1.0,
+            "article-limit": 1.0
+          },
+          "scored": 9,
+          "of": 11,
+          "products": {
+            "edit-window/reviewer-step4/verdict": 0,
+            "edit-window/builder-step5/code": 1,
+            "edit-window/builder-step5/tests": 1,
+            "edit-window/reviewer-step5/verdict": 1,
+            "error-response/planner-step8/spec": 1,
+            "error-response/builder-step8/code": null,
+            "error-response/builder-step8/tests": null,
+            "error-response/reviewer-step8/verdict": 1,
+            "article-limit/builder-step6/code": 1,
+            "article-limit/builder-step6/tests": 1,
+            "article-limit/reviewer-step6/verdict": 1
+          },
+          "run_id": "run-04",
+          "labeled": true
+        },
+        {
+          "alignment_changed": 0.8333333333333334,
+          "alignment_stable": 1.0,
+          "by_role": {
+            "builder": 1.0,
+            "planner": 1.0,
+            "reviewer": 0.6666666666666666
+          },
+          "by_rule": {
+            "edit-window": 0.75,
+            "error-response": 1.0,
+            "article-limit": 1.0
+          },
+          "scored": 9,
+          "of": 11,
+          "products": {
+            "edit-window/reviewer-step4/verdict": 1,
+            "edit-window/builder-step5/code": 1,
+            "edit-window/builder-step5/tests": 1,
+            "edit-window/reviewer-step5/verdict": 0,
+            "error-response/planner-step8/spec": 1,
+            "error-response/builder-step8/code": null,
+            "error-response/builder-step8/tests": null,
+            "error-response/reviewer-step8/verdict": 1,
+            "article-limit/builder-step6/code": 1,
+            "article-limit/builder-step6/tests": 1,
+            "article-limit/reviewer-step6/verdict": 1
+          },
+          "run_id": "run-05",
+          "labeled": true
+        }
+      ],
+      "alignment_changed": {
+        "n": 5,
+        "mean": 0.8333,
+        "stdev": 0.1179,
+        "min": 0.6666666666666666,
+        "max": 1.0
+      },
+      "alignment_stable": {
+        "n": 5,
+        "mean": 1.0,
+        "stdev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      }
+    },
+    "none": {
+      "runs": [
+        {
+          "alignment_changed": 0.25,
+          "alignment_stable": 0.5,
+          "by_role": {
+            "builder": 0.0,
+            "planner": 0.0,
+            "reviewer": 0.6666666666666666
+          },
+          "by_rule": {
+            "edit-window": 0.25,
+            "error-response": 0.25,
+            "article-limit": 0.5
+          },
+          "scored": 10,
+          "of": 11,
+          "products": {
+            "edit-window/reviewer-step4/verdict": 1,
+            "edit-window/builder-step5/code": 0,
+            "edit-window/builder-step5/tests": 0,
+            "edit-window/reviewer-step5/verdict": 0,
+            "error-response/planner-step8/spec": 0,
+            "error-response/builder-step8/code": 0,
+            "error-response/builder-step8/tests": 0,
+            "error-response/reviewer-step8/verdict": 1,
+            "article-limit/builder-step6/code": 0,
+            "article-limit/builder-step6/tests": null,
+            "article-limit/reviewer-step6/verdict": 1
+          },
+          "run_id": "run-01",
+          "labeled": true
+        },
+        {
+          "alignment_changed": 0.375,
+          "alignment_stable": 0.5,
+          "by_role": {
+            "builder": 0.0,
+            "planner": 0.0,
+            "reviewer": 1.0
+          },
+          "by_rule": {
+            "edit-window": 0.5,
+            "error-response": 0.25,
+            "article-limit": 0.5
+          },
+          "scored": 10,
+          "of": 11,
+          "products": {
+            "edit-window/reviewer-step4/verdict": 1,
+            "edit-window/builder-step5/code": 0,
+            "edit-window/builder-step5/tests": 0,
+            "edit-window/reviewer-step5/verdict": 1,
+            "error-response/planner-step8/spec": 0,
+            "error-response/builder-step8/code": 0,
+            "error-response/builder-step8/tests": 0,
+            "error-response/reviewer-step8/verdict": 1,
+            "article-limit/builder-step6/code": 0,
+            "article-limit/builder-step6/tests": null,
+            "article-limit/reviewer-step6/verdict": 1
+          },
+          "run_id": "run-02",
+          "labeled": true
+        },
+        {
+          "alignment_changed": 0.25,
+          "alignment_stable": 0.3333333333333333,
+          "by_role": {
+            "builder": 0.0,
+            "planner": 0.0,
+            "reviewer": 0.6666666666666666
+          },
+          "by_rule": {
+            "edit-window": 0.25,
+            "error-response": 0.25,
+            "article-limit": 0.3333333333333333
+          },
+          "scored": 11,
+          "of": 11,
+          "products": {
+            "edit-window/reviewer-step4/verdict": 1,
+            "edit-window/builder-step5/code": 0,
+            "edit-window/builder-step5/tests": 0,
+            "edit-window/reviewer-step5/verdict": 0,
+            "error-response/planner-step8/spec": 0,
+            "error-response/builder-step8/code": 0,
+            "error-response/builder-step8/tests": 0,
+            "error-response/reviewer-step8/verdict": 1,
+            "article-limit/builder-step6/code": 0,
+            "article-limit/builder-step6/tests": 0,
+            "article-limit/reviewer-step6/verdict": 1
+          },
+          "run_id": "run-03",
+          "labeled": true
+        },
+        {
+          "alignment_changed": 0.25,
+          "alignment_stable": 0.5,
+          "by_role": {
+            "builder": 0.0,
+            "planner": 0.0,
+            "reviewer": 0.6666666666666666
+          },
+          "by_rule": {
+            "edit-window": 0.25,
+            "error-response": 0.25,
+            "article-limit": 0.5
+          },
+          "scored": 10,
+          "of": 11,
+          "products": {
+            "edit-window/reviewer-step4/verdict": 1,
+            "edit-window/builder-step5/code": 0,
+            "edit-window/builder-step5/tests": 0,
+            "edit-window/reviewer-step5/verdict": 0,
+            "error-response/planner-step8/spec": 0,
+            "error-response/builder-step8/code": 0,
+            "error-response/builder-step8/tests": 0,
+            "error-response/reviewer-step8/verdict": 1,
+            "article-limit/builder-step6/code": 0,
+            "article-limit/builder-step6/tests": null,
+            "article-limit/reviewer-step6/verdict": 1
+          },
+          "run_id": "run-04",
+          "labeled": true
+        },
+        {
+          "alignment_changed": 0.375,
+          "alignment_stable": 0.5,
+          "by_role": {
+            "builder": 0.0,
+            "planner": 0.0,
+            "reviewer": 1.0
+          },
+          "by_rule": {
+            "edit-window": 0.5,
+            "error-response": 0.25,
+            "article-limit": 0.5
+          },
+          "scored": 10,
+          "of": 11,
+          "products": {
+            "edit-window/reviewer-step4/verdict": 1,
+            "edit-window/builder-step5/code": 0,
+            "edit-window/builder-step5/tests": 0,
+            "edit-window/reviewer-step5/verdict": 1,
+            "error-response/planner-step8/spec": 0,
+            "error-response/builder-step8/code": 0,
+            "error-response/builder-step8/tests": 0,
+            "error-response/reviewer-step8/verdict": 1,
+            "article-limit/builder-step6/code": 0,
+            "article-limit/builder-step6/tests": null,
+            "article-limit/reviewer-step6/verdict": 1
+          },
+          "run_id": "run-05",
+          "labeled": true
+        }
+      ],
+      "alignment_changed": {
+        "n": 5,
+        "mean": 0.3,
+        "stdev": 0.0685,
+        "min": 0.25,
+        "max": 0.375
+      },
+      "alignment_stable": {
+        "n": 5,
+        "mean": 0.4667,
+        "stdev": 0.0745,
+        "min": 0.3333333333333333,
+        "max": 0.5
+      }
+    },
+    "notes": {
+      "runs": [
+        {
+          "alignment_changed": 0.8333333333333334,
+          "alignment_stable": 1.0,
+          "by_role": {
+            "builder": 0.5,
+            "planner": 1.0,
+            "reviewer": 1.0
+          },
+          "by_rule": {
+            "edit-window": 0.75,
+            "error-response": 1.0,
+            "article-limit": 1.0
+          },
+          "scored": 9,
+          "of": 11,
+          "products": {
+            "edit-window/reviewer-step4/verdict": 1,
+            "edit-window/builder-step5/code": 0,
+            "edit-window/builder-step5/tests": 1,
+            "edit-window/reviewer-step5/verdict": 1,
+            "error-response/planner-step8/spec": 1,
+            "error-response/builder-step8/code": null,
+            "error-response/builder-step8/tests": null,
+            "error-response/reviewer-step8/verdict": 1,
+            "article-limit/builder-step6/code": 1,
+            "article-limit/builder-step6/tests": 1,
+            "article-limit/reviewer-step6/verdict": 1
+          },
+          "run_id": "run-01",
+          "labeled": true
+        },
+        {
+          "alignment_changed": 1.0,
+          "alignment_stable": 1.0,
+          "by_role": {
+            "builder": 1.0,
+            "planner": 1.0,
+            "reviewer": 1.0
+          },
+          "by_rule": {
+            "edit-window": 1.0,
+            "error-response": 1.0,
+            "article-limit": 1.0
+          },
+          "scored": 9,
+          "of": 11,
+          "products": {
+            "edit-window/reviewer-step4/verdict": 1,
+            "edit-window/builder-step5/code": 1,
+            "edit-window/builder-step5/tests": 1,
+            "edit-window/reviewer-step5/verdict": 1,
+            "error-response/planner-step8/spec": 1,
+            "error-response/builder-step8/code": null,
+            "error-response/builder-step8/tests": null,
+            "error-response/reviewer-step8/verdict": 1,
+            "article-limit/builder-step6/code": 1,
+            "article-limit/builder-step6/tests": 1,
+            "article-limit/reviewer-step6/verdict": 1
+          },
+          "run_id": "run-02",
+          "labeled": true
+        },
+        {
+          "alignment_changed": 0.8333333333333334,
+          "alignment_stable": 1.0,
+          "by_role": {
+            "builder": 0.5,
+            "planner": 1.0,
+            "reviewer": 1.0
+          },
+          "by_rule": {
+            "edit-window": 0.75,
+            "error-response": 1.0,
+            "article-limit": 1.0
+          },
+          "scored": 9,
+          "of": 11,
+          "products": {
+            "edit-window/reviewer-step4/verdict": 1,
+            "edit-window/builder-step5/code": 0,
+            "edit-window/builder-step5/tests": 1,
+            "edit-window/reviewer-step5/verdict": 1,
+            "error-response/planner-step8/spec": 1,
+            "error-response/builder-step8/code": null,
+            "error-response/builder-step8/tests": null,
+            "error-response/reviewer-step8/verdict": 1,
+            "article-limit/builder-step6/code": 1,
+            "article-limit/builder-step6/tests": 1,
+            "article-limit/reviewer-step6/verdict": 1
+          },
+          "run_id": "run-03",
+          "labeled": true
+        },
+        {
+          "alignment_changed": 0.875,
+          "alignment_stable": 1.0,
+          "by_role": {
+            "builder": 0.75,
+            "planner": 1.0,
+            "reviewer": 1.0
+          },
+          "by_rule": {
+            "edit-window": 0.75,
+            "error-response": 1.0,
+            "article-limit": 1.0
+          },
+          "scored": 11,
+          "of": 11,
+          "products": {
+            "edit-window/reviewer-step4/verdict": 1,
+            "edit-window/builder-step5/code": 0,
+            "edit-window/builder-step5/tests": 1,
+            "edit-window/reviewer-step5/verdict": 1,
+            "error-response/planner-step8/spec": 1,
+            "error-response/builder-step8/code": 1,
+            "error-response/builder-step8/tests": 1,
+            "error-response/reviewer-step8/verdict": 1,
+            "article-limit/builder-step6/code": 1,
+            "article-limit/builder-step6/tests": 1,
+            "article-limit/reviewer-step6/verdict": 1
+          },
+          "run_id": "run-04",
+          "labeled": true
+        },
+        {
+          "alignment_changed": 1.0,
+          "alignment_stable": 1.0,
+          "by_role": {
+            "builder": 1.0,
+            "planner": 1.0,
+            "reviewer": 1.0
+          },
+          "by_rule": {
+            "edit-window": 1.0,
+            "error-response": 1.0,
+            "article-limit": 1.0
+          },
+          "scored": 9,
+          "of": 11,
+          "products": {
+            "edit-window/reviewer-step4/verdict": 1,
+            "edit-window/builder-step5/code": 1,
+            "edit-window/builder-step5/tests": 1,
+            "edit-window/reviewer-step5/verdict": 1,
+            "error-response/planner-step8/spec": 1,
+            "error-response/builder-step8/code": null,
+            "error-response/builder-step8/tests": null,
+            "error-response/reviewer-step8/verdict": 1,
+            "article-limit/builder-step6/code": 1,
+            "article-limit/builder-step6/tests": 1,
+            "article-limit/reviewer-step6/verdict": 1
+          },
+          "run_id": "run-05",
+          "labeled": true
+        }
+      ],
+      "alignment_changed": {
+        "n": 5,
+        "mean": 0.9083,
+        "stdev": 0.0854,
+        "min": 0.8333333333333334,
+        "max": 1.0
+      },
+      "alignment_stable": {
+        "n": 5,
+        "mean": 1.0,
+        "stdev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      }
+    }
+  },
+  "skipped": [],
+  "metric_sha256": "f800161166b57d2cc54610feb1992d4954acc8e8a6ac40985c808cdd2730b8c7"
+}

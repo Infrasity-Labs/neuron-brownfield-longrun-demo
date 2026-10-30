@@ -116,5 +116,189 @@
       "settle_s": 8.0,
       "finished_at": "2026-10-23T05:57:06Z"
     }
+  ],
+  "questions_with_sources_and_answer": 35,
+  "stale_anchor_failures": 125,
+  "other_citation_failures": 0,
+  "stale_anchor_failures_by_note": {
+    "policy-error-response.md": 16,
+    "specs/feature-1-comment-editing.md": 104,
+    "specs/feature-2-article-limit.md": 5
+  },
+  "stale_anchor_asks": [
+    {
+      "ask_number": 3,
+      "step": 3,
+      "role": "builder",
+      "stale_anchors": 2
+    },
+    {
+      "ask_number": 5,
+      "step": 3,
+      "role": "builder",
+      "stale_anchors": 1
+    },
+    {
+      "ask_number": 7,
+      "step": 3,
+      "role": "builder",
+      "stale_anchors": 1
+    },
+    {
+      "ask_number": 10,
+      "step": 4,
+      "role": "reviewer",
+      "stale_anchors": 4
+    },
+    {
+      "ask_number": 11,
+      "step": 4,
+      "role": "reviewer",
+      "stale_anchors": 7
+    },
+    {
+      "ask_number": 12,
+      "step": 4,
+      "role": "reviewer",
+      "stale_anchors": 4
+    },
+    {
+      "ask_number": 13,
+      "step": 4,
+      "role": "reviewer",
+      "stale_anchors": 7
+    },
+    {
+      "ask_number": 14,
+      "step": 5,
+      "role": "builder",
+      "stale_anchors": 4
+    },
+    {
+      "ask_number": 15,
+      "step": 5,
+      "role": "builder",
+      "stale_anchors": 5
+    },
+    {
+      "ask_number": 16,
+      "step": 5,
+      "role": "reviewer",
+      "stale_anchors": 3
+    },
+    {
+      "ask_number": 17,
+      "step": 5,
+      "role": "reviewer",
+      "stale_anchors": 6
+    },
+    {
+      "ask_number": 18,
+      "step": 5,
+      "role": "reviewer",
+      "stale_anchors": 7
+    },
+    {
+      "ask_number": 19,
+      "step": 6,
+      "role": "planner",
+      "stale_anchors": 3
+    },
+    {
+      "ask_number": 20,
+      "step": 6,
+      "role": "builder",
+      "stale_anchors": 3
+    },
+    {
+      "ask_number": 21,
+      "step": 6,
+      "role": "builder",
+      "stale_anchors": 6
+    },
+    {
+      "ask_number": 22,
+      "step": 6,
+      "role": "reviewer",
+      "stale_anchors": 3
+    },
+    {
+      "ask_number": 24,
+      "step": 8,
+      "role": "planner",
+      "stale_anchors": 3
+    },
+    {
+      "ask_number": 25,
+      "step": 8,
+      "role": "planner",
+      "stale_anchors": 3
+    },
+    {
+      "ask_number": 26,
+      "step": 8,
+      "role": "planner",
+      "stale_anchors": 6
+    },
+    {
+      "ask_number": 27,
+      "step": 8,
+      "role": "planner",
+      "stale_anchors": 3
+    },
+    {
+      "ask_number": 28,
+      "step": 8,
+      "role": "planner",
+      "stale_anchors": 5
+    },
+    {
+      "ask_number": 29,
+      "step": 8,
+      "role": "builder",
+      "stale_anchors": 5
+    },
+    {
+      "ask_number": 30,
+      "step": 8,
+      "role": "builder",
+      "stale_anchors": 4
+    },
+    {
+      "ask_number": 31,
+      "step": 8,
+      "role": "builder",
+      "stale_anchors": 8
+    },
+    {
+      "ask_number": 32,
+      "step": 8,
+      "role": "reviewer",
+      "stale_anchors": 3
+    },
+    {
+      "ask_number": 33,
+      "step": 8,
+      "role": "reviewer",
+      "stale_anchors": 3
+    },
+    {
+      "ask_number": 34,
+      "step": 8,
+      "role": "reviewer",
+      "stale_anchors": 4
+    },
+    {
+      "ask_number": 35,
+      "step": 8,
+      "role": "reviewer",
+      "stale_anchors": 9
+    },
+    {
+      "ask_number": 36,
+      "step": 9,
+      "role": "reviewer",
+      "stale_anchors": 3
+    }
   ]
 }

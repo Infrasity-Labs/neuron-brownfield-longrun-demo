@@ -1,0 +1,10 @@
+{
+  "schema": "neuron-demo-metric-equivalents/1",
+  "description": "Earlier texts of docs/METRIC.md that scripts/score_runs.py accepts as the same metric. A fingerprint is listed only when the scored quantities, the products and the checks are unchanged between the two texts. A changed definition is never listed: it invalidates the runs recorded under the earlier one.",
+  "equivalent": [
+    {
+      "sha256": "4a5fc4fb9fc711e16a98bdcdcccb36bd12b171a51d5c28901ffda6d1c7b8cb1d",
+      "reason": "docs/METRIC.md and scenarios/work_products.json as they were when the 15 runs of 2026-10-29 were recorded (the fingerprint then covered the whole file). Changes since: the opening paragraph and the status paragraph (the sentence that no run existed was replaced and moved to a results section after an END definition marker), and the results section itself. Sections 'What is measured', 'Per run', 'Per arm', 'Who scores what', 'What this metric does not measure' and 'Controls held equal across arms', and scenarios/work_products.json, are byte for byte unchanged."
+    }
+  ]
+}

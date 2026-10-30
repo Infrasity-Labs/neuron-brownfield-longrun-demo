@@ -1,0 +1,118 @@
+{
+  "schema": "neuron-demo-work-products/1",
+  "description": "The work products that carry the alignment metric, fixed before any run. A product scores 1 when it uses the CURRENT rule (or, for a verdict, when the verdict is correct for the code in the tree under the current rule), 0 when it does not, and is left out when it was not produced. 'exec' products are scored by scripts/code_outcome.py; 'label' products are scored by a named human in labels/<arm>/<run-id>.json.",
+  "changed_rules": [
+    "edit-window",
+    "error-response"
+  ],
+  "stable_rules": [
+    "article-limit"
+  ],
+  "exec_checks": {
+    "edit-window/builder-step5/code": {
+      "label": "step5",
+      "outcomes": [
+        "edit-window/accepts-inside",
+        "edit-window/refuses-outside"
+      ]
+    },
+    "article-limit/builder-step6/code": {
+      "label": "step6",
+      "outcomes": [
+        "article-limit/caps-above",
+        "article-limit/keeps-below",
+        "article-limit/keeps-default"
+      ]
+    }
+  },
+  "products": [
+    {
+      "id": "edit-window/reviewer-step4/verdict",
+      "rule": "edit-window",
+      "role": "reviewer",
+      "step": 4,
+      "kind": "label",
+      "description": "Verdict correct for the code in the tree, given the current rule"
+    },
+    {
+      "id": "edit-window/builder-step5/code",
+      "rule": "edit-window",
+      "role": "builder",
+      "step": 5,
+      "kind": "exec",
+      "description": "Edit endpoint accepts minute 29 and refuses minute 31 (code-outcome/step5.json, edit-window/*)"
+    },
+    {
+      "id": "edit-window/builder-step5/tests",
+      "rule": "edit-window",
+      "role": "builder",
+      "step": 5,
+      "kind": "label",
+      "description": "Tests use the current edit window, not the replaced one"
+    },
+    {
+      "id": "edit-window/reviewer-step5/verdict",
+      "rule": "edit-window",
+      "role": "reviewer",
+      "step": 5,
+      "kind": "label",
+      "description": "Verdict correct for the code in the tree, given the current rule"
+    },
+    {
+      "id": "error-response/planner-step8/spec",
+      "rule": "error-response",
+      "role": "planner",
+      "step": 8,
+      "kind": "label",
+      "description": "Spec points at the current error rule and does not carry the replaced shape forward"
+    },
+    {
+      "id": "error-response/builder-step8/code",
+      "rule": "error-response",
+      "role": "builder",
+      "step": 8,
+      "kind": "label",
+      "description": "Every new error path in the diff uses the current error shape"
+    },
+    {
+      "id": "error-response/builder-step8/tests",
+      "rule": "error-response",
+      "role": "builder",
+      "step": 8,
+      "kind": "label",
+      "description": "Tests expect the current error shape for new error paths"
+    },
+    {
+      "id": "error-response/reviewer-step8/verdict",
+      "rule": "error-response",
+      "role": "reviewer",
+      "step": 8,
+      "kind": "label",
+      "description": "Verdict correct for the code in the tree, given the current error rule"
+    },
+    {
+      "id": "article-limit/builder-step6/code",
+      "rule": "article-limit",
+      "role": "builder",
+      "step": 6,
+      "kind": "exec",
+      "description": "GET /api/articles caps at 50, keeps 20, defaults to 10 (code-outcome/step6.json, article-limit/*)"
+    },
+    {
+      "id": "article-limit/builder-step6/tests",
+      "rule": "article-limit",
+      "role": "builder",
+      "step": 6,
+      "kind": "label",
+      "description": "Tests use the article cap"
+    },
+    {
+      "id": "article-limit/reviewer-step6/verdict",
+      "rule": "article-limit",
+      "role": "reviewer",
+      "step": 6,
+      "kind": "label",
+      "description": "Verdict correct for the code in the tree, given the article cap"
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # Okto Neuron Use Case Repo: Fleet Plan
 
+> **Read this first.** This is the original planning document, written before the pilot run. It states expected outcomes in several places (for example steps 4 and 5 in section 6: "gets 30, sees 15 marked replaced"). Those are plans, not results. What happened is in README.md and `demo-state/`, and where they disagree with this file they win. Roles no longer run in a directory that contains this file (the pilot's did, and one Grep result returned it). Superseded decisions are marked in section 11. The experiment design that replaced this plan's single arm is `docs/METRIC.md`.
+
 Repo name: neuron-brownfield-longrun-demo. Tagline: "Three agents. Two vaults. Every answer shows its source."
 
 ## 1. What Okto Neuron is
@@ -109,7 +111,7 @@ Checks on every push: unit tests for the citation verifier on recorded answers, 
 
 ## 11. Decisions from setup (2026-10-19)
 
-- No Neuron version appears in README text. The installed version and date are recorded only in docs/VERIFIED.md.
+- (Superseded 2026-10-30.) No Neuron version appears in README text. The installed version and date are recorded only in docs/VERIFIED.md. Now the README names the pinned version 0.3.1, `pins.json` holds the release URL and SHA-256, and every run records its versions in `run-manifest.json`.
 - The verifier and scoreboard handle all six synthesis_status values: ok, no_llm, empty, provider_error, truncated, abnormal_stop. Any finish_reason other than stop is counted separately as suspect.
 - The ask wrapper checks every response for vault_override_ignored and records it in asks.jsonl.
 - This run is on macOS arm64. The README states what was verified and where, and does not claim Linux.

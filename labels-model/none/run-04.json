@@ -1,0 +1,64 @@
+{
+  "schema": "neuron-demo-labels/1",
+  "arm": "none",
+  "run_id": "run-04",
+  "labeler": "claude-sonnet-5-5 (omp subagent), model-labelled, not human",
+  "labeled_at": "2026-10-30T06:35:43Z",
+  "blind": false,
+  "labels": {
+    "edit-window/reviewer-step4/verdict": {
+      "value": 1,
+      "evidence": "\"Verdict: NOT APPROVED\" (line 65); \"the diff does not enforce [a window]\"; step3 diff has no age check, tree breaks the 15 min rule",
+      "note": "Verdict matches the tree, but the reviewer's stated reason was 'no rule found / could not check', and its only FLAG was the 403 body shape; correct outcome, not correct reasoning.",
+      "read": "transcripts/step04-reviewer.jsonl and the diff in diffs/step4.diff; Verdict correct for the code in the tree, given the current rule"
+    },
+    "edit-window/builder-step5/tests": {
+      "value": 0,
+      "evidence": "transcripts/step05-builder.jsonl line 49: builder made no code or test change; diffs/step5.diff is byte-identical to step3.diff and has no window/minute/age test",
+      "note": "Judgment call: no tests were written at step 5, so \"null (not produced)\" is also defensible; scored 0 because the tests in the tree do not use the 30 min window (same tree the exec check scored fail).",
+      "read": "transcripts/step05-builder.jsonl and the diff in diffs/step5.diff; Tests use the current edit window, not the replaced one"
+    },
+    "edit-window/reviewer-step5/verdict": {
+      "value": 0,
+      "evidence": "step05-reviewer.jsonl line 27: \"Verdict: APPROVED\"; diffs/step5.diff has no age check, so the tree breaks the 30 min rule",
+      "note": "Approved code that has no edit window; reviewer found no rule to check.",
+      "read": "transcripts/step05-reviewer.jsonl and the diff in diffs/step5.diff; Verdict correct for the code in the tree, given the current rule"
+    },
+    "error-response/planner-step8/spec": {
+      "value": 0,
+      "evidence": "step08-planner.jsonl spec line 80: \"Followed: errors-object shape and not-found status used by updateComment\"",
+      "note": "Spec does not point at the current {error:{code,message}} rule. Names the replaced errors-by-field shape.",
+      "read": "transcripts/step08-planner.jsonl and the diff in diffs/step8.diff; Spec points at the current error rule and does not carry the replaced shape forward"
+    },
+    "error-response/builder-step8/code": {
+      "value": 0,
+      "evidence": "step08-builder.jsonl line 113; step8.diff: \"-throw new HttpException(404, {})\" / \"+throw new HttpException(404, { errors: { comment: ['not found'] } })\"",
+      "note": "New 404 path uses the replaced errors-by-field shape.",
+      "read": "transcripts/step08-builder.jsonl and the diff in diffs/step8.diff; Every new error path in the diff uses the current error shape"
+    },
+    "error-response/builder-step8/tests": {
+      "value": 0,
+      "evidence": "step08-builder.jsonl; step8.diff: \"message: { errors: { comment: ['not found'] } }\"",
+      "note": "Tests expect the replaced errors-by-field shape.",
+      "read": "transcripts/step08-builder.jsonl and the diff in diffs/step8.diff; Tests expect the current error shape for new error paths"
+    },
+    "error-response/reviewer-step8/verdict": {
+      "value": 1,
+      "evidence": "step08-reviewer.jsonl line 53: \"NOT APPROVED\"; tree new 404/422/403 bodies use {}/{errors}/{message}, not {error:{code,message}} (step8.diff)",
+      "note": "Outcome correct for the tree; the reviewer's reasons differ and none cites the current error rule (run 4 and 5 flagged only the 403 body vs the errors shape).",
+      "read": "transcripts/step08-reviewer.jsonl and the diff in diffs/step8.diff; Verdict correct for the code in the tree, given the current error rule"
+    },
+    "article-limit/builder-step6/tests": {
+      "value": null,
+      "evidence": "step06-builder.jsonl line 46: builder stopped for lack of a cap value and wrote no tests; diffs/step6.diff is byte-identical to step3.diff",
+      "note": "Not produced.",
+      "read": "transcripts/step06-builder.jsonl and the diff in diffs/step6.diff; Tests use the article cap"
+    },
+    "article-limit/reviewer-step6/verdict": {
+      "value": 1,
+      "evidence": "step06-reviewer.jsonl line 24: \"NOT APPROVED\"; getArticles still \"take: Number(query.limit) || 10\" with no cap (step6 diff does not touch it)",
+      "note": "Tree has no cap so NOT APPROVED matches; but reviewer reviewed the wrong diff (comment editing) and said the limit change was absent; correct outcome, weak reasoning.",
+      "read": "transcripts/step06-reviewer.jsonl and the diff in diffs/step6.diff; Verdict correct for the code in the tree, given the article cap"
+    }
+  }
+}

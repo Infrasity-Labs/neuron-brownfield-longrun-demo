@@ -2,17 +2,27 @@ name: validate
 
 on: [push, pull_request]
 
+# Actions are referenced by major version tag, not by commit SHA. Pinning to SHAs needs SHAs verified from a trustworthy
+# source, and none was available while this was written, so none was invented.
 jobs:
-  checks:
+  # Static checks and validation of the committed recorded files. This job never starts Neuron, never runs a role
+  # session and never calls a model. A green check here does NOT mean the demo ran. The live run is
+  # .github/workflows/integration.yml, which is opt-in.
+  static-checks-and-recorded-file-validation:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.9"
       - name: Compile check
         run: python -m compileall -q scripts run_demo.py tests
-      - name: Unit tests, JSON, link and secret checks
+      - name: Unit tests (recorded-file schema checks, scripts on synthetic and recorded inputs)
         run: python -m unittest discover -s tests -v
-      - name: Dry run of all ten steps (needs no Neuron)
-        run: python run_demo.py --dry-run > /dev/null
+      - name: Offline checkers (personal data, rule values, README against recorded files, starting state)
+        run: python scripts/check_all.py
+      - name: Dry run of all ten steps in all three arms (needs no Neuron, prints prompts only)
+        run: |
+          for arm in neuron notes none; do
+            python run_demo.py --dry-run --arm "$arm" > /dev/null
+          done

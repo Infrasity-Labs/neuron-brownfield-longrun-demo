@@ -1,0 +1,683 @@
+{
+  "schema": "neuron-demo-support-sample/1",
+  "asks_file": "asks.jsonl",
+  "seed": 1,
+  "population": 30,
+  "labeler": "claude-sonnet-5-5 (omp subagent), model-labelled, not human",
+  "labeled_at": "2026-10-30T06:34:41Z",
+  "entries": [
+    {
+      "ask": "asks.jsonl:3",
+      "step": 2,
+      "role": "planner",
+      "question": "How is an edited comment marked, and what must the migration that adds the mark do?",
+      "answer": "An edited comment is marked by a nullable timestamp field named `editedAt`. It stays null until the first edit, and each successful edit sets it to the time of that edit.\n\nThe migration that adds `editedAt` must not change existing rows. The release checklist also requires every new migration to have a one-line note saying how to undo it.",
+      "sources": [
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-release-checklist.md",
+          "byte_start": 0,
+          "byte_end": 165,
+          "cited_text": "# Release checklist\n\nBefore a change ships, run npx prisma migrate deploy against a fresh database. Every new migration needs a one line note saying how to undo it.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-comment-model.md",
+          "byte_start": 0,
+          "byte_end": 245,
+          "cited_text": "# Comment model fields\n\nRead from app/src/prisma/schema.prisma.\n\nThe Comment model has the fields id, createdAt, updatedAt, body, articleId and authorId. It has no editedAt field and no deletedAt field today. Deleting a comment removes the row.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-edited-at-marker.md",
+          "byte_start": 17,
+          "byte_end": 221,
+          "cited_text": "A comment has a nullable timestamp field named editedAt. It stays null until the first edit. Each successful edit sets it to the time of the edit. The migration that adds it must not change existing rows."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-soft-delete.md",
+          "byte_start": 20,
+          "byte_end": 193,
+          "cited_text": "Deleting a comment sets a deletedAt timestamp and keeps the row. Comments with a deletedAt value are left out of comment lists. Only the comment author may delete a comment."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-soft-delete.md",
+          "byte_start": 0,
+          "byte_end": 194,
+          "cited_text": "# Soft delete rule\n\nDeleting a comment sets a deletedAt timestamp and keeps the row. Comments with a deletedAt value are left out of comment lists. Only the comment author may delete a comment.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-comment-ownership.md",
+          "byte_start": 0,
+          "byte_end": 427,
+          "cited_text": "# Comment ownership\n\nRead from deleteComment in app/src/app/routes/article/article.service.ts.\n\nA comment belongs to the user in its authorId field. Deleting a comment looks it up by id and by the current user id together. When the comment is not found, or belongs to someone else, the API returns 404 with an empty body. The 403 branch that follows in the code cannot be reached, because the lookup already filters by author.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-edited-at-marker.md",
+          "byte_start": 0,
+          "byte_end": 222,
+          "cited_text": "# Edited marker\n\nA comment has a nullable timestamp field named editedAt. It stays null until the first edit. Each successful edit sets it to the time of the edit. The migration that adds it must not change existing rows.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-migrations.md",
+          "byte_start": 0,
+          "byte_end": 390,
+          "cited_text": "# Migrations\n\nRead from app/src/prisma/ and app/package.json.\n\nThe database schema is the Prisma file app/src/prisma/schema.prisma. Migrations live in app/src/prisma/migrations, one folder per migration, named with a timestamp. The folder has four migrations today. They are applied with npx prisma migrate deploy, and the database address comes from the DATABASE_URL environment variable.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-jwt-settings.md",
+          "byte_start": 0,
+          "byte_end": 284,
+          "cited_text": "# JWT settings\n\nRead from app/src/app/routes/auth/auth.ts and app/src/app/routes/auth/token.utils.ts.\n\nTokens are signed with HS256. The secret comes from the JWT_SECRET environment variable, and falls back to the string superSecret when it is not set. A token expires after 60 days.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-error-response.md",
+          "byte_start": 0,
+          "byte_end": 240
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-article-list-limit.md",
+          "byte_start": 0,
+          "byte_end": 144,
+          "cited_text": "# Article list limit\n\nGET /api/articles accepts at most 50 articles per request. A limit above 50 is treated as 50. The default limit stays 10.\n"
+        }
+      ],
+      "supported": 1,
+      "note": "policy-edited-at-marker: 'nullable timestamp field named editedAt... migration that adds it must not change existing rows'; checklist: 'one line note saying how to undo it'"
+    },
+    {
+      "ask": "asks.jsonl:4",
+      "step": 2,
+      "role": "planner",
+      "question": "How must an API error response be shaped, and which status codes does it use?",
+      "answer": "New error responses must use the body the app already sends: an object with an `errors` key that maps a field name to a list of messages, for example `{\"errors\":{\"body\":[\"can't be blank\"]}}`. There is no extra wrapper object.\n\nThe notes list these status codes:\n- **422** for validation errors.\n- **401** for a missing or bad token.\n- **500** for any other error.\n\nThe notes don't say which status code a new error response should use.",
+      "sources": [
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-error-shape.md",
+          "byte_start": 0,
+          "byte_end": 504,
+          "cited_text": "# Error shape in the code today\n\nRead from app/src/main.ts and app/src/app/models/http-exception.model.ts.\n\nServices throw HttpException with a status code and a body. The error handler in main.ts sends that body as the whole JSON response. Validation errors use the status 422 and a body like {\"errors\":{\"body\":[\"can't be blank\"]}}. A missing or bad token returns 401 with {\"status\":\"error\",\"message\":\"missing authorization credentials\"}. Any other error returns 500 with the error message as the body.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-error-response.md",
+          "byte_start": 0,
+          "byte_end": 240
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-article-list-limit.md",
+          "byte_start": 0,
+          "byte_end": 144,
+          "cited_text": "# Article list limit\n\nGET /api/articles accepts at most 50 articles per request. A limit above 50 is treated as 50. The default limit stays 10.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-test-layout.md",
+          "byte_start": 65,
+          "byte_end": 365,
+          "cited_text": "Unit tests are Jest files named *.test.ts under app/src/tests/services and app/src/tests/utils. They are run with npx nx test api. The database is mocked in app/src/tests/prisma-mock.ts with jest-mock-extended, so these tests do not need Postgres. End to end tests are in the separate app/e2e folder."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-error-shape.md",
+          "byte_start": 108,
+          "byte_end": 503,
+          "cited_text": "Services throw HttpException with a status code and a body. The error handler in main.ts sends that body as the whole JSON response. Validation errors use the status 422 and a body like {\"errors\":{\"body\":[\"can't be blank\"]}}. A missing or bad token returns 401 with {\"status\":\"error\",\"message\":\"missing authorization credentials\"}. Any other error returns 500 with the error message as the body."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-auth-header.md",
+          "byte_start": 0,
+          "byte_end": 269,
+          "cited_text": "# Auth header\n\nRead from app/src/app/routes/auth/auth.ts.\n\nThe API reads the login token from the Authorization header. The header value is the word Token or the word Bearer, a space, then the JWT. Any other scheme is ignored and the request counts as having no token.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-release-checklist.md",
+          "byte_start": 0,
+          "byte_end": 165,
+          "cited_text": "# Release checklist\n\nBefore a change ships, run npx prisma migrate deploy against a fresh database. Every new migration needs a one line note saying how to undo it.\n"
+        }
+      ],
+      "supported": 0.5,
+      "note": "Unsupported claim: 'must use ... errors-key shape' / 'There is no extra wrapper object' (cited text only shows the shape the code uses today; no cited text says new responses must follow it or that there is no wrapper). Supported: 422/401/500 statuses and the 401 body in code-error-shape. policy-error-response is stale (no cited text)."
+    },
+    {
+      "ask": "asks.jsonl:5",
+      "step": 2,
+      "role": "planner",
+      "question": "How are database migrations organised and applied?",
+      "answer": "Database migrations are organised and applied as follows:\n\n- **Schema:** The Prisma schema is app/src/prisma/schema.prisma.\n- **Layout:** Migrations live in app/src/prisma/migrations, with one folder per migration, named with a timestamp. The notes say there are four migrations today.\n- **Applying:** Run `npx prisma migrate deploy`. The database address comes from the DATABASE_URL environment variable.\n- **Release checklist:** Before a change ships, run `npx prisma migrate deploy` against a fresh database. Each new migration needs a one-line note saying how to undo it.",
+      "sources": [
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-migrations.md",
+          "byte_start": 0,
+          "byte_end": 390,
+          "cited_text": "# Migrations\n\nRead from app/src/prisma/ and app/package.json.\n\nThe database schema is the Prisma file app/src/prisma/schema.prisma. Migrations live in app/src/prisma/migrations, one folder per migration, named with a timestamp. The folder has four migrations today. They are applied with npx prisma migrate deploy, and the database address comes from the DATABASE_URL environment variable.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-release-checklist.md",
+          "byte_start": 0,
+          "byte_end": 165,
+          "cited_text": "# Release checklist\n\nBefore a change ships, run npx prisma migrate deploy against a fresh database. Every new migration needs a one line note saying how to undo it.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-soft-delete.md",
+          "byte_start": 20,
+          "byte_end": 193,
+          "cited_text": "Deleting a comment sets a deletedAt timestamp and keeps the row. Comments with a deletedAt value are left out of comment lists. Only the comment author may delete a comment."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-test-layout.md",
+          "byte_start": 0,
+          "byte_end": 366,
+          "cited_text": "# Test layout\n\nRead from app/src/tests/ and app/jest.config.ts.\n\nUnit tests are Jest files named *.test.ts under app/src/tests/services and app/src/tests/utils. They are run with npx nx test api. The database is mocked in app/src/tests/prisma-mock.ts with jest-mock-extended, so these tests do not need Postgres. End to end tests are in the separate app/e2e folder.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-comment-model.md",
+          "byte_start": 0,
+          "byte_end": 245,
+          "cited_text": "# Comment model fields\n\nRead from app/src/prisma/schema.prisma.\n\nThe Comment model has the fields id, createdAt, updatedAt, body, articleId and authorId. It has no editedAt field and no deletedAt field today. Deleting a comment removes the row.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-jwt-settings.md",
+          "byte_start": 0,
+          "byte_end": 284,
+          "cited_text": "# JWT settings\n\nRead from app/src/app/routes/auth/auth.ts and app/src/app/routes/auth/token.utils.ts.\n\nTokens are signed with HS256. The secret comes from the JWT_SECRET environment variable, and falls back to the string superSecret when it is not set. A token expires after 60 days.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-article-list-limit.md",
+          "byte_start": 0,
+          "byte_end": 144,
+          "cited_text": "# Article list limit\n\nGET /api/articles accepts at most 50 articles per request. A limit above 50 is treated as 50. The default limit stays 10.\n"
+        }
+      ],
+      "supported": 1,
+      "note": "code-migrations: 'one folder per migration, named with a timestamp. ... four migrations ... DATABASE_URL'; checklist: 'run npx prisma migrate deploy against a fresh database'"
+    },
+    {
+      "ask": "asks.jsonl:9",
+      "step": 3,
+      "role": "builder",
+      "question": "How must an API error response be shaped, and which status codes does it use?",
+      "answer": "New error responses must be an object with an `errors` key that maps a field name to a list of messages, for example `{\"errors\":{\"body\":[\"can't be blank\"]}}`. There is no extra wrapper object.\n\nThe notes show three status codes in use today:\n- **422** for validation errors.\n- **401** for a missing or bad token. Its body is `{\"status\":\"error\",\"message\":\"missing authorization credentials\"}`, which does not follow the `errors` shape.\n- **500** for any other error, with the error message as the body.\n\nThe notes do not say which status code a new error response must use.",
+      "sources": [
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-error-shape.md",
+          "byte_start": 0,
+          "byte_end": 504,
+          "cited_text": "# Error shape in the code today\n\nRead from app/src/main.ts and app/src/app/models/http-exception.model.ts.\n\nServices throw HttpException with a status code and a body. The error handler in main.ts sends that body as the whole JSON response. Validation errors use the status 422 and a body like {\"errors\":{\"body\":[\"can't be blank\"]}}. A missing or bad token returns 401 with {\"status\":\"error\",\"message\":\"missing authorization credentials\"}. Any other error returns 500 with the error message as the body.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-error-response.md",
+          "byte_start": 0,
+          "byte_end": 240
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-article-list-limit.md",
+          "byte_start": 0,
+          "byte_end": 144,
+          "cited_text": "# Article list limit\n\nGET /api/articles accepts at most 50 articles per request. A limit above 50 is treated as 50. The default limit stays 10.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-test-layout.md",
+          "byte_start": 65,
+          "byte_end": 365,
+          "cited_text": "Unit tests are Jest files named *.test.ts under app/src/tests/services and app/src/tests/utils. They are run with npx nx test api. The database is mocked in app/src/tests/prisma-mock.ts with jest-mock-extended, so these tests do not need Postgres. End to end tests are in the separate app/e2e folder."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-error-shape.md",
+          "byte_start": 108,
+          "byte_end": 503,
+          "cited_text": "Services throw HttpException with a status code and a body. The error handler in main.ts sends that body as the whole JSON response. Validation errors use the status 422 and a body like {\"errors\":{\"body\":[\"can't be blank\"]}}. A missing or bad token returns 401 with {\"status\":\"error\",\"message\":\"missing authorization credentials\"}. Any other error returns 500 with the error message as the body."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-auth-header.md",
+          "byte_start": 0,
+          "byte_end": 269,
+          "cited_text": "# Auth header\n\nRead from app/src/app/routes/auth/auth.ts.\n\nThe API reads the login token from the Authorization header. The header value is the word Token or the word Bearer, a space, then the JWT. Any other scheme is ignored and the request counts as having no token.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-release-checklist.md",
+          "byte_start": 0,
+          "byte_end": 165,
+          "cited_text": "# Release checklist\n\nBefore a change ships, run npx prisma migrate deploy against a fresh database. Every new migration needs a one line note saying how to undo it.\n"
+        }
+      ],
+      "supported": 0.5,
+      "note": "Unsupported claim: 'must use ... errors-key shape' / 'There is no extra wrapper object' (cited text only shows the shape the code uses today; no cited text says new responses must follow it or that there is no wrapper). Supported: 422/401/500, 401 body, 'does not follow the errors shape' follows from the 401 body."
+    },
+    {
+      "ask": "asks.jsonl:15",
+      "step": 4,
+      "role": "reviewer",
+      "question": "Who owns a comment, and what does the API return when a comment is not found or belongs to someone else?",
+      "answer": "A comment belongs to the user in its `authorId` field. When a comment is not found, or belongs to someone else, the API returns 404 with an empty body.",
+      "sources": [
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-comment-ownership.md",
+          "byte_start": 0,
+          "byte_end": 427,
+          "cited_text": "# Comment ownership\n\nRead from deleteComment in app/src/app/routes/article/article.service.ts.\n\nA comment belongs to the user in its authorId field. Deleting a comment looks it up by id and by the current user id together. When the comment is not found, or belongs to someone else, the API returns 404 with an empty body. The 403 branch that follows in the code cannot be reached, because the lookup already filters by author.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-jwt-settings.md",
+          "byte_start": 0,
+          "byte_end": 284,
+          "cited_text": "# JWT settings\n\nRead from app/src/app/routes/auth/auth.ts and app/src/app/routes/auth/token.utils.ts.\n\nTokens are signed with HS256. The secret comes from the JWT_SECRET environment variable, and falls back to the string superSecret when it is not set. A token expires after 60 days.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-article-list-limit.md",
+          "byte_start": 0,
+          "byte_end": 144,
+          "cited_text": "# Article list limit\n\nGET /api/articles accepts at most 50 articles per request. A limit above 50 is treated as 50. The default limit stays 10.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-test-layout.md",
+          "byte_start": 65,
+          "byte_end": 365,
+          "cited_text": "Unit tests are Jest files named *.test.ts under app/src/tests/services and app/src/tests/utils. They are run with npx nx test api. The database is mocked in app/src/tests/prisma-mock.ts with jest-mock-extended, so these tests do not need Postgres. End to end tests are in the separate app/e2e folder."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-comment-model.md",
+          "byte_start": 0,
+          "byte_end": 245,
+          "cited_text": "# Comment model fields\n\nRead from app/src/prisma/schema.prisma.\n\nThe Comment model has the fields id, createdAt, updatedAt, body, articleId and authorId. It has no editedAt field and no deletedAt field today. Deleting a comment removes the row.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-edited-at-marker.md",
+          "byte_start": 17,
+          "byte_end": 221,
+          "cited_text": "A comment has a nullable timestamp field named editedAt. It stays null until the first edit. Each successful edit sets it to the time of the edit. The migration that adds it must not change existing rows."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-soft-delete.md",
+          "byte_start": 20,
+          "byte_end": 193,
+          "cited_text": "Deleting a comment sets a deletedAt timestamp and keeps the row. Comments with a deletedAt value are left out of comment lists. Only the comment author may delete a comment."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-soft-delete.md",
+          "byte_start": 0,
+          "byte_end": 194,
+          "cited_text": "# Soft delete rule\n\nDeleting a comment sets a deletedAt timestamp and keeps the row. Comments with a deletedAt value are left out of comment lists. Only the comment author may delete a comment.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-edited-at-marker.md",
+          "byte_start": 0,
+          "byte_end": 222,
+          "cited_text": "# Edited marker\n\nA comment has a nullable timestamp field named editedAt. It stays null until the first edit. Each successful edit sets it to the time of the edit. The migration that adds it must not change existing rows.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-error-shape.md",
+          "byte_start": 0,
+          "byte_end": 504,
+          "cited_text": "# Error shape in the code today\n\nRead from app/src/main.ts and app/src/app/models/http-exception.model.ts.\n\nServices throw HttpException with a status code and a body. The error handler in main.ts sends that body as the whole JSON response. Validation errors use the status 422 and a body like {\"errors\":{\"body\":[\"can't be blank\"]}}. A missing or bad token returns 401 with {\"status\":\"error\",\"message\":\"missing authorization credentials\"}. Any other error returns 500 with the error message as the body.\n"
+        }
+      ],
+      "supported": 1,
+      "note": "code-comment-ownership: 'belongs to the user in its authorId field... 404 with an empty body'"
+    },
+    {
+      "ask": "asks.jsonl:16",
+      "step": 5,
+      "role": "builder",
+      "question": "How long after a comment is created may it still be edited?",
+      "answer": "A comment may be edited for 30 minutes after it was created. After that, the API refuses the edit. (Source: policy-edit-window.md)",
+      "sources": [
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-comment-model.md",
+          "byte_start": 0,
+          "byte_end": 245,
+          "cited_text": "# Comment model fields\n\nRead from app/src/prisma/schema.prisma.\n\nThe Comment model has the fields id, createdAt, updatedAt, body, articleId and authorId. It has no editedAt field and no deletedAt field today. Deleting a comment removes the row.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-edited-at-marker.md",
+          "byte_start": 17,
+          "byte_end": 221,
+          "cited_text": "A comment has a nullable timestamp field named editedAt. It stays null until the first edit. Each successful edit sets it to the time of the edit. The migration that adds it must not change existing rows."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-soft-delete.md",
+          "byte_start": 20,
+          "byte_end": 193,
+          "cited_text": "Deleting a comment sets a deletedAt timestamp and keeps the row. Comments with a deletedAt value are left out of comment lists. Only the comment author may delete a comment."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-soft-delete.md",
+          "byte_start": 0,
+          "byte_end": 194,
+          "cited_text": "# Soft delete rule\n\nDeleting a comment sets a deletedAt timestamp and keeps the row. Comments with a deletedAt value are left out of comment lists. Only the comment author may delete a comment.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-comment-ownership.md",
+          "byte_start": 0,
+          "byte_end": 427,
+          "cited_text": "# Comment ownership\n\nRead from deleteComment in app/src/app/routes/article/article.service.ts.\n\nA comment belongs to the user in its authorId field. Deleting a comment looks it up by id and by the current user id together. When the comment is not found, or belongs to someone else, the API returns 404 with an empty body. The 403 branch that follows in the code cannot be reached, because the lookup already filters by author.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-edited-at-marker.md",
+          "byte_start": 0,
+          "byte_end": 222,
+          "cited_text": "# Edited marker\n\nA comment has a nullable timestamp field named editedAt. It stays null until the first edit. Each successful edit sets it to the time of the edit. The migration that adds it must not change existing rows.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-release-checklist.md",
+          "byte_start": 0,
+          "byte_end": 165,
+          "cited_text": "# Release checklist\n\nBefore a change ships, run npx prisma migrate deploy against a fresh database. Every new migration needs a one line note saying how to undo it.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-edit-window.md",
+          "byte_start": 0,
+          "byte_end": 150,
+          "cited_text": "# Comment edit window\n\nA comment author may edit their own comment for 30 minutes after the comment was created. After that the API refuses the edit.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-jwt-settings.md",
+          "byte_start": 0,
+          "byte_end": 284,
+          "cited_text": "# JWT settings\n\nRead from app/src/app/routes/auth/auth.ts and app/src/app/routes/auth/token.utils.ts.\n\nTokens are signed with HS256. The secret comes from the JWT_SECRET environment variable, and falls back to the string superSecret when it is not set. A token expires after 60 days.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-error-shape.md",
+          "byte_start": 0,
+          "byte_end": 504,
+          "cited_text": "# Error shape in the code today\n\nRead from app/src/main.ts and app/src/app/models/http-exception.model.ts.\n\nServices throw HttpException with a status code and a body. The error handler in main.ts sends that body as the whole JSON response. Validation errors use the status 422 and a body like {\"errors\":{\"body\":[\"can't be blank\"]}}. A missing or bad token returns 401 with {\"status\":\"error\",\"message\":\"missing authorization credentials\"}. Any other error returns 500 with the error message as the body.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-error-response.md",
+          "byte_start": 0,
+          "byte_end": 240
+        }
+      ],
+      "supported": 1,
+      "note": "policy-edit-window: 'edit their own comment for 30 minutes after the comment was created. After that the API refuses the edit.'"
+    },
+    {
+      "ask": "asks.jsonl:19",
+      "step": 6,
+      "role": "planner",
+      "question": "What is the largest number of articles that GET /api/articles may return in one request?",
+      "answer": "The largest number of articles GET /api/articles may return in one request is **50**. A limit above 50 is treated as 50, and the default limit is 10.",
+      "sources": [
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-article-list-limit.md",
+          "byte_start": 0,
+          "byte_end": 144,
+          "cited_text": "# Article list limit\n\nGET /api/articles accepts at most 50 articles per request. A limit above 50 is treated as 50. The default limit stays 10.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-auth-header.md",
+          "byte_start": 59,
+          "byte_end": 268,
+          "cited_text": "The API reads the login token from the Authorization header. The header value is the word Token or the word Bearer, a space, then the JWT. Any other scheme is ignored and the request counts as having no token."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-test-layout.md",
+          "byte_start": 65,
+          "byte_end": 365,
+          "cited_text": "Unit tests are Jest files named *.test.ts under app/src/tests/services and app/src/tests/utils. They are run with npx nx test api. The database is mocked in app/src/tests/prisma-mock.ts with jest-mock-extended, so these tests do not need Postgres. End to end tests are in the separate app/e2e folder."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-error-shape.md",
+          "byte_start": 0,
+          "byte_end": 504,
+          "cited_text": "# Error shape in the code today\n\nRead from app/src/main.ts and app/src/app/models/http-exception.model.ts.\n\nServices throw HttpException with a status code and a body. The error handler in main.ts sends that body as the whole JSON response. Validation errors use the status 422 and a body like {\"errors\":{\"body\":[\"can't be blank\"]}}. A missing or bad token returns 401 with {\"status\":\"error\",\"message\":\"missing authorization credentials\"}. Any other error returns 500 with the error message as the body.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-auth-header.md",
+          "byte_start": 0,
+          "byte_end": 269,
+          "cited_text": "# Auth header\n\nRead from app/src/app/routes/auth/auth.ts.\n\nThe API reads the login token from the Authorization header. The header value is the word Token or the word Bearer, a space, then the JWT. Any other scheme is ignored and the request counts as having no token.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-comment-model.md",
+          "byte_start": 0,
+          "byte_end": 245,
+          "cited_text": "# Comment model fields\n\nRead from app/src/prisma/schema.prisma.\n\nThe Comment model has the fields id, createdAt, updatedAt, body, articleId and authorId. It has no editedAt field and no deletedAt field today. Deleting a comment removes the row.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-error-response.md",
+          "byte_start": 0,
+          "byte_end": 240
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-edit-window.md",
+          "byte_start": 0,
+          "byte_end": 150,
+          "cited_text": "# Comment edit window\n\nA comment author may edit their own comment for 30 minutes after the comment was created. After that the API refuses the edit.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-migrations.md",
+          "byte_start": 0,
+          "byte_end": 390,
+          "cited_text": "# Migrations\n\nRead from app/src/prisma/ and app/package.json.\n\nThe database schema is the Prisma file app/src/prisma/schema.prisma. Migrations live in app/src/prisma/migrations, one folder per migration, named with a timestamp. The folder has four migrations today. They are applied with npx prisma migrate deploy, and the database address comes from the DATABASE_URL environment variable.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-edited-at-marker.md",
+          "byte_start": 17,
+          "byte_end": 221,
+          "cited_text": "A comment has a nullable timestamp field named editedAt. It stays null until the first edit. Each successful edit sets it to the time of the edit. The migration that adds it must not change existing rows."
+        }
+      ],
+      "supported": 1,
+      "note": "policy-article-list-limit: 'at most 50 articles per request. A limit above 50 is treated as 50. The default limit stays 10.'"
+    },
+    {
+      "ask": "asks.jsonl:25",
+      "step": 8,
+      "role": "planner",
+      "question": "Which fields does the comment model have?",
+      "answer": "The Comment model has the fields id, createdAt, updatedAt, body, articleId and authorId. It has no editedAt or deletedAt field today.",
+      "sources": [
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-comment-model.md",
+          "byte_start": 0,
+          "byte_end": 245,
+          "cited_text": "# Comment model fields\n\nRead from app/src/prisma/schema.prisma.\n\nThe Comment model has the fields id, createdAt, updatedAt, body, articleId and authorId. It has no editedAt field and no deletedAt field today. Deleting a comment removes the row.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-edited-at-marker.md",
+          "byte_start": 17,
+          "byte_end": 221,
+          "cited_text": "A comment has a nullable timestamp field named editedAt. It stays null until the first edit. Each successful edit sets it to the time of the edit. The migration that adds it must not change existing rows."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-soft-delete.md",
+          "byte_start": 20,
+          "byte_end": 193,
+          "cited_text": "Deleting a comment sets a deletedAt timestamp and keeps the row. Comments with a deletedAt value are left out of comment lists. Only the comment author may delete a comment."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-soft-delete.md",
+          "byte_start": 0,
+          "byte_end": 194,
+          "cited_text": "# Soft delete rule\n\nDeleting a comment sets a deletedAt timestamp and keeps the row. Comments with a deletedAt value are left out of comment lists. Only the comment author may delete a comment.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-comment-ownership.md",
+          "byte_start": 0,
+          "byte_end": 427,
+          "cited_text": "# Comment ownership\n\nRead from deleteComment in app/src/app/routes/article/article.service.ts.\n\nA comment belongs to the user in its authorId field. Deleting a comment looks it up by id and by the current user id together. When the comment is not found, or belongs to someone else, the API returns 404 with an empty body. The 403 branch that follows in the code cannot be reached, because the lookup already filters by author.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-edited-at-marker.md",
+          "byte_start": 0,
+          "byte_end": 222,
+          "cited_text": "# Edited marker\n\nA comment has a nullable timestamp field named editedAt. It stays null until the first edit. Each successful edit sets it to the time of the edit. The migration that adds it must not change existing rows.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-auth-header.md",
+          "byte_start": 0,
+          "byte_end": 269,
+          "cited_text": "# Auth header\n\nRead from app/src/app/routes/auth/auth.ts.\n\nThe API reads the login token from the Authorization header. The header value is the word Token or the word Bearer, a space, then the JWT. Any other scheme is ignored and the request counts as having no token.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/ops-runbook.md",
+          "byte_start": 15,
+          "byte_end": 234,
+          "cited_text": "When an API call fails, support reads the errors key in the response body. It maps each field name to a list of messages, for example {\"errors\":{\"body\":[\"can't be blank\"]}}. New error responses should follow this shape."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-edit-window.md",
+          "byte_start": 0,
+          "byte_end": 150,
+          "cited_text": "# Comment edit window\n\nA comment author may edit their own comment for 30 minutes after the comment was created. After that the API refuses the edit.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-error-response.md",
+          "byte_start": 0,
+          "byte_end": 240
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/ops-runbook.md",
+          "byte_start": 0,
+          "byte_end": 235,
+          "cited_text": "# Ops runbook\n\nWhen an API call fails, support reads the errors key in the response body. It maps each field name to a list of messages, for example {\"errors\":{\"body\":[\"can't be blank\"]}}. New error responses should follow this shape.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-error-shape.md",
+          "byte_start": 0,
+          "byte_end": 504,
+          "cited_text": "# Error shape in the code today\n\nRead from app/src/main.ts and app/src/app/models/http-exception.model.ts.\n\nServices throw HttpException with a status code and a body. The error handler in main.ts sends that body as the whole JSON response. Validation errors use the status 422 and a body like {\"errors\":{\"body\":[\"can't be blank\"]}}. A missing or bad token returns 401 with {\"status\":\"error\",\"message\":\"missing authorization credentials\"}. Any other error returns 500 with the error message as the body.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-error-response.md",
+          "byte_start": 23,
+          "byte_end": 203
+        }
+      ],
+      "supported": 1,
+      "note": "code-comment-model: 'fields id, createdAt, updatedAt, body, articleId and authorId. ... no editedAt field and no deletedAt field today'"
+    },
+    {
+      "ask": "asks.jsonl:26",
+      "step": 8,
+      "role": "builder",
+      "question": "What happens to a comment when it is deleted, and which comments appear in comment lists?",
+      "answer": "The notes conflict on this.\n\n- **Policy (soft delete rule):** Deleting a comment sets a `deletedAt` timestamp and keeps the row. Comments with a `deletedAt` value are left out of comment lists. Only the comment author may delete a comment.\n- **Code note (comment model, read from `schema.prisma`):** The Comment model has no `deletedAt` field today, and deleting a comment removes the row.\n\nThe notes do not say which describes the current behavior. The policy describes the intended rule, and the schema note describes what the code does now. Comment lists should exclude soft-deleted comments under the policy, but the notes do not confirm that this is implemented.",
+      "sources": [
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-soft-delete.md",
+          "byte_start": 20,
+          "byte_end": 193,
+          "cited_text": "Deleting a comment sets a deletedAt timestamp and keeps the row. Comments with a deletedAt value are left out of comment lists. Only the comment author may delete a comment."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-comment-model.md",
+          "byte_start": 0,
+          "byte_end": 245,
+          "cited_text": "# Comment model fields\n\nRead from app/src/prisma/schema.prisma.\n\nThe Comment model has the fields id, createdAt, updatedAt, body, articleId and authorId. It has no editedAt field and no deletedAt field today. Deleting a comment removes the row.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-edited-at-marker.md",
+          "byte_start": 17,
+          "byte_end": 221,
+          "cited_text": "A comment has a nullable timestamp field named editedAt. It stays null until the first edit. Each successful edit sets it to the time of the edit. The migration that adds it must not change existing rows."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-soft-delete.md",
+          "byte_start": 0,
+          "byte_end": 194,
+          "cited_text": "# Soft delete rule\n\nDeleting a comment sets a deletedAt timestamp and keeps the row. Comments with a deletedAt value are left out of comment lists. Only the comment author may delete a comment.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-comment-ownership.md",
+          "byte_start": 0,
+          "byte_end": 427,
+          "cited_text": "# Comment ownership\n\nRead from deleteComment in app/src/app/routes/article/article.service.ts.\n\nA comment belongs to the user in its authorId field. Deleting a comment looks it up by id and by the current user id together. When the comment is not found, or belongs to someone else, the API returns 404 with an empty body. The 403 branch that follows in the code cannot be reached, because the lookup already filters by author.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-edited-at-marker.md",
+          "byte_start": 0,
+          "byte_end": 222,
+          "cited_text": "# Edited marker\n\nA comment has a nullable timestamp field named editedAt. It stays null until the first edit. Each successful edit sets it to the time of the edit. The migration that adds it must not change existing rows.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-article-list-limit.md",
+          "byte_start": 0,
+          "byte_end": 144,
+          "cited_text": "# Article list limit\n\nGET /api/articles accepts at most 50 articles per request. A limit above 50 is treated as 50. The default limit stays 10.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-jwt-settings.md",
+          "byte_start": 0,
+          "byte_end": 284,
+          "cited_text": "# JWT settings\n\nRead from app/src/app/routes/auth/auth.ts and app/src/app/routes/auth/token.utils.ts.\n\nTokens are signed with HS256. The secret comes from the JWT_SECRET environment variable, and falls back to the string superSecret when it is not set. A token expires after 60 days.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-auth-header.md",
+          "byte_start": 0,
+          "byte_end": 269,
+          "cited_text": "# Auth header\n\nRead from app/src/app/routes/auth/auth.ts.\n\nThe API reads the login token from the Authorization header. The header value is the word Token or the word Bearer, a space, then the JWT. Any other scheme is ignored and the request counts as having no token.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/ops-runbook.md",
+          "byte_start": 15,
+          "byte_end": 234,
+          "cited_text": "When an API call fails, support reads the errors key in the response body. It maps each field name to a list of messages, for example {\"errors\":{\"body\":[\"can't be blank\"]}}. New error responses should follow this shape."
+        }
+      ],
+      "supported": 1,
+      "note": "policy-soft-delete + code-comment-model both quoted accurately ('deletedAt timestamp and keeps the row' vs 'Deleting a comment removes the row'). The 'intended rule vs current code' framing is an inference from the two, not stated in the cited text."
+    },
+    {
+      "ask": "asks.jsonl:28",
+      "step": 8,
+      "role": "builder",
+      "question": "Who may delete a comment, and what HTTP status code and error body are returned when someone who is not the comment author tries to delete it, or when the comment does not exist?",
+      "answer": "**Who may delete:** Only the comment's author. A comment belongs to the user in its `authorId` field. (The policy notes say this, and the code agrees.)\n\n**Non-author or missing comment:** The API returns **404 with an empty body**. The code looks up the comment by both id and current user id, so a comment that doesn't exist and one owned by someone else produce the same result. The 403 branch that follows is unreachable.\n\nThe newer error format (`{\"error\":{\"code\":\"...\",\"message\":\"...\"}}`) applies to new error responses and keeps the same status codes. The notes don't say whether this endpoint has moved to it, so the empty 404 body is the documented current behavior.",
+      "sources": [
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-comment-ownership.md",
+          "byte_start": 0,
+          "byte_end": 427,
+          "cited_text": "# Comment ownership\n\nRead from deleteComment in app/src/app/routes/article/article.service.ts.\n\nA comment belongs to the user in its authorId field. Deleting a comment looks it up by id and by the current user id together. When the comment is not found, or belongs to someone else, the API returns 404 with an empty body. The 403 branch that follows in the code cannot be reached, because the lookup already filters by author.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-error-shape.md",
+          "byte_start": 0,
+          "byte_end": 504,
+          "cited_text": "# Error shape in the code today\n\nRead from app/src/main.ts and app/src/app/models/http-exception.model.ts.\n\nServices throw HttpException with a status code and a body. The error handler in main.ts sends that body as the whole JSON response. Validation errors use the status 422 and a body like {\"errors\":{\"body\":[\"can't be blank\"]}}. A missing or bad token returns 401 with {\"status\":\"error\",\"message\":\"missing authorization credentials\"}. Any other error returns 500 with the error message as the body.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-soft-delete.md",
+          "byte_start": 0,
+          "byte_end": 194,
+          "cited_text": "# Soft delete rule\n\nDeleting a comment sets a deletedAt timestamp and keeps the row. Comments with a deletedAt value are left out of comment lists. Only the comment author may delete a comment.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-comment-model.md",
+          "byte_start": 0,
+          "byte_end": 245,
+          "cited_text": "# Comment model fields\n\nRead from app/src/prisma/schema.prisma.\n\nThe Comment model has the fields id, createdAt, updatedAt, body, articleId and authorId. It has no editedAt field and no deletedAt field today. Deleting a comment removes the row.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-error-response.md",
+          "byte_start": 23,
+          "byte_end": 202,
+          "cited_text": "All new error responses use an error object: {\"error\":{\"code\":\"<machine_code>\",\"message\":\"<text>\"}}. This replaces the older errors-by-field body. HTTP status codes do not change."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-jwt-settings.md",
+          "byte_start": 0,
+          "byte_end": 284,
+          "cited_text": "# JWT settings\n\nRead from app/src/app/routes/auth/auth.ts and app/src/app/routes/auth/token.utils.ts.\n\nTokens are signed with HS256. The secret comes from the JWT_SECRET environment variable, and falls back to the string superSecret when it is not set. A token expires after 60 days.\n"
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-edited-at-marker.md",
+          "byte_start": 17,
+          "byte_end": 221,
+          "cited_text": "A comment has a nullable timestamp field named editedAt. It stays null until the first edit. Each successful edit sets it to the time of the edit. The migration that adds it must not change existing rows."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/policy-soft-delete.md",
+          "byte_start": 20,
+          "byte_end": 193,
+          "cited_text": "Deleting a comment sets a deletedAt timestamp and keeps the row. Comments with a deletedAt value are left out of comment lists. Only the comment author may delete a comment."
+        },
+        {
+          "path": ".marginalia/sources/3b59bc11b0f39812/code-error-shape.md",
+          "byte_start": 108,
+          "byte_end": 503,
+          "cited_text": "Services throw HttpException with a status code and a body. The error handler in main.ts sends that body as the whole JSON response. Validation errors use the status 422 and a body like {\"errors\":{\"body\":[\"can't be blank\"]}}. A missing or bad token returns 401 with {\"status\":\"error\",\"message\":\"missing authorization credentials\"}. Any other error returns 500 with the error message as the body."
+        }
+      ],
+      "supported": 1,
+      "note": "code-comment-ownership: '404 with an empty body'; soft-delete: 'Only the comment author may delete'; policy-error-response: 'HTTP status codes do not change'; '403 branch ... cannot be reached'"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "label": "step7",
+  "rule": "error-response",
+  "step": 7,
+  "question": "How must an API error response be shaped, and which status codes does it use?",
+  "vault": "team",
+  "raw": [
+    "probes/step7.ask.raw.json",
+    "probes/step7.explore.raw.json"
+  ],
+  "ask_text_matches_old": false,
+  "ask_text_matches_new": true,
+  "explore_matches_old": false,
+  "explore_matches_new": false,
+  "supersedes_marker_seen": false,
+  "old_value_still_returned": false,
+  "ts": "2026-10-29T21:21:32.802Z"
+}

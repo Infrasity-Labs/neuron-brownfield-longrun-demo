@@ -1,1 +1,1 @@
-The Reviewer flagged the comment editing change. Ask the team vault for the current edit window, with sources, and fix the code and its tests so they use the current value. Run the app tests and report the exact result. Finish with the value you used and its source.
+Make sure the comment editing change in the working tree follows the team's rules as they stand now. Get the rule below. Change the code and its tests where they do not follow it. Finish with the rule you checked, the value you used and where you got it.

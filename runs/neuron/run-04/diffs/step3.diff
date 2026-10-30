@@ -1,0 +1,262 @@
+diff --git a/app/src/app/routes/article/article.controller.ts b/app/src/app/routes/article/article.controller.ts
+index ff03702..a14cc71 100644
+--- a/app/src/app/routes/article/article.controller.ts
++++ b/app/src/app/routes/article/article.controller.ts
+@@ -12,6 +12,7 @@ import {
+   getFeed,
+   unfavoriteArticle,
+   updateArticle,
++  updateComment,
+ } from './article.service';
+ 
+ const router = Router();
+@@ -180,6 +181,33 @@ router.post(
+   },
+ );
+ 
++/**
++ * Edit comment (author only, within 15 minutes of creation)
++ * @auth required
++ * @route {PUT} /articles/:slug/comments/:id
++ * @param slug slug of the article (based on the title)
++ * @param id id of the comment
++ * @bodyparam body new content of the comment
++ * @returns comment updated comment
++ */
++router.put(
++  '/articles/:slug/comments/:id',
++  auth.required,
++  async (req: Request, res: Response, next: NextFunction) => {
++    try {
++      const comment = await updateComment(
++        req.body.comment?.body,
++        req.params.slug,
++        Number(req.params.id),
++        req.auth?.user?.id,
++      );
++      res.json({ comment });
++    } catch (error) {
++      next(error);
++    }
++  },
++);
++
+ /**
+  * Delete comment
+  * @auth required
+diff --git a/app/src/app/routes/article/article.service.ts b/app/src/app/routes/article/article.service.ts
+index c8fdc0c..0e2bf51 100644
+--- a/app/src/app/routes/article/article.service.ts
++++ b/app/src/app/routes/article/article.service.ts
+@@ -5,6 +5,9 @@ import profileMapper from '../profile/profile.utils';
+ import articleMapper from './article.mapper';
+ import { Tag } from '../tag/tag.model';
+ 
++// A comment may be edited for 15 minutes after it was created (team vault, policy-edit-window.md)
++const COMMENT_EDIT_WINDOW_MS = 15 * 60 * 1000;
++
+ const buildFindAllQuery = (query: any, id: number | undefined) => {
+   const queries: any = [];
+   const orAuthorQuery = [];
+@@ -559,6 +562,71 @@ export const deleteComment = async (id: number, userId: number) => {
+   });
+ };
+ 
++export const updateComment = async (body: string, slug: string, id: number, userId: number) => {
++  if (!body) {
++    throw new HttpException(422, { errors: { body: ["can't be blank"] } });
++  }
++
++  const comment = await prisma.comment.findFirst({
++    where: {
++      id,
++      article: {
++        slug,
++      },
++      author: {
++        id: userId,
++      },
++    },
++    select: {
++      createdAt: true,
++    },
++  });
++
++  if (!comment) {
++    throw new HttpException(404, { errors: { comment: ['not found'] } });
++  }
++
++  if (Date.now() - comment.createdAt.getTime() > COMMENT_EDIT_WINDOW_MS) {
++    throw new HttpException(403, {
++      errors: { comment: ["can't be edited after 15 minutes"] },
++    });
++  }
++
++  const updated = await prisma.comment.update({
++    where: {
++      id,
++    },
++    data: {
++      body,
++      editedAt: new Date(),
++    },
++    include: {
++      author: {
++        select: {
++          username: true,
++          bio: true,
++          image: true,
++          followedBy: true,
++        },
++      },
++    },
++  });
++
++  return {
++    id: updated.id,
++    createdAt: updated.createdAt,
++    updatedAt: updated.updatedAt,
++    editedAt: updated.editedAt,
++    body: updated.body,
++    author: {
++      username: updated.author.username,
++      bio: updated.author.bio,
++      image: updated.author.image,
++      following: updated.author.followedBy.some((follow: any) => follow.id === userId),
++    },
++  };
++};
++
+ export const favoriteArticle = async (slugPayload: string, id: number) => {
+   const { _count, ...article } = await prisma.article.update({
+     where: {
+diff --git a/app/src/prisma/migrations/20261030120000_comment_edited_at/migration.sql b/app/src/prisma/migrations/20261030120000_comment_edited_at/migration.sql
+new file mode 100644
+index 0000000..ba18a45
+--- /dev/null
++++ b/app/src/prisma/migrations/20261030120000_comment_edited_at/migration.sql
+@@ -0,0 +1,4 @@
++-- Undo: ALTER TABLE "Comment" DROP COLUMN "editedAt";
++
++-- AlterTable: nullable with no default, so existing rows stay NULL (not edited)
++ALTER TABLE "Comment" ADD COLUMN "editedAt" TIMESTAMP(3);
+diff --git a/app/src/prisma/schema.prisma b/app/src/prisma/schema.prisma
+index 3d767b7..d71ad5f 100644
+--- a/app/src/prisma/schema.prisma
++++ b/app/src/prisma/schema.prisma
+@@ -28,6 +28,7 @@ model Comment {
+   createdAt DateTime @default(now())
+   updatedAt DateTime @default(now())
+   body      String
++  editedAt  DateTime?
+   article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+   articleId Int
+   author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+diff --git a/app/src/tests/services/article.service.test.ts b/app/src/tests/services/article.service.test.ts
+index 4f39562..85ebbc1 100644
+--- a/app/src/tests/services/article.service.test.ts
++++ b/app/src/tests/services/article.service.test.ts
+@@ -3,6 +3,7 @@ import {
+   deleteComment,
+   favoriteArticle,
+   unfavoriteArticle,
++  updateComment,
+ } from '../../app/routes/article/article.service';
+ 
+ describe('ArticleService', () => {
+@@ -141,4 +142,95 @@ describe('ArticleService', () => {
+       await expect(unfavoriteArticle(slug, id)).rejects.toThrowError();
+     });
+   });
++
++  describe('updateComment', () => {
++    const slug = 'How-to-train-your-dragon';
++    const commentId = 123;
++    const userId = 456;
++
++    const mockedUpdatedComment = (createdAt: Date, body: string) => ({
++      id: commentId,
++      createdAt,
++      updatedAt: createdAt,
++      editedAt: new Date(),
++      body,
++      authorId: userId,
++      articleId: 789,
++      author: {
++        username: 'RealWorld',
++        bio: null,
++        image: null,
++        followedBy: [],
++      },
++    });
++
++    test('should throw 422 when the new body is empty', async () => {
++      // Given
++      const body = '';
++
++      // When
++      // @ts-ignore
++      prismaMock.comment.findFirst.mockResolvedValue(null);
++
++      // Then
++      await expect(updateComment(body, slug, commentId, userId)).rejects.toMatchObject({
++        errorCode: 422,
++      });
++      expect(prismaMock.comment.update).not.toHaveBeenCalled();
++    });
++
++    test('should throw 404 when the comment is not found for this author', async () => {
++      // Given
++      const body = 'Edited text';
++
++      // When
++      // @ts-ignore
++      prismaMock.comment.findFirst.mockResolvedValue(null);
++
++      // Then
++      await expect(updateComment(body, slug, commentId, userId)).rejects.toMatchObject({
++        errorCode: 404,
++      });
++      expect(prismaMock.comment.update).not.toHaveBeenCalled();
++    });
++
++    test('should throw 403 when the comment is older than 15 minutes', async () => {
++      // Given
++      const body = 'Edited text';
++      const createdAt = new Date(Date.now() - 16 * 60 * 1000);
++
++      // When
++      // @ts-ignore
++      prismaMock.comment.findFirst.mockResolvedValue({ createdAt });
++
++      // Then
++      await expect(updateComment(body, slug, commentId, userId)).rejects.toMatchObject({
++        errorCode: 403,
++      });
++      expect(prismaMock.comment.update).not.toHaveBeenCalled();
++    });
++
++    test('should update the body and set editedAt when within 15 minutes', async () => {
++      // Given
++      const body = 'Edited text';
++      const createdAt = new Date(Date.now() - 14 * 60 * 1000);
++
++      // When
++      // @ts-ignore
++      prismaMock.comment.findFirst.mockResolvedValue({ createdAt });
++      // @ts-ignore
++      prismaMock.comment.update.mockResolvedValue(mockedUpdatedComment(createdAt, body));
++
++      // Then
++      const result = await updateComment(body, slug, commentId, userId);
++
++      expect(prismaMock.comment.update).toHaveBeenCalledWith(
++        expect.objectContaining({
++          where: { id: commentId },
++          data: expect.objectContaining({ body, editedAt: expect.any(Date) }),
++        }),
++      );
++      expect(result).toMatchObject({ id: commentId, body, editedAt: expect.any(Date) });
++    });
++  });
+ });

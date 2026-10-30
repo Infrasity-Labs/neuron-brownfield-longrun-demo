@@ -1,0 +1,64 @@
+{
+  "schema": "neuron-demo-labels/1",
+  "arm": "neuron",
+  "run_id": "run-04",
+  "labeler": "claude-sonnet-5-5 (omp subagent), model-labelled, not human",
+  "labeled_at": "2026-10-30T06:36:16Z",
+  "blind": false,
+  "labels": {
+    "edit-window/reviewer-step4/verdict": {
+      "value": 0,
+      "evidence": "transcripts/step04-reviewer.jsonl line 47: 'Rule 1 ... Code: COMMENT_EDIT_WINDOW_MS = 15 ... Rule: 15 minutes ... PASS. Conflict: the ask synthesis said 30 minutes ... I followed 15'",
+      "note": "Current rule is 30 (the ask answer at asks.jsonl line 13: 'edited for 30 minutes'); tree held 15, so PASS is wrong. The reviewer followed a graph claim/source that said 15 over the synthesis; I judged only against the current rule of 30 stated in the metric and the vault answer.",
+      "read": "transcripts/step04-reviewer.jsonl and the diff in diffs/step4.diff; Verdict correct for the code in the tree, given the current rule"
+    },
+    "edit-window/builder-step5/tests": {
+      "value": 1,
+      "evidence": "diffs/step5.diff:223 'should throw 403 when the comment is older than 30 minutes' with 31 * 60 * 1000 (line 226); 29 minutes accepted (line 242)",
+      "note": "Tests use 30.",
+      "read": "transcripts/step05-builder.jsonl and the diff in diffs/step5.diff; Tests use the current edit window, not the replaced one"
+    },
+    "edit-window/reviewer-step5/verdict": {
+      "value": 1,
+      "evidence": "transcripts/step05-reviewer.jsonl line 22: 'COMMENT_EDIT_WINDOW_MS = 30 * 60 * 1000 ... Result: PASS ... VERDICT: APPROVED'; code-outcome/step5.json both pass",
+      "note": "Correct.",
+      "read": "transcripts/step05-reviewer.jsonl and the diff in diffs/step5.diff; Verdict correct for the code in the tree, given the current rule"
+    },
+    "error-response/planner-step8/spec": {
+      "value": 1,
+      "evidence": "transcripts/step08-planner.jsonl line 63 (spec Write): 'Error-response policy. policy-error-response.md' and 'Ops runbook asks for the older errors-key shape. Followed rule 4'",
+      "note": "Points at current rule.",
+      "read": "transcripts/step08-planner.jsonl and the diff in diffs/step8.diff; Spec points at the current error rule and does not carry the replaced shape forward"
+    },
+    "error-response/builder-step8/code": {
+      "value": null,
+      "evidence": "transcripts/step08-builder.jsonl line 106: 'No new error bodies: a deleted comment reuses the existing 404 branch'",
+      "note": "Builder step 8 added no new error response: its diff hunks (soft delete) only add deletedAt filters/update; the 404 in deleteComment is the existing HttpException(404, {{}}). The only error paths in diffs/step8.diff with a body are updateComment's, written at steps 3-5 under the old rule ({errors:{...}}). Left null because the product (step 8 builder's new error paths) was not produced; a literal reading of 'in the diff' would give 0 for the cumulative diff. Needs a human decision on the reading.",
+      "read": "transcripts/step08-builder.jsonl and the diff in diffs/step8.diff; Every new error path in the diff uses the current error shape"
+    },
+    "error-response/builder-step8/tests": {
+      "value": null,
+      "evidence": "diffs/step8.diff lines 331-356: toMatchObject({ errorCode: 404 }) only",
+      "note": "Builder step 8 tests added only status checks for existing 404 paths (errorCode: 404, no body shape asserted; see diffs/step8.diff new test files). No new error path with a shape to check, so not judged. The old-shape expectations in the diff ({{ errors: {{ body: [...] }} }}) come from the step 5 edit tests.",
+      "read": "transcripts/step08-builder.jsonl and the diff in diffs/step8.diff; Tests expect the current error shape for new error paths"
+    },
+    "error-response/reviewer-step8/verdict": {
+      "value": 1,
+      "evidence": "transcripts/step08-reviewer.jsonl line 57: 'Row 5 ... New error paths at article.service.ts:575 (422), :595 (404), :599 (403) use the { errors: {...} } body ... FLAG ... Verdict: NOT APPROVED'",
+      "note": "Correct for the error rule. The same verdict also flags the edit window as 15 vs 30 (wrong, 30 is current); I judged only the error rule, so unsure how a human would score the mixed verdict.",
+      "read": "transcripts/step08-reviewer.jsonl and the diff in diffs/step8.diff; Verdict correct for the code in the tree, given the current error rule"
+    },
+    "article-limit/builder-step6/tests": {
+      "value": 1,
+      "evidence": "diffs/step6.diff: 'should cap take at 50 when the limit is above 50' (limit 500), 'exactly 51' -> take: 50, 'exactly 50', default 10",
+      "note": "Uses cap 50.",
+      "read": "transcripts/step06-builder.jsonl and the diff in diffs/step6.diff; Tests use the article cap"
+    },
+    "article-limit/reviewer-step6/verdict": {
+      "value": 1,
+      "evidence": "transcripts/step06-reviewer.jsonl line 22: 'MAX_ARTICLE_LIMIT = 50 ... Result: PASS ... APPROVED'",
+      "note": "Correct.",
+      "read": "transcripts/step06-reviewer.jsonl and the diff in diffs/step6.diff; Verdict correct for the code in the tree, given the article cap"
+    }
+  }
+}

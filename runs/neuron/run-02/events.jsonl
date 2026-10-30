@@ -1,0 +1,76 @@
+{"ts": "2026-10-29T20:56:32.350Z", "event": "run_start", "arm": "neuron", "run_id": "run-02"}
+{"ts": "2026-10-29T21:07:29.317Z", "event": "ingest_complete", "label": "initial", "vault": "team", "started_at": "2026-10-29T20:56:50.178Z", "seconds_upper_bound": 639.1}
+{"ts": "2026-10-29T21:07:29.658Z", "event": "role_start", "step": 2, "role": "planner", "transcript": "transcripts/step02-planner.jsonl", "visible_files": 67}
+{"ts": "2026-10-29T21:08:14.730Z", "event": "role_end", "step": 2, "role": "planner", "exit_code": 0}
+{"ts": "2026-10-29T21:07:32.948Z", "event": "ask", "step": 2, "role": "planner", "tool_use_id": "toolu_011pRze45uGF4ntcjbuUTKD2", "answered_at": "2026-10-29T21:07:35.040Z", "vault": "team"}
+{"ts": "2026-10-29T21:07:33.261Z", "event": "ask", "step": 2, "role": "planner", "tool_use_id": "toolu_01TAd1Kxg9HRh6AujQY3UMVH", "answered_at": "2026-10-29T21:07:36.632Z", "vault": "team"}
+{"ts": "2026-10-29T21:07:33.561Z", "event": "ask", "step": 2, "role": "planner", "tool_use_id": "toolu_01JyuLJJyAtSdExzPoRyifgF", "answered_at": "2026-10-29T21:07:38.004Z", "vault": "team"}
+{"ts": "2026-10-29T21:07:34.263Z", "event": "ask", "step": 2, "role": "planner", "tool_use_id": "toolu_01FeKPUTVf58ohYFm83KfQeW", "answered_at": "2026-10-29T21:07:40.749Z", "vault": "team"}
+{"ts": "2026-10-29T21:07:34.431Z", "event": "ask", "step": 2, "role": "planner", "tool_use_id": "toolu_01E1JcoG2d7UDgAnDPbUJyc3", "answered_at": "2026-10-29T21:07:42.911Z", "vault": "team"}
+{"ts": "2026-10-29T21:07:35.072Z", "event": "ask", "step": 2, "role": "planner", "tool_use_id": "toolu_01AQMvVDe1A4aWFK7zbZ7JQ5", "answered_at": "2026-10-29T21:07:45.086Z", "vault": "team"}
+{"ts": "2026-10-29T21:08:15.217Z", "event": "role_start", "step": 3, "role": "builder", "transcript": "transcripts/step03-builder.jsonl", "visible_files": 69}
+{"ts": "2026-10-29T21:10:18.377Z", "event": "role_end", "step": 3, "role": "builder", "exit_code": 0}
+{"ts": "2026-10-29T21:08:19.235Z", "event": "ask", "step": 3, "role": "builder", "tool_use_id": "toolu_01N1aaY4Cht883F7NC4XwgaW", "answered_at": "2026-10-29T21:08:20.604Z", "vault": "team"}
+{"ts": "2026-10-29T21:08:19.474Z", "event": "ask", "step": 3, "role": "builder", "tool_use_id": "toolu_019kKs14c8asgLAWLdvrfxtB", "answered_at": "2026-10-29T21:08:21.859Z", "vault": "team"}
+{"ts": "2026-10-29T21:08:19.781Z", "event": "ask", "step": 3, "role": "builder", "tool_use_id": "toolu_01ASbNizyJ2ahRDPL9LKuR7d", "answered_at": "2026-10-29T21:08:24.419Z", "vault": "team"}
+{"ts": "2026-10-29T21:08:20.165Z", "event": "ask", "step": 3, "role": "builder", "tool_use_id": "toolu_01Mvht3uHpUgXvP2ravLogGP", "answered_at": "2026-10-29T21:08:26.650Z", "vault": "team"}
+{"ts": "2026-10-29T21:08:20.690Z", "event": "ask", "step": 3, "role": "builder", "tool_use_id": "toolu_019kGsaJZqVpoz7EUeWHq3Ty", "answered_at": "2026-10-29T21:08:28.895Z", "vault": "team"}
+{"ts": "2026-10-29T21:10:21.337Z", "event": "maintainer_edit", "label": "step4", "step": 4, "files": ["policy-edit-window.md"]}
+{"ts": "2026-10-29T21:11:48.403Z", "event": "ingest_complete", "label": "step4", "vault": "team", "started_at": "2026-10-29T21:10:21.377Z", "seconds_upper_bound": 87.0}
+{"ts": "2026-10-29T21:11:50.372Z", "event": "state_probe", "label": "step4", "rule": "edit-window", "step": 4, "question": "How long after a comment is created may it still be edited?", "vault": "team", "ask_text_matches_old": false, "ask_text_matches_new": true, "explore_matches_old": false, "explore_matches_new": false, "supersedes_marker_seen": false, "old_value_still_returned": false}
+{"ts": "2026-10-29T21:11:50.757Z", "event": "role_start", "step": 4, "role": "reviewer", "transcript": "transcripts/step04-reviewer.jsonl", "visible_files": 69}
+{"ts": "2026-10-29T21:12:56.023Z", "event": "role_end", "step": 4, "role": "reviewer", "exit_code": 0}
+{"ts": "2026-10-29T21:11:55.218Z", "event": "ask", "step": 4, "role": "reviewer", "tool_use_id": "toolu_01TWCAK1JGehSiZzm9KzSiFQ", "answered_at": "2026-10-29T21:11:56.551Z", "vault": "team"}
+{"ts": "2026-10-29T21:11:55.533Z", "event": "ask", "step": 4, "role": "reviewer", "tool_use_id": "toolu_01WNMbEXYA5mKDfgNzhoTNQW", "answered_at": "2026-10-29T21:12:00.485Z", "vault": "team"}
+{"ts": "2026-10-29T21:11:55.851Z", "event": "ask", "step": 4, "role": "reviewer", "tool_use_id": "toolu_01B9gfNde7QfSpGF3m3NbvTS", "answered_at": "2026-10-29T21:12:03.214Z", "vault": "team"}
+{"ts": "2026-10-29T21:11:56.139Z", "event": "ask", "step": 4, "role": "reviewer", "tool_use_id": "toolu_0136pLdf5fNXDmFuYM7tSw13", "answered_at": "2026-10-29T21:12:04.448Z", "vault": "team"}
+{"ts": "2026-10-29T21:12:12.312Z", "event": "explore", "step": 4, "role": "reviewer", "tool_use_id": "toolu_01Mz7Tf5FEYCs3toKuc8EbWj", "answered_at": "2026-10-29T21:12:12.735Z", "vault": "team"}
+{"ts": "2026-10-29T21:12:12.583Z", "event": "explore", "step": 4, "role": "reviewer", "tool_use_id": "toolu_01PREh7ip3F6jj9aRnGBidMr", "answered_at": "2026-10-29T21:12:13.150Z", "vault": "team"}
+{"ts": "2026-10-29T21:12:16.816Z", "event": "ask", "step": 4, "role": "reviewer", "tool_use_id": "toolu_018BBG5Ys1hKH3sWF4zVrQv7", "answered_at": "2026-10-29T21:12:18.547Z", "vault": "team"}
+{"ts": "2026-10-29T21:12:17.187Z", "event": "ask", "step": 4, "role": "reviewer", "tool_use_id": "toolu_01KQCipiyKsYMf4cZJAfvF25", "answered_at": "2026-10-29T21:12:21.258Z", "vault": "team"}
+{"ts": "2026-10-29T21:12:56.525Z", "event": "role_start", "step": 5, "role": "builder", "transcript": "transcripts/step05-builder.jsonl", "visible_files": 70}
+{"ts": "2026-10-29T21:13:32.445Z", "event": "role_end", "step": 5, "role": "builder", "exit_code": 0}
+{"ts": "2026-10-29T21:12:59.663Z", "event": "ask", "step": 5, "role": "builder", "tool_use_id": "toolu_01C2hoRT2AfXCRmuKTsxGYeh", "answered_at": "2026-10-29T21:13:01.017Z", "vault": "team"}
+{"ts": "2026-10-29T21:13:05.228Z", "event": "explore", "step": 5, "role": "builder", "tool_use_id": "toolu_01XwyvXTaaFMTpckdqwcLWvo", "answered_at": "2026-10-29T21:13:05.631Z", "vault": "team"}
+{"ts": "2026-10-29T21:13:08.803Z", "event": "explore", "step": 5, "role": "builder", "tool_use_id": "toolu_011mZGRVPWuDuQKtMiaMqGo4", "answered_at": "2026-10-29T21:13:08.839Z", "vault": "team"}
+{"ts": "2026-10-29T21:13:09.149Z", "event": "explore", "step": 5, "role": "builder", "tool_use_id": "toolu_013hRQWd2qFMJ4sq1BeEcT5s", "answered_at": "2026-10-29T21:13:09.179Z", "vault": "team"}
+{"ts": "2026-10-29T21:13:35.177Z", "event": "role_start", "step": 5, "role": "reviewer", "transcript": "transcripts/step05-reviewer.jsonl", "visible_files": 69}
+{"ts": "2026-10-29T21:14:06.337Z", "event": "role_end", "step": 5, "role": "reviewer", "exit_code": 0}
+{"ts": "2026-10-29T21:13:38.191Z", "event": "ask", "step": 5, "role": "reviewer", "tool_use_id": "toolu_01BVVMYxFhENqZCh1u6YiJZT", "answered_at": "2026-10-29T21:13:39.495Z", "vault": "team"}
+{"ts": "2026-10-29T21:16:28.597Z", "event": "ingest_complete", "label": "after-step-5", "vault": "team", "started_at": "2026-10-29T21:14:06.518Z", "seconds_upper_bound": 142.1}
+{"ts": "2026-10-29T21:16:28.898Z", "event": "role_start", "step": 6, "role": "planner", "transcript": "transcripts/step06-planner.jsonl", "visible_files": 68}
+{"ts": "2026-10-29T21:16:53.098Z", "event": "role_end", "step": 6, "role": "planner", "exit_code": 0}
+{"ts": "2026-10-29T21:16:31.801Z", "event": "ask", "step": 6, "role": "planner", "tool_use_id": "toolu_01TNnGKDXrTBnf5YLee5WkrL", "answered_at": "2026-10-29T21:16:33.085Z", "vault": "team"}
+{"ts": "2026-10-29T21:16:53.250Z", "event": "role_start", "step": 6, "role": "builder", "transcript": "transcripts/step06-builder.jsonl", "visible_files": 71}
+{"ts": "2026-10-29T21:17:29.650Z", "event": "role_end", "step": 6, "role": "builder", "exit_code": 0}
+{"ts": "2026-10-29T21:16:57.872Z", "event": "ask", "step": 6, "role": "builder", "tool_use_id": "toolu_01Egv9kgeZFcd26YDpk5fr2W", "answered_at": "2026-10-29T21:16:59.058Z", "vault": "team"}
+{"ts": "2026-10-29T21:17:31.811Z", "event": "role_start", "step": 6, "role": "reviewer", "transcript": "transcripts/step06-reviewer.jsonl", "visible_files": 70}
+{"ts": "2026-10-29T21:18:07.771Z", "event": "role_end", "step": 6, "role": "reviewer", "exit_code": 0}
+{"ts": "2026-10-29T21:17:35.710Z", "event": "ask", "step": 6, "role": "reviewer", "tool_use_id": "toolu_01LjNjmLrtBE71zkMUz4o95Y", "answered_at": "2026-10-29T21:17:36.845Z", "vault": "team"}
+{"ts": "2026-10-29T21:17:35.948Z", "event": "ask", "step": 6, "role": "reviewer", "tool_use_id": "toolu_01V6p8DAacbVE76BdavB9jeG", "answered_at": "2026-10-29T21:17:39.616Z", "vault": "reviewer-private"}
+{"ts": "2026-10-29T21:18:08.127Z", "event": "maintainer_edit", "label": "step7", "step": 7, "files": ["ops-runbook.md", "policy-error-response.md"]}
+{"ts": "2026-10-29T21:20:24.630Z", "event": "ingest_complete", "label": "step7", "vault": "team", "started_at": "2026-10-29T21:18:08.162Z", "seconds_upper_bound": 136.5}
+{"ts": "2026-10-29T21:20:27.844Z", "event": "state_probe", "label": "step7", "rule": "error-response", "step": 7, "question": "How must an API error response be shaped, and which status codes does it use?", "vault": "team", "ask_text_matches_old": false, "ask_text_matches_new": true, "explore_matches_old": false, "explore_matches_new": false, "supersedes_marker_seen": false, "old_value_still_returned": false}
+{"ts": "2026-10-29T21:20:28.486Z", "event": "role_start", "step": 8, "role": "planner", "transcript": "transcripts/step08-planner.jsonl", "visible_files": 69}
+{"ts": "2026-10-29T21:21:24.299Z", "event": "role_end", "step": 8, "role": "planner", "exit_code": 0}
+{"ts": "2026-10-29T21:20:33.848Z", "event": "ask", "step": 8, "role": "planner", "tool_use_id": "toolu_012rrtD2mM7nnwqDUTeMaPZH", "answered_at": "2026-10-29T21:20:36.522Z", "vault": "team"}
+{"ts": "2026-10-29T21:20:34.157Z", "event": "ask", "step": 8, "role": "planner", "tool_use_id": "toolu_012A6vFRWDDB1iUWqRBeWWfm", "answered_at": "2026-10-29T21:20:39.359Z", "vault": "team"}
+{"ts": "2026-10-29T21:20:34.400Z", "event": "ask", "step": 8, "role": "planner", "tool_use_id": "toolu_017HSZDFjZrFU7RmFv3iGBGF", "answered_at": "2026-10-29T21:20:40.927Z", "vault": "team"}
+{"ts": "2026-10-29T21:21:24.480Z", "event": "role_start", "step": 8, "role": "builder", "transcript": "transcripts/step08-builder.jsonl", "visible_files": 73}
+{"ts": "2026-10-29T21:22:23.161Z", "event": "role_end", "step": 8, "role": "builder", "exit_code": 0}
+{"ts": "2026-10-29T21:21:27.744Z", "event": "ask", "step": 8, "role": "builder", "tool_use_id": "toolu_01B5bS6kMxgBMWiGQCEtTbWN", "answered_at": "2026-10-29T21:21:30.669Z", "vault": "team"}
+{"ts": "2026-10-29T21:21:28.001Z", "event": "ask", "step": 8, "role": "builder", "tool_use_id": "toolu_01MS93Q54ejPyxSBMrTjZdu9", "answered_at": "2026-10-29T21:21:33.120Z", "vault": "team"}
+{"ts": "2026-10-29T21:22:25.270Z", "event": "role_start", "step": 8, "role": "reviewer", "transcript": "transcripts/step08-reviewer.jsonl", "visible_files": 72}
+{"ts": "2026-10-29T21:23:20.423Z", "event": "role_end", "step": 8, "role": "reviewer", "exit_code": 0}
+{"ts": "2026-10-29T21:22:28.477Z", "event": "ask", "step": 8, "role": "reviewer", "tool_use_id": "toolu_01DEewVusF9ttDfyrJyx4V7n", "answered_at": "2026-10-29T21:22:31.571Z", "vault": "team"}
+{"ts": "2026-10-29T21:22:28.743Z", "event": "ask", "step": 8, "role": "reviewer", "tool_use_id": "toolu_01C75hzmJuDCga2wW3Y2jPLU", "answered_at": "2026-10-29T21:22:34.144Z", "vault": "team"}
+{"ts": "2026-10-29T21:22:40.230Z", "event": "explore", "step": 8, "role": "reviewer", "tool_use_id": "toolu_01RGDFM2ssmohYcaSKJtsred", "answered_at": "2026-10-29T21:22:40.640Z", "vault": "team"}
+{"ts": "2026-10-29T21:22:40.488Z", "event": "explore", "step": 8, "role": "reviewer", "tool_use_id": "toolu_01Dw2e4QTcBFT3uM4Ro4j4F2", "answered_at": "2026-10-29T21:22:41.036Z", "vault": "team"}
+{"ts": "2026-10-29T21:24:29.942Z", "event": "ingest_complete", "label": "after-step-8", "vault": "team", "started_at": "2026-10-29T21:23:20.550Z", "seconds_upper_bound": 69.4}
+{"ts": "2026-10-29T21:24:37.994Z", "event": "outage_start", "key_env": "OKTO_NEURON_ANTHROPIC_API_KEY"}
+{"ts": "2026-10-29T21:24:38.333Z", "event": "role_start", "step": 9, "role": "reviewer", "transcript": "transcripts/step09-reviewer.jsonl", "visible_files": 72}
+{"ts": "2026-10-29T21:24:54.857Z", "event": "role_end", "step": 9, "role": "reviewer", "exit_code": 0}
+{"ts": "2026-10-29T21:24:40.920Z", "event": "ask", "step": 9, "role": "reviewer", "tool_use_id": "toolu_01EJ36GDS77AAwHN25BtPLX1", "answered_at": "2026-10-29T21:24:42.400Z", "vault": "team"}
+{"ts": "2026-10-29T21:24:43.885Z", "event": "explore", "step": 9, "role": "reviewer", "tool_use_id": "toolu_01BfAhy9M2LRKqriJjpASgAX", "answered_at": "2026-10-29T21:24:44.292Z", "vault": "team"}
+{"ts": "2026-10-29T21:25:03.032Z", "event": "outage_end", "key_env": "OKTO_NEURON_ANTHROPIC_API_KEY"}
+{"ts": "2026-10-29T21:25:03.169Z", "event": "run_end", "hard_failures": 0}

@@ -1,0 +1,18 @@
+{
+  "label": "step4",
+  "rule": "edit-window",
+  "step": 4,
+  "question": "How long after a comment is created may it still be edited?",
+  "vault": "team",
+  "raw": [
+    "probes/step4.ask.raw.json",
+    "probes/step4.explore.raw.json"
+  ],
+  "ask_text_matches_old": false,
+  "ask_text_matches_new": true,
+  "explore_matches_old": false,
+  "explore_matches_new": false,
+  "supersedes_marker_seen": false,
+  "old_value_still_returned": false,
+  "ts": "2026-10-29T21:12:16.164Z"
+}

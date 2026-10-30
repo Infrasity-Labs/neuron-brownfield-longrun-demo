@@ -5,7 +5,6 @@ import {
   createArticle,
   deleteArticle,
   deleteComment,
-  editComment,
   favoriteArticle,
   getArticle,
   getArticles,
@@ -195,32 +194,6 @@ router.delete(
     try {
       await deleteComment(Number(req.params.id), req.auth?.user?.id);
       res.status(200).json({});
-    } catch (error) {
-      next(error);
-    }
-  },
-);
-
-/**
- * Edit comment
- * @auth required
- * @route {PUT} /articles/:slug/comments/:id
- * @param slug slug of the article (based on the title)
- * @param id id of the comment
- * @bodyparam body new content of the comment
- * @returns comment edited comment
- */
-router.put(
-  '/articles/:slug/comments/:id',
-  auth.required,
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const comment = await editComment(
-        req.body.comment?.body,
-        Number(req.params.id),
-        req.auth?.user?.id,
-      );
-      res.json({ comment });
     } catch (error) {
       next(error);
     }

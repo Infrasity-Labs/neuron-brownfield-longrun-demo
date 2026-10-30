@@ -1,0 +1,14 @@
+{
+  "label": "step6",
+  "edit_window_minutes": 30,
+  "article_limit_cap": 50,
+  "jest_exit_code": 1,
+  "outcomes": {
+    "edit-window/accepts-inside": "error",
+    "edit-window/refuses-outside": "error",
+    "article-limit/caps-above": "error",
+    "article-limit/keeps-below": "error",
+    "article-limit/keeps-default": "error"
+  },
+  "suite_failure": "  \u25cf Test suite failed to run\n\n    \u001b[96msrc/app/routes/article/article.service.ts\u001b[0m:\u001b[93m604\u001b[0m:\u001b[93m7\u001b[0m - \u001b[91merror\u001b[0m\u001b[90m TS2322: \u001b[0mType '{ body: string; editedAt: Date; }' is not assignable to type '(Without<CommentUpdateInput, CommentUncheckedUpdateInput> & CommentUncheckedUpdateInput) | (Without<...> & CommentUpdateInput)'.\n      Object literal may only specify known properties, and 'editedAt' does not exist in type '(Without<CommentUpdateInput, CommentUncheckedUpdateInput> & CommentUncheckedUpdateInput) | (Without<...> & CommentUpdateInput)'.\n\n    \u001b[7m604\u001b[0m       editedAt: new Date(),\n    \u001b[7m   \u001b[0m \u001b[91m      ~~~~~~~~\u001b[0m\n\n      \u001b[96m../../../../../../../..<HOME>/Infrasity/review-fixes/neuron/app/node_modules/.prisma/client/index.d.ts\u001b[0m:\u001b[93m3332\u001b[0m:\u001b[93m5\u001b[0m\n        \u001b[7m3332\u001b[0m     data: XOR<CommentUpdateInput, CommentUncheckedUpdateInput>\n        \u001b[7m    \u001b[0m \u001b[96m    ~~~~\u001b[0m\n        The expected type comes from property 'data' which is declared here on type '{ select?: CommentSelect<DefaultArgs>; include?: CommentInclude<DefaultArgs>; data: (Without<CommentUpdateInput, CommentUncheckedUpdateInput> & CommentUncheckedUpdateInput) | (Without<...> & Co"
+}

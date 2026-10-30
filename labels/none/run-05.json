@@ -1,0 +1,64 @@
+{
+  "schema": "neuron-demo-labels/1",
+  "arm": "none",
+  "run_id": "run-05",
+  "labeler": "",
+  "labeled_at": "",
+  "blind": null,
+  "labels": {
+    "edit-window/reviewer-step4/verdict": {
+      "value": null,
+      "evidence": "",
+      "note": "",
+      "read": "transcripts/step04-reviewer.jsonl and the diff in diffs/step4.diff; Verdict correct for the code in the tree, given the current rule"
+    },
+    "edit-window/builder-step5/tests": {
+      "value": null,
+      "evidence": "",
+      "note": "",
+      "read": "transcripts/step05-builder.jsonl and the diff in diffs/step5.diff; Tests use the current edit window, not the replaced one"
+    },
+    "edit-window/reviewer-step5/verdict": {
+      "value": null,
+      "evidence": "",
+      "note": "",
+      "read": "transcripts/step05-reviewer.jsonl and the diff in diffs/step5.diff; Verdict correct for the code in the tree, given the current rule"
+    },
+    "error-response/planner-step8/spec": {
+      "value": null,
+      "evidence": "",
+      "note": "",
+      "read": "transcripts/step08-planner.jsonl and the diff in diffs/step8.diff; Spec points at the current error rule and does not carry the replaced shape forward"
+    },
+    "error-response/builder-step8/code": {
+      "value": null,
+      "evidence": "",
+      "note": "",
+      "read": "transcripts/step08-builder.jsonl and the diff in diffs/step8.diff; Every new error path in the diff uses the current error shape"
+    },
+    "error-response/builder-step8/tests": {
+      "value": null,
+      "evidence": "",
+      "note": "",
+      "read": "transcripts/step08-builder.jsonl and the diff in diffs/step8.diff; Tests expect the current error shape for new error paths"
+    },
+    "error-response/reviewer-step8/verdict": {
+      "value": null,
+      "evidence": "",
+      "note": "",
+      "read": "transcripts/step08-reviewer.jsonl and the diff in diffs/step8.diff; Verdict correct for the code in the tree, given the current error rule"
+    },
+    "article-limit/builder-step6/tests": {
+      "value": null,
+      "evidence": "",
+      "note": "",
+      "read": "transcripts/step06-builder.jsonl and the diff in diffs/step6.diff; Tests use the article cap"
+    },
+    "article-limit/reviewer-step6/verdict": {
+      "value": null,
+      "evidence": "",
+      "note": "",
+      "read": "transcripts/step06-reviewer.jsonl and the diff in diffs/step6.diff; Verdict correct for the code in the tree, given the article cap"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "label": "rescore-step6",
+  "edit_window_minutes": 30,
+  "article_limit_cap": 50,
+  "jest_exit_code": 0,
+  "outcomes": {
+    "edit-window/accepts-inside": "pass",
+    "edit-window/refuses-outside": "pass",
+    "article-limit/caps-above": "pass",
+    "article-limit/keeps-below": "pass",
+    "article-limit/keeps-default": "pass"
+  },
+  "live_outcomes": {
+    "edit-window/accepts-inside": "pass",
+    "edit-window/refuses-outside": "pass",
+    "article-limit/caps-above": "pass",
+    "article-limit/keeps-below": "pass",
+    "article-limit/keeps-default": "pass"
+  },
+  "matches_live": true
+}

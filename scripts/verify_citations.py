@@ -13,13 +13,15 @@ import os
 import sys
 from typing import Dict, List, Optional, Tuple
 
-DEFAULT_VAULTS_DIR = os.path.expanduser("~/.okto-neuron/vaults")
+def default_vaults_dir() -> str:
+    """Neuron's vault folder under the CURRENT home. Read at call time so a run with an isolated HOME looks there."""
+    return os.path.expanduser("~/.okto-neuron/vaults")
 
 
 def vault_root(vault: str, roots: Optional[Dict[str, str]] = None) -> str:
     if roots and vault in roots:
         return roots[vault]
-    return os.path.join(os.environ.get("OKTO_NEURON_VAULTS_DIR", DEFAULT_VAULTS_DIR), vault)
+    return os.path.join(os.environ.get("OKTO_NEURON_VAULTS_DIR") or default_vaults_dir(), vault)
 
 
 def verify_source(source: dict, root: str) -> Tuple[bool, str]:

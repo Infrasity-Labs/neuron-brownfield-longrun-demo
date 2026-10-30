@@ -1,0 +1,26 @@
+{"ts": "2026-10-29T20:45:59.694Z", "event": "run_start", "arm": "none", "run_id": "smoke-02"}
+{"ts": "2026-10-29T20:46:02.278Z", "event": "role_start", "step": 2, "role": "planner", "transcript": "transcripts/step02-planner.jsonl", "visible_files": 67}
+{"ts": "2026-10-29T20:47:07.898Z", "event": "role_end", "step": 2, "role": "planner", "exit_code": 0}
+{"ts": "2026-10-29T20:47:08.006Z", "event": "role_start", "step": 3, "role": "builder", "transcript": "transcripts/step03-builder.jsonl", "visible_files": 69}
+{"ts": "2026-10-29T20:48:31.599Z", "event": "role_end", "step": 3, "role": "builder", "exit_code": 0}
+{"ts": "2026-10-29T20:48:34.212Z", "event": "maintainer_edit", "label": "step4", "step": 4, "files": ["policy-edit-window.md"]}
+{"ts": "2026-10-29T20:48:34.289Z", "event": "role_start", "step": 4, "role": "reviewer", "transcript": "transcripts/step04-reviewer.jsonl", "visible_files": 68}
+{"ts": "2026-10-29T20:49:17.454Z", "event": "role_end", "step": 4, "role": "reviewer", "exit_code": 0}
+{"ts": "2026-10-29T20:49:17.584Z", "event": "role_start", "step": 5, "role": "builder", "transcript": "transcripts/step05-builder.jsonl", "visible_files": 69}
+{"ts": "2026-10-29T20:49:37.522Z", "event": "role_end", "step": 5, "role": "builder", "exit_code": 0}
+{"ts": "2026-10-29T20:49:40.094Z", "event": "role_start", "step": 5, "role": "reviewer", "transcript": "transcripts/step05-reviewer.jsonl", "visible_files": 68}
+{"ts": "2026-10-29T20:50:07.346Z", "event": "role_end", "step": 5, "role": "reviewer", "exit_code": 0}
+{"ts": "2026-10-29T20:50:07.414Z", "event": "role_start", "step": 6, "role": "planner", "transcript": "transcripts/step06-planner.jsonl", "visible_files": 67}
+{"ts": "2026-10-29T20:50:41.333Z", "event": "role_end", "step": 6, "role": "planner", "exit_code": 0}
+{"ts": "2026-10-29T20:50:41.440Z", "event": "role_start", "step": 6, "role": "builder", "transcript": "transcripts/step06-builder.jsonl", "visible_files": 70}
+{"ts": "2026-10-29T20:51:00.533Z", "event": "role_end", "step": 6, "role": "builder", "exit_code": 0}
+{"ts": "2026-10-29T20:51:03.205Z", "event": "role_start", "step": 6, "role": "reviewer", "transcript": "transcripts/step06-reviewer.jsonl", "visible_files": 68}
+{"ts": "2026-10-29T20:51:23.178Z", "event": "role_end", "step": 6, "role": "reviewer", "exit_code": 0}
+{"ts": "2026-10-29T20:51:23.216Z", "event": "maintainer_edit", "label": "step7", "step": 7, "files": ["ops-runbook.md", "policy-error-response.md"]}
+{"ts": "2026-10-29T20:51:23.245Z", "event": "role_start", "step": 8, "role": "planner", "transcript": "transcripts/step08-planner.jsonl", "visible_files": 67}
+{"ts": "2026-10-29T20:52:08.660Z", "event": "role_end", "step": 8, "role": "planner", "exit_code": 0}
+{"ts": "2026-10-29T20:52:08.767Z", "event": "role_start", "step": 8, "role": "builder", "transcript": "transcripts/step08-builder.jsonl", "visible_files": 71}
+{"ts": "2026-10-29T20:53:33.611Z", "event": "role_end", "step": 8, "role": "builder", "exit_code": 0}
+{"ts": "2026-10-29T20:53:36.098Z", "event": "role_start", "step": 8, "role": "reviewer", "transcript": "transcripts/step08-reviewer.jsonl", "visible_files": 70}
+{"ts": "2026-10-29T20:54:39.891Z", "event": "role_end", "step": 8, "role": "reviewer", "exit_code": 0}
+{"ts": "2026-10-29T20:54:39.971Z", "event": "run_end", "hard_failures": 2}

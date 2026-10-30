@@ -1,0 +1,14 @@
+{
+  "label": "step8",
+  "edit_window_minutes": 30,
+  "article_limit_cap": 50,
+  "jest_exit_code": 1,
+  "outcomes": {
+    "edit-window/accepts-inside": "error",
+    "edit-window/refuses-outside": "error",
+    "article-limit/caps-above": "error",
+    "article-limit/keeps-below": "error",
+    "article-limit/keeps-default": "error"
+  },
+  "suite_failure": "  \u25cf Test suite failed to run\n\n    \u001b[96msrc/app/routes/article/article.service.ts\u001b[0m:\u001b[93m445\u001b[0m:\u001b[93m11\u001b[0m - \u001b[91merror\u001b[0m\u001b[90m TS2322: \u001b[0mType '{ OR: any[]; deletedAt: null; }' is not assignable to type 'CommentWhereInput'.\n      Object literal may only specify known properties, and 'deletedAt' does not exist in type 'CommentWhereInput'.\n\n    \u001b[7m445\u001b[0m           deletedAt: null,\n    \u001b[7m   \u001b[0m \u001b[91m          ~~~~~~~~~\u001b[0m\n    \u001b[96msrc/app/routes/article/article.service.ts\u001b[0m:\u001b[93m465\u001b[0m:\u001b[93m28\u001b[0m - \u001b[91merror\u001b[0m\u001b[90m TS2339: \u001b[0mProperty 'comments' does not exist on type 'GetResult<{ id: number; slug: string; title: string; description: string; body: string; createdAt: Date; updatedAt: Date; authorId: number; }, unknown> & {}'.\n\n    \u001b[7m465\u001b[0m   const result = comments?.comments.map((comment: any) => ({\n    \u001b[7m   \u001b[0m \u001b[91m                           ~~~~~~~~\u001b[0m\n    \u001b[96msrc/app/routes/article/article.service.ts\u001b[0m:\u001b[93m537\u001b[0m:\u001b[93m7\u001b[0m - \u001b[91merror\u001b[0m\u001b[90m TS2322: \u001b[0mType '{ id: number; deletedAt: null; author: { id: number; }; }' is not assignable to type 'CommentWhereInput'.\n      Object literal may only specify known properties, and 'deletedAt' does not exi"
+}
